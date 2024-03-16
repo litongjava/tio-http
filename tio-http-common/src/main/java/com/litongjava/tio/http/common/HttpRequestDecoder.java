@@ -16,7 +16,7 @@ import com.litongjava.tio.core.Tio;
 import com.litongjava.tio.core.exception.TioDecodeException;
 import com.litongjava.tio.http.common.HttpConst.RequestBodyFormat;
 import com.litongjava.tio.http.common.utils.HttpParseUtils;
-import com.litongjava.tio.http.common.utils.IpUtils;
+import com.litongjava.tio.http.common.utils.HttpIpUtils;
 import com.litongjava.tio.utils.SysConst;
 import com.litongjava.tio.utils.environment.EnvironmentUtils;
 import com.litongjava.tio.utils.hutool.StrUtil;
@@ -128,7 +128,7 @@ public class HttpRequestDecoder {
 
     // httpRequest.setHttpConfig((HttpConfig) channelContext.tioConfig.getAttribute(TioConfigKey.HTTP_SERVER_CONFIG));
 
-    String realIp = IpUtils.getRealIp(channelContext, httpConfig, headers);
+    String realIp = HttpIpUtils.getRealIp(channelContext, httpConfig, headers);
     if (Tio.IpBlacklist.isInBlacklist(channelContext.tioConfig, realIp)) {
       throw new TioDecodeException("[" + realIp + "] in black list");
     }

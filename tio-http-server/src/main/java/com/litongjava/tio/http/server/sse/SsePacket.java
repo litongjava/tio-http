@@ -7,104 +7,94 @@ import java.nio.charset.StandardCharsets;
 import com.litongjava.tio.core.TioConfig;
 import com.litongjava.tio.core.intf.Packet;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class SsePacket extends Packet {
   private static final long serialVersionUID = 1L;
   private Charset charset = StandardCharsets.UTF_8;
-  private String eventId;
-  private String name;
-  private String data;
+  private byte[] nBytes = "\n".getBytes(charset);
 
-  public SsePacket() {
-    super();
-  }
+  private String event;
+  private byte[] data;
 
-  public SsePacket(String id, String name, String data) {
-    super();
-    this.eventId = id;
-    this.name = name;
-    this.data = data;
-  }
-
-  public SsePacket(Charset charset, String id, String name, String data) {
-    super();
-    this.charset = charset;
-    this.eventId = id;
-    this.name = name;
-    this.data = data;
-  }
-
-  public SsePacket eventId(String id) {
-    this.eventId = id;
+  public SsePacket id(int i) {
+    super.setId((long) i);
     return this;
   }
 
-  public SsePacket name(String name) {
-    this.name = name;
+  public SsePacket id(Long id) {
+    super.setId(id);
     return this;
   }
 
-  public SsePacket data(String data) {
-    this.data = data;
+  public SsePacket event(String event) {
+    this.event = event;
     return this;
   }
 
-  public Charset getCharset() {
-    return charset;
-  }
-
-  public void setCharset(Charset charset) {
-    this.charset = charset;
-  }
-
-  public String getEventId() {
-    return eventId;
-  }
-
-  public void setEventId(String id) {
-    this.eventId = id;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public String getData() {
-    return data;
-  }
-
-  public void setData(String data) {
+  public SsePacket data(byte[] data) {
     this.data = data;
+    return this;
   }
 
   public ByteBuffer toByteBuffer(TioConfig tioConfig) {
-    // String message = "id:2\n" + "event:message\n" + "data:This is message 1" + "\n\n";
-    StringBuffer stringBuffer = new StringBuffer();
-    if (eventId != null) {
-      stringBuffer.append("id:").append(eventId + "\n");
-    }
-    if (name != null) {
-      stringBuffer.append("name:").append(name + "\n");
-    }
-    if (data != null) {
-      stringBuffer.append("data:").append(data + "\n\n");
-    }
-
-    byte[] bytes = stringBuffer.toString().getBytes();
-
-    // ByteBuffer的总长度是消息体长度
-    int bodyLength = bytes.length;
-
-    // 创建一个新的ByteBuffer
-    ByteBuffer buffer = ByteBuffer.allocate(bodyLength);
-    // 设置字节序
+    ByteBuffer buffer = ByteBuffer.allocate(calculateBufferSize());
     buffer.order(tioConfig.getByteOrder());
-    // 消息消息体
-    buffer.put(bytes);
+
+    // Add id
+    if (getId() != null) {
+      String idString = "id: " + getId() + "\n";
+      buffer.put(idString.getBytes(charset));
+    }
+
+    // Add event
+    if (event != null) {
+      String eventString = "event: " + event + "\n";
+      buffer.put(eventString.getBytes(charset));
+    }
+
+    // Add data
+    if (data != null) {
+      buffer.put("data: ".getBytes(charset));
+      buffer.put(data);
+      buffer.put(nBytes);
+
+    }
+
+    buffer.put(nBytes);
+    buffer.flip();
     return buffer;
+  }
+
+  private int calculateBufferSize() {
+    int size = 0;
+
+    // id
+    if (getId() != null) {
+      size += ("id: " + getId()).getBytes(charset).length + nBytes.length;
+    }
+
+    // event
+    if (event != null) {
+      size += ("event: " + event).getBytes(charset).length + nBytes.length;
+    }
+
+    // data
+    if (data != null) {
+      size += ("data: ").getBytes(charset).length + nBytes.length + data.length;
+    }
+
+    // Add extra newline
+    size += nBytes.length;
+
+    return size;
   }
 
 }

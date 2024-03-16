@@ -1,9 +1,5 @@
 package com.litongjava.tio.http.common.utils;
 
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.util.Enumeration;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -21,42 +17,8 @@ import com.litongjava.tio.utils.hutool.StrUtil;
  * @author tanyaowu
  * 2017年8月10日 下午5:05:49
  */
-public class IpUtils {
-  private static Logger log = LoggerFactory.getLogger(IpUtils.class);
-
-  /**
-   * 获取本机 ip
-   * @return 本机IP
-   */
-  public static String getLocalIp() throws SocketException {
-    String localip = null; // 本地IP，如果没有配置外网IP则返回
-    String netip = null; // 外网IP
-
-    Enumeration<NetworkInterface> netInterfaces = NetworkInterface.getNetworkInterfaces();
-    InetAddress ip = null;
-    boolean finded = false; // 是否找到外网IP
-    while (netInterfaces.hasMoreElements() && !finded) {
-      NetworkInterface ni = netInterfaces.nextElement();
-      Enumeration<InetAddress> address = ni.getInetAddresses();
-      while (address.hasMoreElements()) {
-        ip = address.nextElement();
-        if (!ip.isSiteLocalAddress() && !ip.isLoopbackAddress() && ip.getHostAddress().indexOf(":") == -1) {// 外网IP
-          netip = ip.getHostAddress();
-          finded = true;
-          break;
-        } else if (ip.isSiteLocalAddress() && !ip.isLoopbackAddress() && ip.getHostAddress().indexOf(":") == -1) {// 内网IP
-          localip = ip.getHostAddress();
-        }
-      }
-    }
-
-    if (netip != null && !"".equals(netip)) {
-      return netip;
-    } else {
-      return localip;
-    }
-  }
-
+public class HttpIpUtils {
+  private static Logger log = LoggerFactory.getLogger(HttpIpUtils.class);
   /**
    * 如果是被代理了，获取客户端ip时，依次从下面这些头部中获取
    */
@@ -70,7 +32,7 @@ public class IpUtils {
    * @author tanyaowu
    */
   public static String getRealIp(HttpRequest request) {
-//		return getRealIp(request.channelContext, request.httpConfig, request.getHeaders());
+//    return getRealIp(request.channelContext, request.httpConfig, request.getHeaders());
 
     if (request.httpConfig == null) {
       return request.getRemote().getIp();
