@@ -50,19 +50,19 @@ public class SsePacket extends Packet {
 
     // Add id
     if (getId() != null) {
-      String idString = "id: " + getId() + "\n";
+      String idString = "id:" + getId() + "\n";
       buffer.put(idString.getBytes(charset));
     }
 
     // Add event
     if (event != null) {
-      String eventString = "event: " + event + "\n";
+      String eventString = "event:" + event + "\n";
       buffer.put(eventString.getBytes(charset));
     }
 
     // Add data
     if (data != null) {
-      buffer.put("data: ".getBytes(charset));
+      buffer.put("data:".getBytes(charset));
       buffer.put(data);
       buffer.put(nBytes);
 
@@ -78,17 +78,17 @@ public class SsePacket extends Packet {
 
     // id
     if (getId() != null) {
-      size += ("id: " + getId()).getBytes(charset).length + nBytes.length;
+      size += ("id:" + getId()).getBytes(charset).length + nBytes.length;
     }
 
     // event
     if (event != null) {
-      size += ("event: " + event).getBytes(charset).length + nBytes.length;
+      size += ("event:" + event).getBytes(charset).length + nBytes.length;
     }
 
     // data
     if (data != null) {
-      size += ("data: ").getBytes(charset).length + nBytes.length + data.length;
+      size += ("data:").getBytes(charset).length + nBytes.length + data.length;
     }
 
     // Add extra newline
