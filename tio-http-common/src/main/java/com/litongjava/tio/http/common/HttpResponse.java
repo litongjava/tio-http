@@ -1,5 +1,7 @@
 package com.litongjava.tio.http.common;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -13,7 +15,9 @@ import org.slf4j.LoggerFactory;
 
 import com.litongjava.tio.http.common.utils.HttpGzipUtils;
 import com.litongjava.tio.utils.SysConst;
+import com.litongjava.tio.utils.hutool.ClassUtil;
 import com.litongjava.tio.utils.hutool.StrUtil;
+import com.litongjava.tio.utils.json.Json;
 
 /**
  *
@@ -445,5 +449,70 @@ public class HttpResponse extends HttpPacket {
     setStatus(HttpResponseStatus.C302);
     addHeader(HeaderName.Location, HeaderValue.from(url));
 
+  }
+
+  public static HttpResponse string(String bodyString, String charset, String mimeTypeStr) {
+    HttpResponse httpResponse = new HttpResponse();
+    httpResponse.setString(bodyString, charset, mimeTypeStr);
+    return httpResponse;
+  }
+
+  public HttpResponse setString(String bodyString, String charset, String mimeTypeStr) {
+    if (bodyString != null) {
+      if (charset == null) {
+        setBody(bodyString.getBytes());
+      } else {
+        try {
+          setBody(bodyString.getBytes(charset));
+        } catch (UnsupportedEncodingException e) {
+          log.error(e.toString(), e);
+        }
+      }
+    }
+    this.addHeader(HeaderName.Content_Type, HeaderValue.Content_Type.from(mimeTypeStr));
+    return this;
+  }
+
+  public HttpResponse setJson(Object body) {
+    String charset = this.getHttpRequest().getHttpConfig().getCharset();
+    if (body == null) {
+      return setString("", charset, getMimeTypeStr(MimeType.TEXT_PLAIN_JSON, charset));
+    } else {
+      if (body.getClass() == String.class || ClassUtil.isBasicType(body.getClass())) {
+        return setString(body + "", charset, getMimeTypeStr(MimeType.TEXT_PLAIN_JSON, charset));
+      } else {
+        return setString(Json.getJson().toJson(body), charset, getMimeTypeStr(MimeType.TEXT_PLAIN_JSON, charset));
+      }
+    }
+  }
+
+  public static HttpResponse json(Object body) {
+    String charset = Charset.defaultCharset().name();
+    return json(body, charset);
+  }
+
+  public static HttpResponse json(Object body, String charset) {
+    if (body == null) {
+      return string("", charset, getMimeTypeStr(MimeType.TEXT_PLAIN_JSON, charset));
+    } else {
+      if (body.getClass() == String.class || ClassUtil.isBasicType(body.getClass())) {
+        return string(body + "", charset, getMimeTypeStr(MimeType.TEXT_PLAIN_JSON, charset));
+      } else {
+        return string(Json.getJson().toJson(body), charset, getMimeTypeStr(MimeType.TEXT_PLAIN_JSON, charset));
+      }
+    }
+  }
+
+  private static String getMimeTypeStr(MimeType mimeType, String charset) {
+    if (charset == null) {
+      return mimeType.getType();
+    } else {
+      return mimeType.getType() + ";charset=" + charset;
+    }
+  }
+
+  public static HttpResponse json(HttpRequest request, Object body) {
+    HttpResponse httpResponse = new HttpResponse(request);
+    return httpResponse.setJson(body);
   }
 }
