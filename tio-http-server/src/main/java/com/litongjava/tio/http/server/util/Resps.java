@@ -9,6 +9,8 @@ import java.nio.file.Files;
 import java.util.Date;
 import java.util.Map;
 
+import com.litongjava.tio.utils.environment.EnvironmentUtils;
+import com.litongjava.tio.utils.resp.RespVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +43,7 @@ public class Resps {
   /**
    * 构建css响应
    * Content-Type: text/css;charset=utf-8
+   *
    * @param request
    * @param bodyString
    * @return
@@ -53,6 +56,7 @@ public class Resps {
   /**
    * 构建css响应
    * Content-Type: text/css;charset=utf-8
+   *
    * @param request
    * @param bodyString
    * @param charset
@@ -66,6 +70,7 @@ public class Resps {
 
   /**
    * 根据byte[]创建响应
+   *
    * @param request
    * @param bodyBytes
    * @param extension 后缀，可以为空
@@ -103,7 +108,7 @@ public class Resps {
       }
     }
     return bytesWithContentType(response, byteOne, contentType);
-    
+
   }
 
   /**
@@ -127,9 +132,9 @@ public class Resps {
   }
 
 
-
   /**
    * 根据文件创建响应
+   *
    * @param request
    * @param fileOnServer
    * @return
@@ -157,7 +162,6 @@ public class Resps {
   }
 
   /**
-   * 
    * @param request
    * @param path
    * @return
@@ -182,7 +186,7 @@ public class Resps {
   }
 
   /**
-   * 
+   *
    * @param request
    * @param path 文件在服务器上的相对pageRoot的路径，形如："/user/index.html"
    * @param httpConfig
@@ -199,22 +203,21 @@ public class Resps {
   // }
 
   /**
-   * 
    * @param request
    * @param requestLine
    * @param httpConfig
    * @return
+   * @throws Exception
    * @author: tanyaowu
-   * @throws Exception 
    */
   public static HttpResponse resp404(HttpRequest request, RequestLine requestLine, HttpConfig httpConfig)
-      throws Exception {
+    throws Exception {
     String file404 = httpConfig.getPage404();
     HttpResource httpResource = request.httpConfig.getResource(request, file404);
     if (httpResource != null) {
       file404 = httpResource.getPath();
       HttpResponse ret = Resps.forward(request,
-          file404 + "?tio_initpath=" + URLEncoder.encode(requestLine.getPathAndQuery(), httpConfig.getCharset()));
+        file404 + "?tio_initpath=" + URLEncoder.encode(requestLine.getPathAndQuery(), httpConfig.getCharset()));
       return ret;
     }
 
@@ -230,7 +233,6 @@ public class Resps {
   }
 
   /**
-   * 
    * @param request
    * @return
    * @throws Exception
@@ -262,17 +264,16 @@ public class Resps {
   // }
 
   /**
-   * 
+   *
    * @param request
    * @param requestLine
    * @param httpConfig
    * @param throwable
    * @return
-   * @author: tanyaowu
-   * @throws Exception 
+   * @throws Exception
    */
   public static HttpResponse resp500(HttpRequest request, RequestLine requestLine, HttpConfig httpConfig,
-      Throwable throwable) throws Exception {
+                                     Throwable throwable) throws Exception {
     String file500 = httpConfig.getPage500();
     HttpResource httpResource = request.httpConfig.getResource(request, file500);
 
@@ -281,13 +282,19 @@ public class Resps {
       HttpResponse ret = Resps.forward(request, file500 + "?tio_initpath=" + requestLine.getPathAndQuery());
       return ret;
     }
-    HttpResponse ret = Resps.html(request, "500");
+
+    HttpResponse ret = null;
+    if (EnvironmentUtils.getBoolean("http.response.showExceptionDetails",false)) {
+      RespVo fail = RespVo.fail(throwable.getMessage());
+      ret = Resps.json(request, fail);
+    } else {
+      ret = Resps.html(request, "500");
+    }
     ret.setStatus(HttpResponseStatus.C500);
     return ret;
   }
 
   /**
-   * 
    * @param request
    * @param throwable
    * @return
@@ -298,7 +305,6 @@ public class Resps {
   }
 
   /**
-   *
    * @param request
    * @param bodyBytes
    * @param contentType 形如:application/octet-stream等
@@ -316,7 +322,7 @@ public class Resps {
     }
     return ret;
   }
-  
+
   /**
    * @param response
    * @param byteOne
@@ -333,7 +339,7 @@ public class Resps {
     }
     return response;
   }
-  
+
   public static HttpResponse bytesWithContentType(HttpResponse response, byte[] bodyBytes, String contentType) {
     response.setBody(bodyBytes);
 
@@ -346,7 +352,6 @@ public class Resps {
   }
 
   /**
-   *
    * @param request
    * @param bodyBytes
    * @param headers
@@ -354,7 +359,7 @@ public class Resps {
    * @author tanyaowu
    */
   public static HttpResponse bytesWithHeaders(HttpRequest request, byte[] bodyBytes,
-      Map<HeaderName, HeaderValue> headers) {
+                                              Map<HeaderName, HeaderValue> headers) {
     HttpResponse ret = new HttpResponse(request);
     ret.setBody(bodyBytes);
     ret.addHeaders(headers);
@@ -362,7 +367,6 @@ public class Resps {
   }
 
   /**
-   *
    * @param request
    * @param bodyString
    * @return
@@ -382,7 +386,6 @@ public class Resps {
   }
 
   /**
-   * 
    * @param request
    * @param newPath
    * @return
@@ -394,6 +397,7 @@ public class Resps {
 
   /**
    * Content-Type: text/html;charset=utf-8
+   *
    * @param request
    * @param bodyString
    * @param charset
@@ -417,6 +421,7 @@ public class Resps {
 
   /**
    * Content-Type: application/javascript;charset=utf-8
+   *
    * @param request
    * @param bodyString
    * @return
@@ -428,6 +433,7 @@ public class Resps {
 
   /**
    * Content-Type: application/javascript;charset=utf-8
+   *
    * @param request
    * @param bodyString
    * @param charset
@@ -436,12 +442,13 @@ public class Resps {
    */
   public static HttpResponse js(HttpRequest request, String bodyString, String charset) {
     HttpResponse ret = string(request, bodyString, charset,
-        getMimeTypeStr(MimeType.APPLICATION_JAVASCRIPT_JS, charset));
+      getMimeTypeStr(MimeType.APPLICATION_JAVASCRIPT_JS, charset));
     return ret;
   }
 
   /**
    * Content-Type: application/json;charset=utf-8
+   *
    * @param request
    * @param body
    * @return
@@ -458,6 +465,7 @@ public class Resps {
 
   /**
    * Content-Type: application/json;charset=utf-8
+   *
    * @param request
    * @param body
    * @param charset
@@ -486,7 +494,7 @@ public class Resps {
         response = string(response, body + "", charset, getMimeTypeStr(MimeType.TEXT_PLAIN_JSON, charset));
       } else {
         response = string(response, Json.getJson().toJson(body), charset,
-            getMimeTypeStr(MimeType.TEXT_PLAIN_JSON, charset));
+          getMimeTypeStr(MimeType.TEXT_PLAIN_JSON, charset));
       }
     }
     return response;
@@ -502,6 +510,7 @@ public class Resps {
 
   /**
    * 重定向
+   *
    * @param request
    * @param path
    * @return
@@ -513,6 +522,7 @@ public class Resps {
 
   /**
    * 永久重定向
+   *
    * @param request
    * @param path
    * @return
@@ -522,7 +532,6 @@ public class Resps {
   }
 
   /**
-   * 
    * @param request
    * @param path
    * @param status
@@ -537,6 +546,7 @@ public class Resps {
 
   /**
    * 用页面重定向
+   *
    * @param request
    * @param path
    * @return
@@ -554,6 +564,7 @@ public class Resps {
 
   /**
    * 创建字符串输出
+   *
    * @param request
    * @param bodyString
    * @param Content_Type
@@ -566,6 +577,7 @@ public class Resps {
 
   /**
    * 创建字符串输出
+   *
    * @param request
    * @param bodyString
    * @param charset
@@ -615,6 +627,7 @@ public class Resps {
 
   /**
    * 尝试返回304，这个会new一个HttpResponse返回
+   *
    * @param request
    * @param lastModifiedOnServer 服务器中资源的lastModified
    * @return
@@ -643,6 +656,7 @@ public class Resps {
 
   /**
    * Content-Type: text/plain;charset=utf-8
+   *
    * @param request
    * @param bodyString
    * @return
@@ -663,6 +677,7 @@ public class Resps {
 
   /**
    * Content-Type: text/plain;charset=utf-8
+   *
    * @param request
    * @param bodyString
    * @param charset
