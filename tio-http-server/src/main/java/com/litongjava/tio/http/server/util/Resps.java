@@ -1,9 +1,6 @@
 package com.litongjava.tio.http.server.util;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.util.Date;
@@ -285,8 +282,11 @@ public class Resps {
 
     HttpResponse ret = null;
     if (EnvironmentUtils.getBoolean("http.response.showExceptionDetails",false)) {
-      RespVo fail = RespVo.fail(throwable.getMessage());
-      ret = Resps.json(request, fail);
+      // 获取完整的堆栈跟踪
+      StringWriter sw = new StringWriter();
+      PrintWriter pw = new PrintWriter(sw);
+      throwable.printStackTrace(pw);
+      ret = Resps.txt(request,sw.toString());
     } else {
       ret = Resps.html(request, "500");
     }
