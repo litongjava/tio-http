@@ -6,9 +6,9 @@ import com.litongjava.tio.http.common.HttpConfig;
 import com.litongjava.tio.http.common.HttpRequest;
 import com.litongjava.tio.http.common.HttpResponse;
 import com.litongjava.tio.http.common.handler.HttpRequestHandler;
-import com.litongjava.tio.http.server.handler.HttpRoutes;
 import com.litongjava.tio.http.server.handler.SimpleHttpDispatcherHandler;
-import com.litongjava.tio.http.server.handler.SimpleHttpRoutes;
+import com.litongjava.tio.http.server.router.HttpRoutes;
+import com.litongjava.tio.http.server.router.SimpleHttpRoutes;
 import com.litongjava.tio.http.server.util.Resps;
 
 public class HttpServerStarterTest {

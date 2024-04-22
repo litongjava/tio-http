@@ -1,4 +1,6 @@
-package com.litongjava.tio.http.server.handler;
+package com.litongjava.tio.http.server.router;
+
+import com.litongjava.tio.http.server.handler.HttpRequestRouteHandler;
 
 public interface HttpRoutes {
 

@@ -1,8 +1,10 @@
-package com.litongjava.tio.http.server.handler;
+package com.litongjava.tio.http.server.router;
 
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+
+import com.litongjava.tio.http.server.handler.HttpRequestRouteHandler;
 
 public class SimpleHttpRoutes implements HttpRoutes {
   Map<String, HttpRequestRouteHandler> requestMapping = new ConcurrentHashMap<>();
