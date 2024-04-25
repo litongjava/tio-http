@@ -7,7 +7,7 @@ import com.litongjava.tio.http.server.handler.HttpRequestRouteHandler;
  * @author Tong Li
  *
  */
-public interface DbHttpRoutes {
+public interface GroovyHttpRoutes {
 
   /**
    * 添加路由
