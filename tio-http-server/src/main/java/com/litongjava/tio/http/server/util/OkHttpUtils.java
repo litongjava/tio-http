@@ -29,23 +29,30 @@ public class OkHttpUtils {
     // Setting the response body
     ResponseBody body = okHttpResponse.body();
     if (body != null) {
-      try {
+      try (InputStream byteStream = body.byteStream(); ByteArrayOutputStream baos = new ByteArrayOutputStream();) {
         // Extract bytes from response body
-        InputStream byteStream = body.byteStream();
-        byte[] buffer = new byte[1024 * 2];
         int read;
+        byte[] buffer = new byte[1024 * 2];
         // Assuming you want to send the whole body in the httpResponse
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
         while ((read = byteStream.read(buffer)) != -1) {
           baos.write(buffer, 0, read);
         }
-        byte[] bodyBytes = baos.toByteArray();
-        httpResponse.setBody(bodyBytes);
-
+        httpResponse.setBody(baos.toByteArray());
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
 
     }
+//    try (InputStream gzipStream = new GZIPInputStream(body.byteStream());
+//        ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+//      byte[] buffer = new byte[4096];
+//      int len;
+//      while ((len = gzipStream.read(buffer)) > 0) {
+//        baos.write(buffer, 0, len);
+//      }
+//      httpResponse.setBody(baos.toByteArray());
+//    } catch (IOException e) {
+//      e.printStackTrace();
+//    }
   }
 }
