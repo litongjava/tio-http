@@ -8,7 +8,7 @@ import com.litongjava.tio.http.common.RequestLine;
  * @author tanyaowu
  * 2017年7月25日 下午2:16:06
  */
-public interface HttpServerInterceptor {
+public interface HttpRequestInterceptor {
 
   /**
    * 在执行org.tio.http.server.handler.IHttpRequestHandler.handler()前会先调用这个方法<br>

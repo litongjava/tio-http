@@ -2,7 +2,7 @@ package com.litongjava.tio.http.server.router;
 
 import com.litongjava.tio.http.server.handler.HttpRequestRouteHandler;
 
-public interface HttpRoutes {
+public interface HttpReqeustSimpleHandlerRoute {
 
   /**
    * 添加路由
