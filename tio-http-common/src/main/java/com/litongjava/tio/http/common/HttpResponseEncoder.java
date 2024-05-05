@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import javax.management.RuntimeErrorException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,8 +39,7 @@ public class HttpResponseEncoder {
    * @return
    * @author tanyaowu
    */
-  public static ByteBuffer encode(HttpResponse httpResponse, TioConfig tioConfig, ChannelContext channelContext)
-      throws UnsupportedEncodingException {
+  public static ByteBuffer encode(HttpResponse httpResponse, TioConfig tioConfig, ChannelContext channelContext) {
     int bodyLength = 0;
     byte[] body = httpResponse.body;
 
@@ -49,7 +50,11 @@ public class HttpResponseEncoder {
     if (httpRequest != null) {
       String jsonp = httpRequest.getParam(httpRequest.httpConfig.getJsonpParamName());
       if (StrUtil.isNotBlank(jsonp)) {
-        jsonpBytes = jsonp.getBytes(httpRequest.getCharset());
+        try {
+          jsonpBytes = jsonp.getBytes(httpRequest.getCharset());
+        } catch (UnsupportedEncodingException e) {
+          throw new RuntimeException(e);
+        }
         if (body == null) {
           body = com.litongjava.tio.utils.SysConst.NULL;
         }
@@ -65,15 +70,18 @@ public class HttpResponseEncoder {
 
     if (body != null) {
       // 处理gzip
-      try {
-        HttpGzipUtils.gzip(httpRequest, httpResponse);
-      } catch (Exception e) {
-        log.error(e.toString(), e);
+      if (!httpResponse.isHasGzipped()) {
+        try {
+          HttpGzipUtils.gzip(httpRequest, httpResponse);
+          body = httpResponse.body;
+        } catch (Exception e) {
+          log.error(e.toString(), e);
+        }
       }
-
-      body = httpResponse.body;
       bodyLength = body.length;
     }
+    
+    
 
     HttpResponseStatus httpResponseStatus = httpResponse.getStatus();
 
@@ -84,7 +92,8 @@ public class HttpResponseEncoder {
     // StringBuilder sb = new StringBuilder(512);
 
     Map<HeaderName, HeaderValue> headers = httpResponse.getHeaders();
-    if (!httpResponse.isStream()) {
+    boolean isNotAddContentLength=httpResponse.isStream() || httpResponse.isHasCountContentLength();
+    if (!isNotAddContentLength) {
       httpResponse.addHeader(HeaderName.Content_Length, HeaderValue.from(Integer.toString(bodyLength)));
     }
     int headerLength = httpResponse.getHeaderByteCount();
@@ -98,7 +107,12 @@ public class HttpResponseEncoder {
     if (httpResponse.getCookies() != null) {
       for (Cookie cookie : httpResponse.getCookies()) {
         headerLength += HeaderName.SET_COOKIE.bytes.length;
-        byte[] bs = cookie.toString().getBytes(httpResponse.getCharset());
+        byte[] bs;
+        try {
+          bs = cookie.toString().getBytes(httpResponse.getCharset());
+        } catch (UnsupportedEncodingException e) {
+          throw new RuntimeException(e);
+        }
         cookie.setBytes(bs);
         headerLength += (bs.length);
       }

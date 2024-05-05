@@ -111,6 +111,9 @@ public interface HttpConst {
      * 文件下载
      */
     String Content_Disposition = "Content-Disposition".toLowerCase();
+
+    
+    String Transfer_Encoding = "Transfer-Encoding".toLowerCase();
     /**
      * 文档的编码（Encode）方法。只有在解码之后才可以得到Content-Type头指定的内容类型。
      * 利用gzip压缩文档能够显著地减少HTML文档的下载时间。

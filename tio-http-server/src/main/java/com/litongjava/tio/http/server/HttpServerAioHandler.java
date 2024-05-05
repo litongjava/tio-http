@@ -54,14 +54,7 @@ public class HttpServerAioHandler implements ServerAioHandler {
   @Override
   public ByteBuffer encode(Packet packet, TioConfig tioConfig, ChannelContext channelContext) {
     HttpResponse httpResponse = (HttpResponse) packet;
-    ByteBuffer byteBuffer;
-    try {
-      byteBuffer = HttpResponseEncoder.encode(httpResponse, tioConfig, channelContext);
-      return byteBuffer;
-    } catch (UnsupportedEncodingException e) {
-      log.error(e.toString(), e);
-      return null;
-    }
+    return HttpResponseEncoder.encode(httpResponse, tioConfig, channelContext);
   }
 
   /**
@@ -85,7 +78,7 @@ public class HttpServerAioHandler implements ServerAioHandler {
           Tio.send(channelContext, httpResponse);
           return;
         } else {
-          Tio.remove(channelContext, ip + "在黑名单中");
+          Tio.remove(channelContext, ip + "in the blacklist");
           return;
         }
       }

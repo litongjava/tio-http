@@ -25,7 +25,6 @@ import com.litongjava.tio.utils.json.Json;
  *
  */
 public class HttpResponse extends HttpPacket {
-  @SuppressWarnings("unused")
   private static Logger log = LoggerFactory.getLogger(HttpResponse.class);
   private static final long serialVersionUID = -3512681144230291786L;
   public static final HttpResponse NULL_RESPONSE = new HttpResponse();
@@ -46,6 +45,10 @@ public class HttpResponse extends HttpPacket {
    * 是否后续返回流格式,如果是则在相应时不计算Content-Length
    */
   private boolean stream = false;
+  /**
+   * 不计算Content-Length
+   */
+  private boolean hasCountContentLength = false;
   private HttpRequest request = null;
   private List<Cookie> cookies = null;
   private Map<HeaderName, HeaderValue> headers = new HashMap<>();
@@ -514,5 +517,20 @@ public class HttpResponse extends HttpPacket {
   public static HttpResponse json(HttpRequest request, Object body) {
     HttpResponse httpResponse = new HttpResponse(request);
     return httpResponse.setJson(body);
+  }
+
+  public boolean isHasCountContentLength() {
+    return hasCountContentLength;
+  }
+
+  public HttpResponse setHasCountContentLength(boolean b) {
+    this.hasCountContentLength = b;
+    return this;
+  }
+
+  public HttpResponse removeHeaders(String name) {
+    headers.remove(HeaderName.from(name));
+    return this;
+
   }
 }
