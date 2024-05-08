@@ -1,11 +1,11 @@
-package com.litongjava.tio.http.server.sse;
+package com.litongjava.tio.http.common.sse;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 import com.litongjava.tio.core.TioConfig;
-import com.litongjava.tio.core.intf.Packet;
+import com.litongjava.tio.http.common.HttpResponsePacket;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,7 +16,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class SsePacket extends Packet {
+public class SsePacket extends HttpResponsePacket {
   private static final long serialVersionUID = 1L;
   private Charset charset = StandardCharsets.UTF_8;
   private byte[] nBytes = "\n".getBytes(charset);
@@ -44,6 +44,7 @@ public class SsePacket extends Packet {
     return this;
   }
 
+  @Override
   public ByteBuffer toByteBuffer(TioConfig tioConfig) {
     ByteBuffer buffer = ByteBuffer.allocate(calculateBufferSize());
     buffer.order(tioConfig.getByteOrder());
