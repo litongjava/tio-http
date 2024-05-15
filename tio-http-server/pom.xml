@@ -17,6 +17,12 @@
     </dependency>
 
     <dependency>
+      <groupId>com.litongjava</groupId>
+      <artifactId>tio-utils</artifactId>
+      <version>3.7.3.v20240601-RELEASE</version>
+    </dependency>
+
+    <dependency>
       <groupId>com.github.ben-manes.caffeine</groupId>
       <artifactId>caffeine</artifactId>
       <scope>provided</scope>

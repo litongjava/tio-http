@@ -18,7 +18,7 @@ import com.litongjava.tio.http.common.HttpConst.RequestBodyFormat;
 import com.litongjava.tio.http.common.utils.HttpParseUtils;
 import com.litongjava.tio.http.common.utils.HttpIpUtils;
 import com.litongjava.tio.utils.SysConst;
-import com.litongjava.tio.utils.environment.EnvironmentUtils;
+import com.litongjava.tio.utils.environment.EnvUtils;
 import com.litongjava.tio.utils.hutool.StrUtil;
 
 /**
@@ -339,7 +339,7 @@ public class HttpRequestDecoder {
         try {
           bodyString = new String(bodyBytes, httpRequest.getCharset());
           httpRequest.setBodyString(bodyString);
-          if (EnvironmentUtils.getBoolean("tio.devMode", false)) {
+          if (EnvUtils.getBoolean("tio.devMode", false)) {
             if (log.isInfoEnabled()) {
               log.info("{} body value\r\n{}", channelContext, bodyString);
             }

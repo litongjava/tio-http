@@ -1,13 +1,16 @@
 package com.litongjava.tio.http.server.util;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.util.Date;
 import java.util.Map;
 
-import com.litongjava.tio.utils.environment.EnvironmentUtils;
-import com.litongjava.tio.utils.resp.RespVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,6 +25,7 @@ import com.litongjava.tio.http.common.HttpResponseStatus;
 import com.litongjava.tio.http.common.MimeType;
 import com.litongjava.tio.http.common.RequestLine;
 import com.litongjava.tio.utils.IoUtils;
+import com.litongjava.tio.utils.environment.EnvUtils;
 import com.litongjava.tio.utils.hutool.ClassUtil;
 import com.litongjava.tio.utils.hutool.FileUtil;
 import com.litongjava.tio.utils.hutool.StrUtil;
@@ -128,7 +132,6 @@ public class Resps {
     return bytesWithContentType(response, bodyBytes, contentType);
   }
 
-
   /**
    * 根据文件创建响应
    *
@@ -208,13 +211,13 @@ public class Resps {
    * @author: tanyaowu
    */
   public static HttpResponse resp404(HttpRequest request, RequestLine requestLine, HttpConfig httpConfig)
-    throws Exception {
+      throws Exception {
     String file404 = httpConfig.getPage404();
     HttpResource httpResource = request.httpConfig.getResource(request, file404);
     if (httpResource != null) {
       file404 = httpResource.getPath();
       HttpResponse ret = Resps.forward(request,
-        file404 + "?tio_initpath=" + URLEncoder.encode(requestLine.getPathAndQuery(), httpConfig.getCharset()));
+          file404 + "?tio_initpath=" + URLEncoder.encode(requestLine.getPathAndQuery(), httpConfig.getCharset()));
       return ret;
     }
 
@@ -270,7 +273,7 @@ public class Resps {
    * @throws Exception
    */
   public static HttpResponse resp500(HttpRequest request, RequestLine requestLine, HttpConfig httpConfig,
-                                     Throwable throwable) throws Exception {
+      Throwable throwable) throws Exception {
     String file500 = httpConfig.getPage500();
     HttpResource httpResource = request.httpConfig.getResource(request, file500);
 
@@ -281,12 +284,12 @@ public class Resps {
     }
 
     HttpResponse ret = null;
-    if (EnvironmentUtils.getBoolean("http.response.showExceptionDetails",false)) {
+    if (EnvUtils.getBoolean("http.response.showExceptionDetails", false)) {
       // 获取完整的堆栈跟踪
       StringWriter sw = new StringWriter();
       PrintWriter pw = new PrintWriter(sw);
       throwable.printStackTrace(pw);
-      ret = Resps.txt(request,sw.toString());
+      ret = Resps.txt(request, sw.toString());
     } else {
       ret = Resps.html(request, "500");
     }
@@ -359,7 +362,7 @@ public class Resps {
    * @author tanyaowu
    */
   public static HttpResponse bytesWithHeaders(HttpRequest request, byte[] bodyBytes,
-                                              Map<HeaderName, HeaderValue> headers) {
+      Map<HeaderName, HeaderValue> headers) {
     HttpResponse ret = new HttpResponse(request);
     ret.setBody(bodyBytes);
     ret.addHeaders(headers);
@@ -442,7 +445,7 @@ public class Resps {
    */
   public static HttpResponse js(HttpRequest request, String bodyString, String charset) {
     HttpResponse ret = string(request, bodyString, charset,
-      getMimeTypeStr(MimeType.APPLICATION_JAVASCRIPT_JS, charset));
+        getMimeTypeStr(MimeType.APPLICATION_JAVASCRIPT_JS, charset));
     return ret;
   }
 
@@ -494,7 +497,7 @@ public class Resps {
         response = string(response, body + "", charset, getMimeTypeStr(MimeType.TEXT_PLAIN_JSON, charset));
       } else {
         response = string(response, Json.getJson().toJson(body), charset,
-          getMimeTypeStr(MimeType.TEXT_PLAIN_JSON, charset));
+            getMimeTypeStr(MimeType.TEXT_PLAIN_JSON, charset));
       }
     }
     return response;
