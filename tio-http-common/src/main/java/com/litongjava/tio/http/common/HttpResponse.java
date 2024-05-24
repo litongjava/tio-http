@@ -3,7 +3,6 @@ package com.litongjava.tio.http.common;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -441,11 +440,8 @@ public class HttpResponse extends HttpPacket {
   public HttpResponse setServerSentEventsHeader() {
     this.setContentType("text/event-stream");
     this.addHeader(HeaderName.Connection, HeaderValue.from("keep-alive"));
-    this.addHeader(HeaderName.Date, HeaderValue.from(new Date().toString()));
-    this.addHeader(HeaderName.Keep_Alive, HeaderValue.from("timeout=60"));
     this.stream = true;
     return this;
-
   }
 
   public void sendRedirect(String url) {

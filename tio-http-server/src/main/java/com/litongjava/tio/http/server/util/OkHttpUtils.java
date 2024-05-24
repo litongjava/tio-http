@@ -4,9 +4,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import com.litongjava.tio.http.common.HttpRequest;
 import com.litongjava.tio.http.common.HttpResponse;
 
 import okhttp3.Headers;
+import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
