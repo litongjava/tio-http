@@ -6,8 +6,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import javax.management.RuntimeErrorException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,10 +14,11 @@ import com.litongjava.tio.core.TioConfig;
 import com.litongjava.tio.http.common.utils.HttpDateTimer;
 import com.litongjava.tio.http.common.utils.HttpGzipUtils;
 import com.litongjava.tio.utils.SysConst;
+import com.litongjava.tio.utils.environment.EnvUtils;
 import com.litongjava.tio.utils.hutool.StrUtil;
 
 /**
- * http server中使用
+ * HttpResponseEncoder  
  * @author tanyaowu
  * 2017年8月4日 上午9:41:12
  */
@@ -80,8 +79,6 @@ public class HttpResponseEncoder {
       }
       bodyLength = body.length;
     }
-    
-    
 
     HttpResponseStatus httpResponseStatus = httpResponse.getStatus();
 
@@ -92,7 +89,7 @@ public class HttpResponseEncoder {
     // StringBuilder sb = new StringBuilder(512);
 
     Map<HeaderName, HeaderValue> headers = httpResponse.getHeaders();
-    boolean isNotAddContentLength=httpResponse.isStream() || httpResponse.isHasCountContentLength();
+    boolean isNotAddContentLength = httpResponse.isStream() || httpResponse.isHasCountContentLength();
     if (!isNotAddContentLength) {
       httpResponse.addHeader(HeaderName.Content_Length, HeaderValue.from(Integer.toString(bodyLength)));
     }
@@ -126,10 +123,13 @@ public class HttpResponseEncoder {
     ByteBuffer buffer = ByteBuffer.allocate(respLineLength + headerLength + bodyLength);
     buffer.put(httpResponseStatus.responseLineBinary);
 
-    buffer.put(HeaderName.Server.bytes);
-    buffer.put(SysConst.COL);
-    buffer.put(HeaderValue.Server.TIO.bytes);
-    buffer.put(SysConst.CR_LF);
+    boolean addServerHead = EnvUtils.getBoolean("http.response.addServerHead", false);
+    if (addServerHead) {
+      buffer.put(HeaderName.Server.bytes);
+      buffer.put(SysConst.COL);
+      buffer.put(HeaderValue.Server.TIO.bytes);
+      buffer.put(SysConst.CR_LF);
+    }
 
     buffer.put(HeaderName.Date.bytes);
     buffer.put(SysConst.COL);
