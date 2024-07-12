@@ -24,6 +24,21 @@ public class SsePacket extends HttpResponsePacket {
   private String event;
   private byte[] data;
 
+  public SsePacket(Long id, String event, byte[] data) {
+    super.setId(id);
+    this.event = event;
+    this.data = data;
+  }
+
+  public SsePacket(String event, byte[] data) {
+    this.event = event;
+    this.data = data;
+  }
+
+  public SsePacket(byte[] data) {
+    this.data = data;
+  }
+
   public SsePacket id(int i) {
     super.setId((long) i);
     return this;
