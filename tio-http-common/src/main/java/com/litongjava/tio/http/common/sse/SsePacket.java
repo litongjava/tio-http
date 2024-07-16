@@ -35,6 +35,11 @@ public class SsePacket extends HttpResponsePacket {
     this.data = data;
   }
 
+  public SsePacket(String event, String data) {
+    this.event = event;
+    this.data = data.getBytes();
+  }
+
   public SsePacket(byte[] data) {
     this.data = data;
   }
@@ -112,5 +117,4 @@ public class SsePacket extends HttpResponsePacket {
 
     return size;
   }
-
 }

@@ -19,9 +19,7 @@ import com.litongjava.tio.utils.hutool.StrUtil;
 import com.litongjava.tio.utils.json.Json;
 
 /**
- *
  * @author tanyaowu
- *
  */
 public class HttpResponse extends HttpPacket {
   private static Logger log = LoggerFactory.getLogger(HttpResponse.class);
@@ -151,45 +149,6 @@ public class HttpResponse extends HttpPacket {
     return headers;
   }
 
-  // private String lastModified = null;//HttpConst.ResponseHeaderKey.Last_Modified
-
-  // /**
-  // *
-  // * @param request
-  // * @param httpConfig 可以为null
-  // * @author tanyaowu
-  // */
-  // public HttpResponse(HttpRequest request, HttpConfig httpConfig) {
-  // this.request = request;
-  //
-  // String Connection = StrUtil.lowerCase(request.getHeader(HttpConst.RequestHeaderKey.Connection));
-  // RequestLine requestLine = request.getRequestLine();
-  // String version = requestLine.getVersion();
-  // if ("1.0".equals(version)) {
-  // if (StrUtil.equals(Connection, HttpConst.RequestHeaderValue.Connection.keep_alive)) {
-  // addHeader(HttpConst.ResponseHeaderKey.Connection, HttpConst.ResponseHeaderValue.Connection.keep_alive);
-  // addHeader(HttpConst.ResponseHeaderKey.Keep_Alive, "timeout=10, max=20");
-  // } else {
-  // addHeader(HttpConst.ResponseHeaderKey.Connection, HttpConst.ResponseHeaderValue.Connection.close);
-  // }
-  // } else {
-  // if (StrUtil.equals(Connection, HttpConst.RequestHeaderValue.Connection.close)) {
-  // addHeader(HttpConst.ResponseHeaderKey.Connection, HttpConst.ResponseHeaderValue.Connection.close);
-  // } else {
-  // addHeader(HttpConst.ResponseHeaderKey.Connection, HttpConst.ResponseHeaderValue.Connection.keep_alive);
-  // addHeader(HttpConst.ResponseHeaderKey.Keep_Alive, "timeout=10, max=20");
-  // }
-  // }
-  //
-  //
-  // if (httpConfig != null) {
-  // addHeader(HttpConst.ResponseHeaderKey.Server, httpConfig.getServerInfo());
-  // }
-  // // String xx = DatePattern.HTTP_DATETIME_FORMAT.format(SystemTimer.currTime);
-  // // addHeader(HttpConst.ResponseHeaderKey.Date, DatePattern.HTTP_DATETIME_FORMAT.format(SystemTimer.currTime));
-  // // addHeader(HttpConst.ResponseHeaderKey.Date, new Date().toGMTString());
-  // }
-
   public void addHeader(HeaderName key, HeaderValue value) {
     headers.put(key, value);
     headerByteCount += (key.bytes.length + value.bytes.length + 3); // 冒号和\r\n
@@ -245,13 +204,6 @@ public class HttpResponse extends HttpPacket {
     return cookies;
   }
 
-  // /**
-  // * @return the encodedBytes
-  // */
-  // public byte[] getEncodedBytes() {
-  // return encodedBytes;
-  // }
-
   /**
    * @return the request
    */
@@ -298,13 +250,6 @@ public class HttpResponse extends HttpPacket {
   public void setCookies(List<Cookie> cookies) {
     this.cookies = cookies;
   }
-
-  // /**
-  // * @param encodedBytes the encodedBytes to set
-  // */
-  // public void setEncodedBytes(byte[] encodedBytes) {
-  // this.encodedBytes = encodedBytes;
-  // }
 
   /**
    * @param request the request to set
@@ -367,9 +312,6 @@ public class HttpResponse extends HttpPacket {
   }
 
   public HeaderValue getLastModified() {
-    // if (lastModified != null) {
-    // return lastModified;
-    // }
     return this.getHeader(HeaderName.Last_Modified);
   }
 
@@ -385,21 +327,12 @@ public class HttpResponse extends HttpPacket {
 
   public void setLastModified(HeaderValue lastModified) {
     if (lastModified != null) {
-      // this.lastModified = lastModified;
       this.addHeader(HeaderName.Last_Modified, lastModified);
     }
   }
 
   @Override
   public String toString() {
-    // String ret = this.getHeaderString();
-    // if (this.getBody() != null) {
-    // try {
-    // ret += new String(this.getBody(), this.request.getCharset());
-    // } catch (UnsupportedEncodingException e) {
-    // log.error(e.toString(), e);
-    // }
-    // }
     return this.status.toString();
   }
 
@@ -409,12 +342,6 @@ public class HttpResponse extends HttpPacket {
   public int getHeaderByteCount() {
     return headerByteCount;
   }
-  // /**
-  // * @return the cookieByteCount
-  // */
-  // public int getCookieByteCount() {
-  // return cookieByteCount;
-  // }
 
   public void setContentType(String contentType) {
     this.addHeader(HeaderName.Content_Type, HeaderValue.from(contentType));

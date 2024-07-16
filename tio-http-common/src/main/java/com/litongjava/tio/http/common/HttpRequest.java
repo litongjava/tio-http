@@ -22,9 +22,7 @@ import com.litongjava.tio.utils.SystemTimer;
 import com.litongjava.tio.utils.hutool.StrUtil;
 
 /**
- *
  * @author tanyaowu
- *
  */
 public class HttpRequest extends HttpPacket {
   private static Logger log = LoggerFactory.getLogger(HttpRequest.class);
@@ -52,17 +50,13 @@ public class HttpRequest extends HttpPacket {
   public HttpConfig httpConfig;
   private String domain = null;
   private String host = null;
-//	private String					clientIp			= null;
+
   /**该HttpRequest对象的创建时间*/
   private long createTime = SystemTimer.currTime;
   private boolean closed = false;
   protected Map<String, String> headers = new HashMap<>();
   private Integer forwardCount = null;
 
-  /**
-   * @author tanyaowu
-   * 2017年2月22日 下午4:14:40
-   */
   public HttpRequest(Node remote) {
     this.remote = remote;
   }
@@ -152,6 +146,13 @@ public class HttpRequest extends HttpPacket {
   }
 
   /**
+   * @param userAgent the userAgent to set
+   */
+  public void setUserAgent(String userAgent) {
+    this.headers.put(HttpConst.RequestHeaderKey.User_Agent, userAgent);
+  }
+
+  /**
    * 获取请求头中的User-Agent字段
    * @return
    * @author: tanyaowu
@@ -181,10 +182,6 @@ public class HttpRequest extends HttpPacket {
    */
   public String getClientIp() {
     return remote.getIp();
-//		if (clientIp == null) {
-//			clientIp = IpUtils.getRealIp(this);
-//		}
-//		return clientIp;
   }
 
   public void addHeader(String key, String value) {
@@ -261,30 +258,16 @@ public class HttpRequest extends HttpPacket {
   // /**
   // * @return the bodyBytes
   // */
-  // public byte[] getBodyBytes() {
-  // return bodyBytes;
-  // }
-  //
-  // /**
-  // * @param bodyBytes the bodyBytes to set
-  // */
-  // public void setBodyBytes(byte[] bodyBytes) {
-  // this.bodyBytes = bodyBytes;
-  // }
+  public byte[] getBodyBytes() {
+    return body;
+  }
 
-  // /**
-  // * @return the userAgent
-  // */
-  // public UserAgent getUserAgent() {
-  // return userAgent;
-  // }
-  //
-  // /**
-  // * @param userAgent the userAgent to set
-  // */
-  // public void setUserAgent(UserAgent userAgent) {
-  // this.userAgent = userAgent;
-  // }
+  /**
+  * @param bodyBytes the bodyBytes to set
+  */
+  public void setBodyBytes(byte[] bodyBytes) {
+    this.body = bodyBytes;
+  }
 
   /**
    * @return the cookies
@@ -297,9 +280,9 @@ public class HttpRequest extends HttpPacket {
    * @return the cookies
    */
   public Cookie[] getCookiesArray() {
-    if(cookies==null) {
+    if (cookies == null) {
       return new Cookie[] {};
-    }else {
+    } else {
       return cookies.toArray(new Cookie[] {});
     }
   }
@@ -354,20 +337,6 @@ public class HttpRequest extends HttpPacket {
    */
   public Boolean getIsSupportGzip() {
     return true;
-    // if (isSupportGzip == null) {
-    // String Accept_Encoding = getHeader(HttpConst.RequestHeaderKey.Accept_Encoding);
-    // if (StrUtil.isNotBlank(Accept_Encoding)) {
-    // String[] ss = StrUtil.split(Accept_Encoding, ",");
-    // if (ArrayUtil.contains(ss, "gzip")) {
-    // isSupportGzip = true;
-    // } else {
-    // isSupportGzip = false;
-    // }
-    // } else {
-    // isSupportGzip = true;
-    // }
-    // }
-    // return isSupportGzip;
   }
 
   /**
@@ -617,12 +586,6 @@ public class HttpRequest extends HttpPacket {
     if (headers != null) {
       parseCookie(httpConfig);
     }
-
-    // String Sec_WebSocket_Key = headers.get(HttpConst.RequestHeaderKey.Sec_WebSocket_Key);
-    // if (StrUtil.isNotBlank(Sec_WebSocket_Key)) {
-    // ImSessionContext httpSession = channelContext.get();
-    // httpSession.setWebsocket(true);
-    // }
   }
 
   /**
@@ -708,20 +671,6 @@ public class HttpRequest extends HttpPacket {
    */
   public String getConnection() {
     return connection;
-
-    // if (httpConfig.compatible1_0 || connection != null) {
-    // return connection;
-    // } else {
-    // String connection = headers.get(HttpConst.RequestHeaderKey.Connection);
-    // if (connection != null) {
-    // connection = connection.toLowerCase();
-    // setConnection(connection);
-    // return connection;
-    // } else {
-    // return null;
-    // }
-    // }
-
   }
 
   /**
@@ -774,7 +723,8 @@ public class HttpRequest extends HttpPacket {
 
   public StringBuffer getRequestURL() {
     StringBuffer stringBuffer = new StringBuffer();
-    stringBuffer.append(requestLine.getProtocol().toLowerCase()).append("://").append(host).append(requestLine.getPath());
+    stringBuffer.append(requestLine.getProtocol().toLowerCase()).append("://").append(host)
+        .append(requestLine.getPath());
     return stringBuffer;
   }
 
@@ -789,19 +739,4 @@ public class HttpRequest extends HttpPacket {
   public RequestDispatcher getRequestDispatcher(String path) {
     return new RequestDispatcher(path);
   }
-
-  // /**
-  // * @return the httpSession
-  // */
-  // public HttpSession getHttpSession() {
-  // return httpSession;
-  // }
-  //
-  // /**
-  // * @param httpSession the httpSession to set
-  // */
-  // public void setHttpSession(HttpSession httpSession) {
-  // this.httpSession = httpSession;
-  // }
-
 }
