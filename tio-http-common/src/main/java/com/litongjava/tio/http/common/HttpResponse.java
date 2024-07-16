@@ -383,6 +383,18 @@ public class HttpResponse extends HttpPacket {
     return httpResponse;
   }
 
+  public HttpResponse setString(String bodyString) {
+    if (bodyString != null) {
+      try {
+        setBody(bodyString.getBytes(charset));
+      } catch (UnsupportedEncodingException e) {
+        throw new RuntimeException(e);
+      }
+    }
+    this.addHeader(HeaderName.Content_Type, HeaderValue.Content_Type.TEXT_PLAIN_TXT);
+    return this;
+  }
+
   public HttpResponse setString(String bodyString, String charset, String mimeTypeStr) {
     if (bodyString != null) {
       if (charset == null) {
@@ -391,7 +403,7 @@ public class HttpResponse extends HttpPacket {
         try {
           setBody(bodyString.getBytes(charset));
         } catch (UnsupportedEncodingException e) {
-          log.error(e.toString(), e);
+          throw new RuntimeException(e);
         }
       }
     }
@@ -410,6 +422,11 @@ public class HttpResponse extends HttpPacket {
         return setString(Json.getJson().toJson(body), charset, getMimeTypeStr(MimeType.TEXT_PLAIN_JSON, charset));
       }
     }
+  }
+
+  public HttpResponse fail(Object body) {
+    this.setStatus(400);
+    return setJson(body);
   }
 
   public static HttpResponse json(Object body) {
