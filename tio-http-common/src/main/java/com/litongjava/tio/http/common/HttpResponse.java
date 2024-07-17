@@ -365,7 +365,7 @@ public class HttpResponse extends HttpPacket {
   }
 
   public HttpResponse addServerSentEventsHeader(String charset) {
-    this.setContentType("text/event-stream ; charset=" + charset);
+    this.setContentType("text/event-stream; charset=" + charset);
     this.addHeader(HeaderName.Connection, HeaderValue.from("keep-alive"));
     this.stream = true;
     return this;
