@@ -17,15 +17,21 @@ import lombok.Setter;
 @Getter
 @Setter
 public class SsePacket extends HttpResponsePacket {
+  private static final byte[] CRLF = { 13, 10 };
+
+  private static final byte[] idBytes = { 105, 100, 58 };
+  private static final byte[] eventBytes = { 101, 118, 101, 110, 116, 58 };
+  private static final byte[] dataBytes = { 100, 97, 116, 97, 58 };
+
   private static final long serialVersionUID = 1L;
   private Charset charset = StandardCharsets.UTF_8;
-  private byte[] nBytes = "\n".getBytes(charset);
 
+  private Long eventId;
   private String event;
   private byte[] data;
 
   public SsePacket(Long id, String event, byte[] data) {
-    super.setId(id);
+    this.eventId = id;
     this.event = event;
     this.data = data;
   }
@@ -45,12 +51,12 @@ public class SsePacket extends HttpResponsePacket {
   }
 
   public SsePacket id(int i) {
-    super.setId((long) i);
+    eventId = ((long) i);
     return this;
   }
 
   public SsePacket id(Long id) {
-    super.setId(id);
+    eventId = (id);
     return this;
   }
 
@@ -70,26 +76,25 @@ public class SsePacket extends HttpResponsePacket {
     buffer.order(tioConfig.getByteOrder());
 
     // Add id
-    if (getId() != null) {
-      String idString = "id:" + getId() + "\n";
-      buffer.put(idString.getBytes(charset));
+    if (eventId != null) {
+      buffer.put(idBytes);
+      buffer.put(eventId.toString().getBytes(charset)).put(CRLF);
     }
 
     // Add event
     if (event != null) {
-      String eventString = "event:" + event + "\n";
-      buffer.put(eventString.getBytes(charset));
+      buffer.put(eventBytes).put(event.getBytes(charset)).put(CRLF);
     }
 
     // Add data
     if (data != null) {
-      buffer.put("data:".getBytes(charset));
+      buffer.put(dataBytes);
       buffer.put(data);
-      buffer.put(nBytes);
+      buffer.put(CRLF);
 
     }
 
-    buffer.put(nBytes);
+    buffer.put(CRLF);
     buffer.flip();
     return buffer;
   }
@@ -98,22 +103,22 @@ public class SsePacket extends HttpResponsePacket {
     int size = 0;
 
     // id
-    if (getId() != null) {
-      size += ("id:" + getId()).getBytes(charset).length + nBytes.length;
+    if (eventId != null) {
+      size += 3 + eventId.toString().getBytes(charset).length + 2;
     }
 
     // event
     if (event != null) {
-      size += ("event:" + event).getBytes(charset).length + nBytes.length;
+      size += 6 + event.toString().getBytes(charset).length + 2;
     }
 
     // data
     if (data != null) {
-      size += ("data:").getBytes(charset).length + nBytes.length + data.length;
+      size += 5 + 2 + data.length;
     }
 
     // Add extra newline
-    size += nBytes.length;
+    size += CRLF.length;
 
     return size;
   }

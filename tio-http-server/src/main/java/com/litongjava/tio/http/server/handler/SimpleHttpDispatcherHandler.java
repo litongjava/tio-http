@@ -6,16 +6,16 @@ import com.litongjava.tio.http.common.HttpResponse;
 import com.litongjava.tio.http.common.RequestLine;
 import com.litongjava.tio.http.common.handler.HttpRequestHandler;
 import com.litongjava.tio.http.server.intf.ThrowableHandler;
-import com.litongjava.tio.http.server.router.HttpReqeustSimpleHandlerRoute;
+import com.litongjava.tio.http.server.router.RequestRoute;
 import com.litongjava.tio.http.server.util.Resps;
 
 public class SimpleHttpDispatcherHandler implements HttpRequestHandler {
 
-  private HttpReqeustSimpleHandlerRoute httpRoutes;
+  private RequestRoute httpRoutes;
   private HttpConfig httpConfig;
   private ThrowableHandler throwableHandler;
 
-  public SimpleHttpDispatcherHandler(HttpConfig httpConfig, HttpReqeustSimpleHandlerRoute httpRoutes) {
+  public SimpleHttpDispatcherHandler(HttpConfig httpConfig, RequestRoute httpRoutes) {
     this.httpRoutes = httpRoutes;
     this.httpConfig = httpConfig;
   }

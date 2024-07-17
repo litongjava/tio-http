@@ -7,8 +7,8 @@ import com.litongjava.tio.http.common.HttpRequest;
 import com.litongjava.tio.http.common.HttpResponse;
 import com.litongjava.tio.http.common.handler.HttpRequestHandler;
 import com.litongjava.tio.http.server.handler.SimpleHttpDispatcherHandler;
-import com.litongjava.tio.http.server.router.HttpReqeustSimpleHandlerRoute;
-import com.litongjava.tio.http.server.router.DefaultHttpReqeustSimpleHandlerRoute;
+import com.litongjava.tio.http.server.router.RequestRoute;
+import com.litongjava.tio.http.server.router.DefaultHttpReqeustRoute;
 import com.litongjava.tio.http.server.util.Resps;
 
 public class HttpServerStarterTest {
@@ -17,7 +17,7 @@ public class HttpServerStarterTest {
     // 手动添加路由
     HttpServerStarterTest controller = new HttpServerStarterTest();
 
-    HttpReqeustSimpleHandlerRoute simpleHttpRoutes = new DefaultHttpReqeustSimpleHandlerRoute();
+    RequestRoute simpleHttpRoutes = new DefaultHttpReqeustRoute();
     simpleHttpRoutes.add("/", controller::index);
     simpleHttpRoutes.add("/login", controller::login);
     simpleHttpRoutes.add("/exception", controller::exception);

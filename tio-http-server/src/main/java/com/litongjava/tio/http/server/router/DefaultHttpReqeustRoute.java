@@ -6,7 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.litongjava.tio.http.server.handler.HttpRequestRouteHandler;
 
-public class DefaultHttpReqeustSimpleHandlerRoute implements HttpReqeustSimpleHandlerRoute {
+public class DefaultHttpReqeustRoute implements RequestRoute {
   Map<String, HttpRequestRouteHandler> requestMapping = new ConcurrentHashMap<>();
 
   public void add(String path, HttpRequestRouteHandler handler) {
