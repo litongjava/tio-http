@@ -364,11 +364,15 @@ public class HttpResponse extends HttpPacket {
     this.stream = stream;
   }
 
-  public HttpResponse setServerSentEventsHeader() {
-    this.setContentType("text/event-stream");
+  public HttpResponse addServerSentEventsHeader(String charset) {
+    this.setContentType("text/event-stream ; charset=" + charset);
     this.addHeader(HeaderName.Connection, HeaderValue.from("keep-alive"));
     this.stream = true;
     return this;
+  }
+
+  public HttpResponse addServerSentEventsHeader() {
+    return addServerSentEventsHeader("utf-8");
   }
 
   public void sendRedirect(String url) {
