@@ -12,7 +12,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class SseBytesPacket extends HttpResponsePacket {
+public class ChunkedPacket extends HttpResponsePacket {
   private static final long serialVersionUID = 1014364783783749718L;
   private byte[] bytes;
 
@@ -25,11 +25,11 @@ public class SseBytesPacket extends HttpResponsePacket {
     return buffer;
   }
 
-  public SseBytesPacket(byte[] bytes) {
+  public ChunkedPacket(byte[] bytes) {
     this.bytes = bytes;
   }
 
-  public SseBytesPacket(String line) {
+  public ChunkedPacket(String line) {
     this.bytes = line.getBytes();
   }
 }
