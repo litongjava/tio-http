@@ -9,9 +9,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.litongjava.tio.http.common.utils.HttpGzipUtils;
 import com.litongjava.tio.utils.SysConst;
 import com.litongjava.tio.utils.hutool.ClassUtil;
@@ -22,7 +19,6 @@ import com.litongjava.tio.utils.json.Json;
  * @author tanyaowu
  */
 public class HttpResponse extends HttpPacket {
-  private static Logger log = LoggerFactory.getLogger(HttpResponse.class);
   private static final long serialVersionUID = -3512681144230291786L;
   public static final HttpResponse NULL_RESPONSE = new HttpResponse();
   /**
@@ -365,7 +361,7 @@ public class HttpResponse extends HttpPacket {
   }
 
   public HttpResponse addServerSentEventsHeader(String charset) {
-    this.setContentType("text/event-stream; charset=" + charset);
+    this.setContentType("text/event-stream;charset=" + charset);
     this.addHeader(HeaderName.Connection, HeaderValue.from("keep-alive"));
     this.stream = true;
     return this;
