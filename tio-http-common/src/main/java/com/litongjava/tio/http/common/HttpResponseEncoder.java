@@ -123,7 +123,7 @@ public class HttpResponseEncoder {
     ByteBuffer buffer = ByteBuffer.allocate(respLineLength + headerLength + bodyLength);
     buffer.put(httpResponseStatus.responseLineBinary);
 
-    boolean addServerHead = EnvUtils.getBoolean("http.response.addServerHead", false);
+    boolean addServerHead = EnvUtils.getBoolean("http.response.header.showServer", true);
     if (addServerHead) {
       buffer.put(HeaderName.Server.bytes);
       buffer.put(SysConst.COL);
