@@ -69,7 +69,7 @@ public class HttpResponseEncoder {
 
     if (body != null) {
       // 处理gzip
-      if (!httpResponse.isHasGzipped()) {
+      if (!httpResponse.hasGzipped()) {
         try {
           HttpGzipUtils.gzip(httpRequest, httpResponse);
           body = httpResponse.body;
@@ -89,7 +89,7 @@ public class HttpResponseEncoder {
     // StringBuilder sb = new StringBuilder(512);
 
     Map<HeaderName, HeaderValue> headers = httpResponse.getHeaders();
-    boolean isNotAddContentLength = httpResponse.isStream() || httpResponse.isHasCountContentLength();
+    boolean isNotAddContentLength = httpResponse.isStream() || httpResponse.hasCountContentLength();
     if (!isNotAddContentLength) {
       httpResponse.addHeader(HeaderName.Content_Length, HeaderValue.from(Integer.toString(bodyLength)));
     }
@@ -123,8 +123,8 @@ public class HttpResponseEncoder {
     ByteBuffer buffer = ByteBuffer.allocate(respLineLength + headerLength + bodyLength);
     buffer.put(httpResponseStatus.responseLineBinary);
 
-    boolean addServerHead = EnvUtils.getBoolean("http.response.header.showServer", true);
-    if (addServerHead) {
+    boolean showServer = EnvUtils.getBoolean("http.response.header.showServer", true);
+    if (showServer) {
       buffer.put(HeaderName.Server.bytes);
       buffer.put(SysConst.COL);
       buffer.put(HeaderValue.Server.TIO.bytes);

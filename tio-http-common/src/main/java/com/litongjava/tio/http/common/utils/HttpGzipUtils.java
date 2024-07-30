@@ -5,9 +5,9 @@ import org.slf4j.LoggerFactory;
 
 import com.litongjava.tio.http.common.HeaderName;
 import com.litongjava.tio.http.common.HeaderValue;
-import com.litongjava.tio.http.common.HttpConst;
 import com.litongjava.tio.http.common.HttpRequest;
 import com.litongjava.tio.http.common.HttpResponse;
+import com.litongjava.tio.http.common.RequestHeaderKey;
 import com.litongjava.tio.utils.hutool.ZipUtil;
 
 /**
@@ -28,21 +28,19 @@ public class HttpGzipUtils {
       return;
     }
 
-    //
-    // // 已经gzip过了，就不必再压缩了
-    // if (response.isHasGzipped()) {
-    // return;
-    // }
+    // 已经gzip过了，就不必再压缩了
+    if (response.hasGzipped()) {
+      return;
+    }
 
     if (request != null && request.getIsSupportGzip()) {
-      gzip(response);
+      justGzip(response);
     } else {
       if (request != null) {
-        log.warn("{}, 不支持gzip, {}", request.getClientIp(), request.getHeader(HttpConst.RequestHeaderKey.User_Agent));
+        log.warn("not support gzip:{}, {}", request.getClientIp(), request.getHeader(RequestHeaderKey.User_Agent));
       } else {
-        log.info("request对象为空");
+        log.info("request is empty");
       }
-
     }
   }
 
@@ -57,10 +55,14 @@ public class HttpGzipUtils {
     }
 
     // 已经gzip过了，就不必再压缩了
-    if (response.isHasGzipped()) {
+    if (response.hasGzipped()) {
       return;
     }
 
+    justGzip(response);
+  }
+
+  public static void justGzip(HttpResponse response) {
     byte[] bs = response.getBody();
     if (bs != null && bs.length >= 300) {
       byte[] bs2 = ZipUtil.gzip(bs);
@@ -70,12 +72,5 @@ public class HttpGzipUtils {
         response.addHeader(HeaderName.Content_Encoding, HeaderValue.Content_Encoding.gzip);
       }
     }
-  }
-
-  /**
-   *
-   * @author tanyaowu
-   */
-  private HttpGzipUtils() {
   }
 }

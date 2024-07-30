@@ -25,7 +25,7 @@ public class OkHttpUtils {
     // Setting headers
     Headers responseHeaders = okHttpResponse.headers();
     for (String name : responseHeaders.names()) {
-      httpResponse.addHeader(name, responseHeaders.get(name));
+      httpResponse.addHeader(name.toLowerCase(), responseHeaders.get(name));
     }
 
     // Setting the response body

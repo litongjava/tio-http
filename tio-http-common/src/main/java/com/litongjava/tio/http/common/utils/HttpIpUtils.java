@@ -32,37 +32,35 @@ public class HttpIpUtils {
    * @author tanyaowu
    */
   public static String getRealIp(HttpRequest request) {
-//    return getRealIp(request.channelContext, request.httpConfig, request.getHeaders());
 
     if (request.httpConfig == null) {
       return request.getRemote().getIp();
     }
 
-    if (request.httpConfig.isProxied()) {
-      String headerName = null;
-      String ip = null;
-      for (String name : HEADER_NAMES_FOR_REALIP) {
-        headerName = name;
-        ip = request.getHeader(headerName);
+    String headerName = null;
+    String ip = null;
+    for (String name : HEADER_NAMES_FOR_REALIP) {
+      headerName = name;
+      ip = request.getHeader(headerName);
 
-        if (StrUtil.isNotBlank(ip) && !"unknown".equalsIgnoreCase(ip)) {
-          break;
-        }
+      if (StrUtil.isNotBlank(ip) && !"unknown".equalsIgnoreCase(ip)) {
+        break;
       }
-
-      if (StrUtil.isBlank(ip) || "unknown".equalsIgnoreCase(ip)) {
-        headerName = null;
-        ip = request.getRemote().getIp();
-      }
-
-      if (ip.contains(",")) {
-        log.error("ip[{}], header name:{}", ip, headerName);
-        ip = ip.split(",")[0].trim();
-      }
-      return ip;
-    } else {
-      return request.getRemote().getIp();
     }
+
+    if (StrUtil.isBlank(ip) || "unknown".equalsIgnoreCase(ip)) {
+      headerName = null;
+      ip = request.getRemote().getIp();
+    }
+
+    if (ip.contains(",")) {
+      ip = ip.split(",")[0].trim();
+    }
+    if (StrUtil.isBlank(ip)) {
+      ip = request.getRemote().getIp();
+    }
+
+    return ip;
   }
 
   /**

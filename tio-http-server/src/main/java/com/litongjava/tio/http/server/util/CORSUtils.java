@@ -43,7 +43,13 @@ public class CORSUtils {
     }
 
     if (origin != null && origin != "") {
-      response.addHeader(HeaderName.from("Origin"), HeaderValue.from(origin));
+      response.addHeader(HeaderName.Origin, HeaderValue.from(origin));
     }
+
+    response.addHeader(HeaderName.Vary, HeaderValue.from("Origin"));
+    response.addHeader(HeaderName.Vary, HeaderValue.from("Access-Control-Request-Method"));
+    response.addHeader(HeaderName.Vary, HeaderValue.from("Access-Control-Request-Headers"));
+    response.addHeader(HeaderName.Keep_Alive, HeaderValue.from("timeout=60"));
+    response.addHeader(HeaderName.Connection, HeaderValue.from("keep-alive"));
   }
 }

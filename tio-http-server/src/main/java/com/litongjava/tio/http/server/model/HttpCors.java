@@ -5,7 +5,7 @@ import com.litongjava.tio.http.server.annotation.EnableCORS;
 public class HttpCors {
   private String allowOrigin = "*";
   private String allowCredentials = "true";;
-  private String allowHeaders = "Origin,X-Requested-With,Content-Type,Accept,Authorization,Jwt";
+  private String allowHeaders = "*";
   private String allowMethods = "GET,PUT,POST,DELETE,PATCH,OPTIONS";
   private String exposeHeaders = "";
   private String requestHeaders = "";

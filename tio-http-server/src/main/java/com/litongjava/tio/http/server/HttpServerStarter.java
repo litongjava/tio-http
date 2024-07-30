@@ -19,8 +19,8 @@ import org.slf4j.LoggerFactory;
 
 import com.litongjava.tio.core.TcpConst;
 import com.litongjava.tio.http.common.HttpConfig;
-import com.litongjava.tio.http.common.HttpConst;
 import com.litongjava.tio.http.common.HttpUuid;
+import com.litongjava.tio.http.common.RequestHeaderKey;
 import com.litongjava.tio.http.common.TioConfigKey;
 import com.litongjava.tio.http.common.handler.HttpRequestHandler;
 import com.litongjava.tio.http.common.session.id.impl.UUIDSessionIdGenerator;
@@ -92,89 +92,6 @@ public class HttpServerStarter {
 
     init(httpConfig, requestHandler, tioExecutor, groupExecutor);
   }
-
-  // /**
-  // * @deprecated
-  // * @param pageRoot 如果为null，则不提供静态资源服务
-  // * @param serverPort
-  // * @param contextPath
-  // * @param scanPackages
-  // * @param httpServerInterceptor
-  // * @author tanyaowu
-  // * @throws IOException
-  // */
-  // public HttpServerStarter(String pageRoot, int serverPort, String contextPath, String[] scanPackages, HttpServerInterceptor httpServerInterceptor) throws IOException {
-  // this(pageRoot, serverPort, contextPath, scanPackages, httpServerInterceptor, null, null, null);
-  // }
-  //
-  // /**
-  // * @deprecated
-  // * @param pageRoot 如果为null，则不提供静态资源服务
-  // * @param serverPort
-  // * @param contextPath
-  // * @param scanPackages
-  // * @param httpServerInterceptor
-  // * @param sessionStore
-  // * @author tanyaowu
-  // * @throws IOException
-  // */
-  // public HttpServerStarter(String pageRoot, int serverPort, String contextPath, String[] scanPackages, HttpServerInterceptor httpServerInterceptor, ICache sessionStore) throws IOException {
-  // this(pageRoot, serverPort, contextPath, scanPackages, httpServerInterceptor, sessionStore, null, null);
-  // }
-  //
-  // /**
-  // * @deprecated
-  // * pageRoot 如果为null，则不提供静态资源服务
-  // * @param pageRoot
-  // * @param serverPort
-  // * @param contextPath
-  // * @param scanPackages
-  // * @param httpServerInterceptor
-  // * @param sessionStore
-  // * @param tioExecutor
-  // * @param groupExecutor
-  // * @author tanyaowu
-  // * @throws IOException
-  // */
-  // public HttpServerStarter(String pageRoot, int serverPort, String contextPath, String[] scanPackages, HttpServerInterceptor httpServerInterceptor, ICache sessionStore,
-  // SynThreadPoolExecutor tioExecutor, ThreadPoolExecutor groupExecutor) throws IOException {
-  // this(pageRoot, serverPort, contextPath, scanPackages, httpServerInterceptor, null, sessionStore, tioExecutor, groupExecutor);
-  // }
-  //
-  // /**
-  // * @deprecated
-  // * pageRoot 如果为null，则不提供静态资源服务
-  // * @param pageRoot
-  // * @param serverPort
-  // * @param contextPath
-  // * @param scanPackages
-  // * @param httpServerInterceptor
-  // * @param httpSessionListener
-  // * @param sessionStore
-  // * @param tioExecutor
-  // * @param groupExecutor
-  // * @author tanyaowu
-  // * @throws IOException
-  // */
-  // public HttpServerStarter(String pageRoot, int serverPort, String contextPath, String[] scanPackages, HttpServerInterceptor httpServerInterceptor, HttpSessionListener httpSessionListener, ICache sessionStore,
-  // SynThreadPoolExecutor tioExecutor, ThreadPoolExecutor groupExecutor) throws IOException {
-  // int port = serverPort;
-  //
-  // httpConfig = new HttpConfig(port, null, contextPath, null);
-  // httpConfig.setPageRoot(pageRoot);
-  // if (sessionStore != null) {
-  // httpConfig.setSessionStore(sessionStore);
-  // }
-  //
-  // Routes routes = new Routes(scanPackages);
-  // DefaultHttpRequestHandler requestHandler = new DefaultHttpRequestHandler(httpConfig, routes);
-  // requestHandler.setHttpServerInterceptor(httpServerInterceptor);
-  // requestHandler.setHttpSessionListener(httpSessionListener);
-  //
-  //
-  //
-  // init(httpConfig, requestHandler, tioExecutor, groupExecutor);
-  // }
 
   /**
    * @return the httpConfig
@@ -328,8 +245,8 @@ public class HttpServerStarter {
         }
 
         Json json = Json.getJson();
-        log.info("预访问了{}个path，耗时:{}ms，访问详情:\r\n{}\r\n耗时排序:\r\n{}", pathCostMap.size(), iv,
-            json.toJson(pathCostMap), json.toJson(costPathsMap));
+        log.info("预访问了{}个path，耗时:{}ms，访问详情:\r\n{}\r\n耗时排序:\r\n{}", pathCostMap.size(), iv, json.toJson(pathCostMap),
+            json.toJson(costPathsMap));
       }
     }).start();
 
@@ -343,7 +260,7 @@ public class HttpServerStarter {
   private void preAccess(String rootpath, Map<String, Long> pathCostMap) {
     try {
       Map<String, String> headerMap = new HashMap<>();
-      headerMap.put(HttpConst.RequestHeaderKey.Host, "127.0.0.1");
+      headerMap.put(RequestHeaderKey.Host, "127.0.0.1");
 
       String protocol = null;
 

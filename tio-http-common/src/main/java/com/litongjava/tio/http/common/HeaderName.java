@@ -9,44 +9,40 @@ import java.util.Map;
  */
 public class HeaderName {
   private static final Map<String, HeaderName> map = new HashMap<>();
-  public static final HeaderName SET_COOKIE = new HeaderName(HttpConst.ResponseHeaderKey.Set_Cookie);
-  public static final HeaderName CONTENT_TYPE = new HeaderName(HttpConst.ResponseHeaderKey.Content_Type);
-  public static final HeaderName CACHE_CONTROL = new HeaderName(HttpConst.ResponseHeaderKey.Cache_Control);
-  public static final HeaderName LOCATION = new HeaderName(HttpConst.ResponseHeaderKey.Location);
-  public static final HeaderName Connection = new HeaderName(HttpConst.ResponseHeaderKey.Connection);
-  public static final HeaderName Keep_Alive = new HeaderName(HttpConst.ResponseHeaderKey.Keep_Alive);
-  public static final HeaderName Content_Length = new HeaderName(HttpConst.ResponseHeaderKey.Content_Length);
+  public static final HeaderName SET_COOKIE = new HeaderName(ResponseHeaderKey.Set_Cookie);
+  public static final HeaderName CONTENT_TYPE = new HeaderName(ResponseHeaderKey.Content_Type);
+  public static final HeaderName CACHE_CONTROL = new HeaderName(ResponseHeaderKey.Cache_Control);
+  public static final HeaderName LOCATION = new HeaderName(ResponseHeaderKey.Location);
+  public static final HeaderName Connection = new HeaderName(ResponseHeaderKey.Connection);
+  public static final HeaderName Keep_Alive = new HeaderName(ResponseHeaderKey.Keep_Alive);
+  public static final HeaderName Content_Length = new HeaderName(ResponseHeaderKey.Content_Length);
   public static final HeaderName Access_Control_Allow_Origin = new HeaderName(
-      HttpConst.ResponseHeaderKey.Access_Control_Allow_Origin);
+      ResponseHeaderKey.Access_Control_Allow_Origin);
   public static final HeaderName Access_Control_Allow_Headers = new HeaderName(
-      HttpConst.ResponseHeaderKey.Access_Control_Allow_Headers);
+      ResponseHeaderKey.Access_Control_Allow_Headers);
   public static final HeaderName Access_Control_Allow_Methods = new HeaderName(
-      HttpConst.ResponseHeaderKey.Access_Control_Allow_Methods);
-  public static final HeaderName Access_Control_Max_Age = new HeaderName(
-      HttpConst.ResponseHeaderKey.Access_Control_Max_Age);
-  // httpResponse.addHeader("Access-Control-Allow-Origin", "*");
-  // httpResponse.addHeader("Access-Control-Allow-Methods", "*");Access_Control_Allow_Headers
-  // httpResponse.addHeader("Access-Control-Allow-Headers", "Content-Type");
-  // httpResponse.addHeader("Access-Control-Max-Age", "1800");
-  public static final HeaderName Content_Disposition = new HeaderName(HttpConst.ResponseHeaderKey.Content_Disposition);
-  public static final HeaderName Transfer_Encoding = new HeaderName(HttpConst.ResponseHeaderKey.Transfer_Encoding);
-  public static final HeaderName Content_Encoding = new HeaderName(HttpConst.ResponseHeaderKey.Content_Encoding);
-  public static final HeaderName Date = new HeaderName(HttpConst.ResponseHeaderKey.Date);
-  public static final HeaderName Expires = new HeaderName(HttpConst.ResponseHeaderKey.Expires);
-  public static final HeaderName Last_Modified = new HeaderName(HttpConst.ResponseHeaderKey.Last_Modified);
-  public static final HeaderName Refresh = new HeaderName(HttpConst.ResponseHeaderKey.Refresh);
-  public static final HeaderName Sec_WebSocket_Accept = new HeaderName(
-      HttpConst.ResponseHeaderKey.Sec_WebSocket_Accept);
-  public static final HeaderName Server = new HeaderName(HttpConst.ResponseHeaderKey.Server);
-  public static final HeaderName Upgrade = new HeaderName(HttpConst.ResponseHeaderKey.Upgrade);
-  public static final HeaderName Content_Type = new HeaderName(HttpConst.ResponseHeaderKey.Content_Type);
-  public static final HeaderName Location = new HeaderName(HttpConst.ResponseHeaderKey.Location);
-  public static final HeaderName Cache_Control = new HeaderName(HttpConst.ResponseHeaderKey.Cache_Control);
-  public static final HeaderName tio_from_cache = new HeaderName(HttpConst.ResponseHeaderKey.tio_from_cache);
-  public static final HeaderName tio_webpack_used_cache = new HeaderName(
-      HttpConst.ResponseHeaderKey.tio_webpack_used_cache);
+      ResponseHeaderKey.Access_Control_Allow_Methods);
+  public static final HeaderName Access_Control_Max_Age = new HeaderName(ResponseHeaderKey.Access_Control_Max_Age);
+
+  public static final HeaderName Content_Disposition = new HeaderName(ResponseHeaderKey.Content_Disposition);
+  public static final HeaderName Transfer_Encoding = new HeaderName(ResponseHeaderKey.Transfer_Encoding);
+  public static final HeaderName Content_Encoding = new HeaderName(ResponseHeaderKey.Content_Encoding);
+  public static final HeaderName Date = new HeaderName(ResponseHeaderKey.Date);
+  public static final HeaderName Expires = new HeaderName(ResponseHeaderKey.Expires);
+  public static final HeaderName Last_Modified = new HeaderName(ResponseHeaderKey.Last_Modified);
+  public static final HeaderName Refresh = new HeaderName(ResponseHeaderKey.Refresh);
+  public static final HeaderName Sec_WebSocket_Accept = new HeaderName(ResponseHeaderKey.Sec_WebSocket_Accept);
+  public static final HeaderName Server = new HeaderName(ResponseHeaderKey.Server);
+  public static final HeaderName Upgrade = new HeaderName(ResponseHeaderKey.Upgrade);
+  public static final HeaderName Content_Type = new HeaderName(ResponseHeaderKey.Content_Type);
+  public static final HeaderName Location = new HeaderName(ResponseHeaderKey.Location);
+  public static final HeaderName Cache_Control = new HeaderName(ResponseHeaderKey.Cache_Control);
+  public static final HeaderName tio_from_cache = new HeaderName(ResponseHeaderKey.tio_from_cache);
+  public static final HeaderName tio_webpack_used_cache = new HeaderName(ResponseHeaderKey.tio_webpack_used_cache);
   public static final HeaderName Access_Control_Allow_Credentials = new HeaderName(
-      HttpConst.ResponseHeaderKey.Access_Control_Allow_Credentials);
+      ResponseHeaderKey.Access_Control_Allow_Credentials);
+  public static final HeaderName Vary = new HeaderName(ResponseHeaderKey.vary);
+  public static final HeaderName Origin = new HeaderName(ResponseHeaderKey.origin);
 
   public final String name;
 

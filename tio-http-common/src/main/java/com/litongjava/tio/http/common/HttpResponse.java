@@ -124,7 +124,7 @@ public class HttpResponse extends HttpPacket {
     HttpResponse cloneResponse = new HttpResponse(request);
     cloneResponse.setStatus(response.getStatus());
     cloneResponse.setBody(response.getBody());
-    cloneResponse.setHasGzipped(response.isHasGzipped());
+    cloneResponse.setHasGzipped(response.hasGzipped());
     cloneResponse.addHeaders(response.getHeaders());
 
     if (cloneResponse.getCookies() != null) {
@@ -283,7 +283,7 @@ public class HttpResponse extends HttpPacket {
     this.status = custom;
   }
 
-  public boolean isHasGzipped() {
+  public boolean hasGzipped() {
     return hasGzipped;
   }
 
@@ -459,10 +459,6 @@ public class HttpResponse extends HttpPacket {
     return httpResponse.setJson(body);
   }
 
-  public boolean isHasCountContentLength() {
-    return hasCountContentLength;
-  }
-
   public HttpResponse setHasCountContentLength(boolean b) {
     this.hasCountContentLength = b;
     return this;
@@ -472,5 +468,9 @@ public class HttpResponse extends HttpPacket {
     headers.remove(HeaderName.from(name));
     return this;
 
+  }
+
+  public boolean hasCountContentLength() {
+    return hasCountContentLength;
   }
 }

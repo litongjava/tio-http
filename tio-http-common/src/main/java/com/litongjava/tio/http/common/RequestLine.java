@@ -10,7 +10,7 @@ import com.litongjava.tio.utils.hutool.StrUtil;
  * 2017年6月28日 下午2:20:32
  */
 public class RequestLine {
-	public Method	method;
+	public HttpMethod	method;
 	public String	path;			//譬如http://www.163.com/user/get?value=tan&id=789，那么此值就是/user/get
 	public String	initPath;		//同path，只是path可能会被业务端修改，而这个是记录访问者访问的最原始path的
 	public String	queryString;	//譬如http://www.163.com/user/get?value=tan&id=789，那么此值就是name=tan&id=789
@@ -20,7 +20,7 @@ public class RequestLine {
 	/**
 	 * @return the method
 	 */
-	public Method getMethod() {
+	public HttpMethod getMethod() {
 		return method;
 	}
 
@@ -69,7 +69,7 @@ public class RequestLine {
 	/**
 	 * @param method the method to set
 	 */
-	public void setMethod(Method method) {
+	public void setMethod(HttpMethod method) {
 		this.method = method;
 	}
 

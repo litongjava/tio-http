@@ -98,7 +98,7 @@ public class HttpRequestDecoder {
     if (!headerCompleted) {
       return null;
     }
-    String contentLengthStr = headers.get(HttpConst.RequestHeaderKey.Content_Length);
+    String contentLengthStr = headers.get(RequestHeaderKey.Content_Length);
 
     if (StrUtil.isBlank(contentLengthStr)) {
       contentLength = 0;
@@ -133,7 +133,7 @@ public class HttpRequestDecoder {
       throw new TioDecodeException("[" + realIp + "] in black list");
     }
     if (httpConfig.checkHost) {
-      if (!headers.containsKey(HttpConst.RequestHeaderKey.Host)) {
+      if (!headers.containsKey(RequestHeaderKey.Host)) {
         throw new TioDecodeException("there is no host header");
       }
     }
@@ -158,7 +158,7 @@ public class HttpRequestDecoder {
     // httpRequest.setHeaderString("");
     // }
 
-    String connection = headers.get(HttpConst.RequestHeaderKey.Connection);
+    String connection = headers.get(RequestHeaderKey.Connection);
     if (connection != null) {
       httpRequest.setConnection(connection.toLowerCase());
     }
@@ -181,7 +181,7 @@ public class HttpRequestDecoder {
     // ----------------------------------------------- request body end
 
     // 解析User_Agent(浏览器操作系统等信息)
-    // String User_Agent = headers.get(HttpConst.RequestHeaderKey.User_Agent);
+    // String User_Agent = headers.get(RequestHeaderKey.User_Agent);
     // if (StrUtil.isNotBlank(User_Agent)) {
     // // long start = System.currentTimeMillis();
     // UserAgentAnalyzer userAgentAnalyzer = UserAgentAnalyzerFactory.getUserAgentAnalyzer();
@@ -286,7 +286,7 @@ public class HttpRequestDecoder {
     // }
     //
     // //【multipart/form-data; boundary=----WebKitFormBoundaryuwYcfA2AIgxqIxA0】
-    // String initboundary = HttpParseUtils.getPerprotyEqualValue(httpRequest.getHeaders(), HttpConst.RequestHeaderKey.Content_Type, "boundary");
+    // String initboundary = HttpParseUtils.getPerprotyEqualValue(httpRequest.getHeaders(), RequestHeaderKey.Content_Type, "boundary");
     // log.debug("{}, initboundary:{}", channelContext, initboundary);
     // HttpMultiBodyDecoder.decode(httpRequest, firstLine, bodyBytes, initboundary, channelContext, httpConfig);
     // } else {
@@ -325,8 +325,8 @@ public class HttpRequestDecoder {
       }
 
       // 【multipart/form-data; boundary=----WebKitFormBoundaryuwYcfA2AIgxqIxA0】
-      String contentType = httpRequest.getHeader(HttpConst.RequestHeaderKey.Content_Type);
-      String initboundary = HttpParseUtils.getSubAttribute(contentType, "boundary");// .getPerprotyEqualValue(httpRequest.getHeaders(), HttpConst.RequestHeaderKey.Content_Type, "boundary");
+      String contentType = httpRequest.getHeader(RequestHeaderKey.Content_Type);
+      String initboundary = HttpParseUtils.getSubAttribute(contentType, "boundary");// .getPerprotyEqualValue(httpRequest.getHeaders(), RequestHeaderKey.Content_Type, "boundary");
       if (log.isDebugEnabled()) {
         log.debug("{}, initboundary:{}", channelContext, initboundary);
       }
@@ -375,7 +375,7 @@ public class HttpRequestDecoder {
    * @author tanyaowu
    */
   public static void parseBodyFormat(HttpRequest httpRequest, Map<String, String> headers) {
-    String contentType = headers.get(HttpConst.RequestHeaderKey.Content_Type);
+    String contentType = headers.get(RequestHeaderKey.Content_Type);
     if (contentType != null) {
       contentType = contentType.toLowerCase();
     }
@@ -389,7 +389,7 @@ public class HttpRequestDecoder {
     }
 
     if (StrUtil.isNotBlank(contentType)) {
-      String charset = HttpParseUtils.getSubAttribute(contentType, "charset");// .getPerprotyEqualValue(headers, HttpConst.RequestHeaderKey.Content_Type, "charset");
+      String charset = HttpParseUtils.getSubAttribute(contentType, "charset");// .getPerprotyEqualValue(headers, RequestHeaderKey.Content_Type, "charset");
       if (StrUtil.isNotBlank(charset)) {
         httpRequest.setCharset(charset);
       } else {
@@ -712,7 +712,7 @@ public class HttpRequestDecoder {
           lastPosition = buffer.position();
 
           RequestLine requestLine = new RequestLine();
-          Method method = Method.from(methodStr);
+          HttpMethod method = HttpMethod.from(methodStr);
           requestLine.setMethod(method);
           requestLine.setPath(pathStr);
           requestLine.setInitPath(pathStr);
@@ -814,7 +814,7 @@ public class HttpRequestDecoder {
           buffer.position(nowPosition);
 
           RequestLine requestLine = new RequestLine();
-          Method method = Method.from(methodStr);
+          HttpMethod method = HttpMethod.from(methodStr);
           requestLine.setMethod(method);
           requestLine.setPath(pathStr);
           requestLine.setInitPath(pathStr);

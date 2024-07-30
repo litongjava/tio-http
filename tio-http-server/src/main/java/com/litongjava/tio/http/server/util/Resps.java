@@ -17,12 +17,12 @@ import org.slf4j.LoggerFactory;
 import com.litongjava.tio.http.common.HeaderName;
 import com.litongjava.tio.http.common.HeaderValue;
 import com.litongjava.tio.http.common.HttpConfig;
-import com.litongjava.tio.http.common.HttpConst;
 import com.litongjava.tio.http.common.HttpRequest;
 import com.litongjava.tio.http.common.HttpResource;
 import com.litongjava.tio.http.common.HttpResponse;
 import com.litongjava.tio.http.common.HttpResponseStatus;
 import com.litongjava.tio.http.common.MimeType;
+import com.litongjava.tio.http.common.RequestHeaderKey;
 import com.litongjava.tio.http.common.RequestLine;
 import com.litongjava.tio.utils.IoUtils;
 import com.litongjava.tio.utils.environment.EnvUtils;
@@ -637,7 +637,7 @@ public class Resps {
    * @author tanyaowu
    */
   public static HttpResponse try304(HttpRequest request, long lastModifiedOnServer) {
-    String If_Modified_Since = request.getHeader(HttpConst.RequestHeaderKey.If_Modified_Since);// If-Modified-Since
+    String If_Modified_Since = request.getHeader(RequestHeaderKey.If_Modified_Since);// If-Modified-Since
     if (StrUtil.isNotBlank(If_Modified_Since)) {
       Long If_Modified_Since_Date = null;
       try {
@@ -649,7 +649,7 @@ public class Resps {
           return ret;
         }
       } catch (NumberFormatException e) {
-        log.warn("{}, {}不是整数，浏览器信息:{}", request.getClientIp(), If_Modified_Since, request.getUserAgent());
+        log.warn("{}, {} is not an int，client:{}", request.getClientIp(), If_Modified_Since, request.getUserAgent());
         return null;
       }
     }

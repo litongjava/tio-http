@@ -149,7 +149,7 @@ public class HttpRequest extends HttpPacket {
    * @param userAgent the userAgent to set
    */
   public void setUserAgent(String userAgent) {
-    this.headers.put(HttpConst.RequestHeaderKey.User_Agent, userAgent);
+    this.headers.put(RequestHeaderKey.User_Agent, userAgent);
   }
 
   /**
@@ -158,7 +158,7 @@ public class HttpRequest extends HttpPacket {
    * @author: tanyaowu
    */
   public String getUserAgent() {
-    return this.headers.get(HttpConst.RequestHeaderKey.User_Agent);
+    return this.headers.get(RequestHeaderKey.User_Agent);
   }
 
   /**
@@ -171,7 +171,7 @@ public class HttpRequest extends HttpPacket {
       return host;
     }
 
-    host = this.headers.get(HttpConst.RequestHeaderKey.Host);
+    host = this.headers.get(RequestHeaderKey.Host);
     return host;
   }
 
@@ -321,7 +321,7 @@ public class HttpRequest extends HttpPacket {
    */
   public Boolean getIsAjax() {
     if (isAjax == null) {
-      String X_Requested_With = this.getHeader(HttpConst.RequestHeaderKey.X_Requested_With);
+      String X_Requested_With = this.getHeader(RequestHeaderKey.X_Requested_With);
       if (X_Requested_With != null && "XMLHttpRequest".equalsIgnoreCase(X_Requested_With)) {
         isAjax = true;
       } else {
@@ -507,7 +507,7 @@ public class HttpRequest extends HttpPacket {
   }
 
   public void parseCookie(HttpConfig httpConfig) {
-    String cookieline = headers.get(HttpConst.RequestHeaderKey.Cookie);
+    String cookieline = headers.get(RequestHeaderKey.Cookie);
     if (StrUtil.isNotBlank(cookieline)) {
       cookies = new ArrayList<>();
       cookieMap = new HashMap<>();
@@ -681,7 +681,7 @@ public class HttpRequest extends HttpPacket {
   }
 
   public String getReferer() {
-    return getHeader(HttpConst.RequestHeaderKey.Referer);
+    return getHeader(RequestHeaderKey.Referer);
   }
 
   public boolean isNeedForward() {
@@ -701,7 +701,7 @@ public class HttpRequest extends HttpPacket {
   }
 
   public String getContentType() {
-    return this.getHeader(HttpConst.RequestHeaderKey.Content_Type);
+    return this.getHeader(RequestHeaderKey.Content_Type);
   }
 
   public Enumeration<String> getParameterNames() {

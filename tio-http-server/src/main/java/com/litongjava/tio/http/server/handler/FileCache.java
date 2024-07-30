@@ -77,7 +77,7 @@ public class FileCache implements java.io.Serializable {
     // HttpResponse responseInCache = fileCache.getResponse();
     HttpResponse ret = new HttpResponse(request);
     ret.setBody(response.getBody());
-    ret.setHasGzipped(response.isHasGzipped());
+    ret.setHasGzipped(response.hasGzipped());
     ret.addHeaders(response.getHeaders());
     return ret;
   }
