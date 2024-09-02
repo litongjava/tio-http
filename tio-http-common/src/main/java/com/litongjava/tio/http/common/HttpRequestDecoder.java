@@ -224,7 +224,7 @@ public class HttpRequestDecoder {
       if (keyvalueArr.length == 2) {
         value1 = keyvalueArr[1];
       } else if (keyvalueArr.length > 2) {
-        throw new TioDecodeException("含有多个" + SysConst.STR_EQ);
+        throw new TioDecodeException(queryString+" contain multi" + SysConst.STR_EQ);
       }
 
       String key = keyvalueArr[0];
