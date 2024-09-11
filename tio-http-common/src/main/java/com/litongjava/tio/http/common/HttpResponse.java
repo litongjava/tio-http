@@ -35,6 +35,10 @@ public class HttpResponse extends HttpPacket {
    */
   private boolean stream = false;
   /**
+   * 是否需要改发改数据包,如果该数据包已经发送或者即将发送,可以在也业务中将该值设置为false,防止重复发送数据包
+   */
+  private boolean send = true;
+  /**
    * 不计算Content-Length
    */
   private boolean hasCountContentLength = false;
@@ -120,6 +124,14 @@ public class HttpResponse extends HttpPacket {
 
   public boolean isKeepedConnection() {
     return super.keepedConnection;
+  }
+
+  public boolean setSend(boolean send) {
+    return this.send = send;
+  }
+
+  public boolean isSend() {
+    return send;
   }
 
   /**
