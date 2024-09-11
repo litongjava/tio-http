@@ -24,16 +24,12 @@ public class HttpResponse extends HttpPacket {
   /**
    * 服务器端用（因为服务器端可以直接枚举）
    */
-  private HttpResponseStatus status = HttpResponseStatus.C200;
+  private HttpResponseStatus status = null;
   /**
-   * 是否是静态资源
-   * true: 静态资源
+   * 是否是静态资源 true: 静态资源
    */
   private boolean isStaticRes = false;
-  /**
-   * 是否向客户端发送消息,SSE的情况下不发送,由Controller控制具体的方式
-   */
-  private boolean send = true;
+
   /**
    * 是否后续返回流格式,如果是则在相应时不计算Content-Length
    */
@@ -60,7 +56,10 @@ public class HttpResponse extends HttpPacket {
    */
   private boolean skipTokenStat = false;
 
+  private String version;
+
   public HttpResponse() {
+    this.status = HttpResponseStatus.C200;
   }
 
   /**
@@ -74,25 +73,28 @@ public class HttpResponse extends HttpPacket {
       return;
     }
 
+    String version = request.requestLine.version;
+    this.version = version;
+
     if (request.httpConfig != null && request.httpConfig.compatible1_0) {
       String connection = request.getConnection();// StrUtil.lowerCase(request.getHeader(HttpConst.RequestHeaderKey.Connection));
-      switch (request.requestLine.version) {
+      switch (version) {
       case HttpConst.HttpVersion.V1_0:
+        this.status = HttpResponseStatus.C200.changeVersion(version);
         if (StrUtil.equals(connection, HttpConst.RequestHeaderValue.Connection.keep_alive)) {
           addHeader(HeaderName.Connection, HeaderValue.Connection.keep_alive);
           addHeader(HeaderName.Keep_Alive, HeaderValue.Keep_Alive.TIMEOUT_10_MAX_20);
         } else {
-          // addHeader(HeaderName.Connection, HeaderValue.Connection.close);
+          // 不保存连接,直接关闭
+          this.status = HttpResponseStatus.C200;
+          setKeepedConnectin(false);
         }
         break;
 
       default:
-        if (StrUtil.equals(connection, HttpConst.RequestHeaderValue.Connection.close)) {
-          // addHeader(HeaderName.Connection, HeaderValue.Connection.close);
-        } else {
-          // addHeader(HeaderName.Connection, HeaderValue.Connection.keep_alive);
-          // addHeader(HeaderName.Keep_Alive, HeaderValue.Keep_Alive.TIMEOUT_10_MAX_20);
-        }
+//        if (StrUtil.equals(connection, HttpConst.RequestHeaderValue.Connection.close)) {
+//        } else {
+//        }
         break;
       }
     }
@@ -107,12 +109,22 @@ public class HttpResponse extends HttpPacket {
     if (responseHeaders != null) {
       this.headers.putAll(responseHeaders);
     }
+    this.status = HttpResponseStatus.C200;
     this.setBody(body);
     HttpGzipUtils.gzip(this);
   }
 
+  public void setKeepedConnectin(boolean keepedConnection) {
+    super.keepedConnection = keepedConnection;
+  }
+
+  public boolean isKeepedConnection() {
+    return super.keepedConnection;
+  }
+
   /**
    * 支持跨域
+   * 
    * @author tanyaowu
    */
   public void crossDomain() {
@@ -135,9 +147,16 @@ public class HttpResponse extends HttpPacket {
 
   /**
    * <span style='color:red'>
-   *  <p style='color:red;font-size:12pt;'>警告：通过本方法获得Map<HeaderName, HeaderValue>对象后，请勿调用put(key, value)。<p>
-   *  <p style='color:red;font-size:12pt;'>添加响应头只能通过HttpResponse.addHeader(HeaderName, HeaderValue)或HttpResponse.addHeaders(Map<HeaderName, HeaderValue> headers)方式添加<p>
+   * <p style='color:red;font-size:12pt;'>
+   * 警告：通过本方法获得Map<HeaderName, HeaderValue>对象后，请勿调用put(key, value)。
+   * <p>
+   * <p style='color:red;font-size:12pt;'>
+   * 添加响应头只能通过HttpResponse.addHeader(HeaderName,
+   * HeaderValue)或HttpResponse.addHeaders(Map<HeaderName, HeaderValue>
+   * headers)方式添加
+   * <p>
    * </span>
+   * 
    * @return
    * @author tanyaowu
    */
@@ -172,6 +191,7 @@ public class HttpResponse extends HttpPacket {
 
   /**
    * 获取"Content-Type"头部内容
+   * 
    * @return
    * @author tanyaowu
    */
@@ -269,17 +289,17 @@ public class HttpResponse extends HttpPacket {
   }
 
   public void setStatus(int status, String description, String headerText) {
-    HttpResponseStatus custom = HttpResponseStatus.CUSTOM.build(status, description, headerText);
+    HttpResponseStatus custom = HttpResponseStatus.CUSTOM.build(version, status, description, headerText);
     this.status = custom;
   }
 
   public void setStatus(int status, String description) {
-    HttpResponseStatus custom = HttpResponseStatus.CUSTOM.build(status, description);
+    HttpResponseStatus custom = HttpResponseStatus.CUSTOM.build(version, status, description);
     this.status = custom;
   }
 
   public void setStatus(int status) {
-    HttpResponseStatus custom = HttpResponseStatus.CUSTOM.build(status);
+    HttpResponseStatus custom = HttpResponseStatus.CUSTOM.build(version, status);
     this.status = custom;
   }
 
@@ -341,15 +361,6 @@ public class HttpResponse extends HttpPacket {
 
   public void setContentType(String contentType) {
     this.addHeader(HeaderName.Content_Type, HeaderValue.from(contentType));
-  }
-
-  public boolean isSend() {
-    return send;
-  }
-
-  public HttpResponse setSend(boolean send) {
-    this.send = send;
-    return this;
   }
 
   public boolean isStream() {

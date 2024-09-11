@@ -84,7 +84,8 @@ public class HttpResponseEncoder {
 
     // byte[] respLineStatusBytes = getBytes(Integer.toString(httpResponseStatus.getStatus()));
     // byte[] respLineDescriptionBytes = getBytes(httpResponseStatus.getDescription());
-    int respLineLength = httpResponseStatus.responseLineBinary.length;// http1_1Bytes.length + httpResponseStatus.getHeaderBinary().length + 3; //一个空格+\r\n
+   // http1_1Bytes.length + httpResponseStatus.getHeaderBinary().length + 3; //一个空格+\r\n
+    int respLineLength = httpResponseStatus.responseLineBinary.length;
 
     // StringBuilder sb = new StringBuilder(512);
 

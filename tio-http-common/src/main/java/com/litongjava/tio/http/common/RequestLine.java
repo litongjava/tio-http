@@ -14,7 +14,7 @@ public class RequestLine {
 	public String	path;			//譬如http://www.163.com/user/get?value=tan&id=789，那么此值就是/user/get
 	public String	initPath;		//同path，只是path可能会被业务端修改，而这个是记录访问者访问的最原始path的
 	public String	queryString;	//譬如http://www.163.com/user/get?value=tan&id=789，那么此值就是name=tan&id=789
-	public String	protocol;
+	public String	protocol; //http/1.0 or http/1.1
 	public String	version;
 
 	/**

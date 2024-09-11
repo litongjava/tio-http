@@ -6,7 +6,7 @@
     <version>3.7.3.v20240601-RELEASE</version>
   </parent>
   <artifactId>tio-http-common</artifactId>
-  <version>3.7.3.v20240902-RELEASE</version>
+  <version>3.7.3.v20240911-RELEASE</version>
   <name>${project.artifactId}</name>
   <url>http://maven.apache.org</url>
   <description>t-io is a aio framework for java</description>
@@ -15,13 +15,13 @@
     <dependency>
       <groupId>com.litongjava</groupId>
       <artifactId>tio-core</artifactId>
-      <version>3.7.3.v20240901-RELEASE</version>
+      <version>3.7.3.v20240910-RELEASE</version>
     </dependency>
 
     <dependency>
       <groupId>com.litongjava</groupId>
       <artifactId>tio-utils</artifactId>
-      <version>3.7.3.v20240901-RELEASE</version>
+      <version>3.7.3.v20240906-RELEASE</version>
     </dependency>
 
     <dependency>

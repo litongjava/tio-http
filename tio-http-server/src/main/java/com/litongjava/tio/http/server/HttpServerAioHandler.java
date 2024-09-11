@@ -2,9 +2,6 @@ package com.litongjava.tio.http.server;
 
 import java.nio.ByteBuffer;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.litongjava.tio.core.ChannelContext;
 import com.litongjava.tio.core.Tio;
 import com.litongjava.tio.core.TioConfig;
@@ -24,14 +21,12 @@ import com.litongjava.tio.server.intf.ServerAioHandler;
  *
  */
 public class HttpServerAioHandler implements ServerAioHandler {
-  private static Logger log = LoggerFactory.getLogger(HttpServerAioHandler.class);
   public static final String REQUEST_KEY = "tio_request_key";
   protected HttpConfig httpConfig;
   private HttpRequestHandler requestHandler;
 
   /**
-   * @author tanyaowu
-   * 2016年11月18日 上午9:13:15
+   * @author tanyaowu 2016年11月18日 上午9:13:15
    *
    */
   public HttpServerAioHandler(HttpConfig httpConfig, HttpRequestHandler requestHandler) {
@@ -40,10 +35,8 @@ public class HttpServerAioHandler implements ServerAioHandler {
   }
 
   @Override
-  public HttpRequest decode(ByteBuffer buffer, int limit, int position, int readableLength,
-      ChannelContext channelContext) throws TioDecodeException {
-    HttpRequest request = HttpRequestDecoder.decode(buffer, limit, position, readableLength, channelContext,
-        httpConfig);
+  public HttpRequest decode(ByteBuffer buffer, int limit, int position, int readableLength, ChannelContext channelContext) throws TioDecodeException {
+    HttpRequest request = HttpRequestDecoder.decode(buffer, limit, position, readableLength, channelContext, httpConfig);
     if (request != null) {
       channelContext.setAttribute(REQUEST_KEY, request);
     }
@@ -85,16 +78,7 @@ public class HttpServerAioHandler implements ServerAioHandler {
 
     HttpResponse httpResponse = requestHandler.handler(request);
     if (httpResponse != null) {
-      if (httpResponse.isSend()) {
-        Tio.send(channelContext, httpResponse);
-      }
-    } else {
-      if (log.isInfoEnabled()) {
-        log.info("{}, {}, handler return null, request line: {}", channelContext.tioConfig.getName(),
-            channelContext.toString(), request.getRequestLine().toString());
-      }
-      // Tio.remove(channelContext, "handler return null");
-      request.close("handler return null");
+      Tio.send(channelContext, httpResponse);
     }
   }
 

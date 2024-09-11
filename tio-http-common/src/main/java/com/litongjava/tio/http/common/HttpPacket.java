@@ -20,6 +20,14 @@ public class HttpPacket extends Packet {
   protected byte[] body;
   private String headerString = SysConst.BLANK;
 
+  public void setKeepedConnectin(boolean keepedConnection) {
+    super.keepedConnection = keepedConnection;
+  }
+
+  public boolean isKeepedConnection() {
+    return super.keepedConnection;
+  }
+
   /**
    * 获取属性
    * @param key

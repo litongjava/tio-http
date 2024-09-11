@@ -48,6 +48,15 @@ public class HttpRequestDecoder {
    */
   public static final int MAX_LENGTH_OF_REQUESTLINE = 2048;
 
+
+  /**
+   * @author tanyaowu
+   * 2017年2月22日 下午4:06:42
+   *
+   */
+  public HttpRequestDecoder() {
+
+  }
   /**
    * 
    * @param buffer
@@ -62,21 +71,7 @@ public class HttpRequestDecoder {
    */
   public static HttpRequest decode(ByteBuffer buffer, int limit, int position, int readableLength,
       ChannelContext channelContext, HttpConfig httpConfig) throws TioDecodeException {
-    // int initPosition = position;
-    // int count = 0;
-    // Step step = Step.firstline;
-    // StringBuilder currLine = new StringBuilder();
     RequestLine firstLine = null;
-    // StringBuilder headerSb = null;//new StringBuilder(512);
-
-    // boolean appendRequestHeaderString = httpConfig.isAppendRequestHeaderString();
-
-    // if (httpConfig != null) {
-    //
-    // }
-    // if (appendRequestHeaderString) {
-    // headerSb = new StringBuilder(512);
-    // }
 
     // request line start
     firstLine = parseRequestLine(buffer, channelContext);
@@ -87,11 +82,6 @@ public class HttpRequestDecoder {
     int contentLength = 0;
     byte[] bodyBytes = null;
     // request line end
-
-    // HttpRequestHandler httpRequestHandler = (HttpRequestHandler)channelContext.tioConfig.getAttribute(TioConfigKey.HTTP_REQ_HANDLER);
-    // if (httpRequestHandler != null) {
-    // httpRequest.setHttpConfig(httpRequestHandler.getHttpConfig(httpRequest));
-    // }
 
     // request header start
     boolean headerCompleted = parseHeaderLine(buffer, headers, 0, httpConfig);
@@ -642,9 +632,6 @@ public class HttpRequestDecoder {
    */
   public static RequestLine parseRequestLine(ByteBuffer buffer, ChannelContext channelContext)
       throws TioDecodeException {
-    // if (!buffer.hasArray()) {
-    // return parseRequestLine2(buffer, channelContext);
-    // }
 
     byte[] allbs = buffer.array();
 
@@ -821,9 +808,6 @@ public class HttpRequestDecoder {
           requestLine.setQueryString(queryStr);
           requestLine.setProtocol(protocol);
           requestLine.setVersion(version);
-
-          // requestLine.setLine(line);
-
           return requestLine;
         }
         continue;
@@ -847,24 +831,5 @@ public class HttpRequestDecoder {
     decodeParams(httpRequest.getParams(), bodyString, httpRequest.getCharset(), channelContext);
   }
 
-  // /**
-  // * 解析查询
-  // * @param httpRequest
-  // * @param requestLine
-  // * @param channelContext
-  // */
-  // private static void parseQueryString(HttpRequest httpRequest, RequestLine requestLine, ChannelContext channelContext) {
-  // String queryString = requestLine.getQueryString();
-  // decodeParams(httpRequest.getParams(), queryString, httpRequest.getCharset(), channelContext);
-  // }
-
-  /**
-   * @author tanyaowu
-   * 2017年2月22日 下午4:06:42
-   *
-   */
-  public HttpRequestDecoder() {
-
-  }
 
 }
