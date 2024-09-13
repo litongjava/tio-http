@@ -7,8 +7,13 @@ import com.litongjava.tio.http.server.model.HttpCors;
 
 public class CORSUtils {
 
+  public static void enableCORS(HttpResponse response) {
+    CORSUtils.enableCORS(response, new HttpCors());
+  }
+
   /**
    * enableCORS
+   * 
    * @param response
    * @param httpCors
    */

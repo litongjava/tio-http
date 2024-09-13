@@ -4,18 +4,18 @@ import com.litongjava.tio.http.common.HttpConfig;
 import com.litongjava.tio.http.common.HttpRequest;
 import com.litongjava.tio.http.common.HttpResponse;
 import com.litongjava.tio.http.common.RequestLine;
-import com.litongjava.tio.http.common.handler.HttpRequestHandler;
+import com.litongjava.tio.http.common.handler.ITioHttpRequestHandler;
 import com.litongjava.tio.http.server.intf.ThrowableHandler;
-import com.litongjava.tio.http.server.router.RequestRoute;
+import com.litongjava.tio.http.server.router.HttpRequestRouter;
 import com.litongjava.tio.http.server.util.Resps;
 
-public class SimpleHttpDispatcherHandler implements HttpRequestHandler {
+public class DefaultHttpRequestDispatcher implements ITioHttpRequestHandler {
 
-  private RequestRoute httpRoutes;
+  private HttpRequestRouter httpRoutes;
   private HttpConfig httpConfig;
   private ThrowableHandler throwableHandler;
 
-  public SimpleHttpDispatcherHandler(HttpConfig httpConfig, RequestRoute httpRoutes) {
+  public DefaultHttpRequestDispatcher(HttpConfig httpConfig, HttpRequestRouter httpRoutes) {
     this.httpRoutes = httpRoutes;
     this.httpConfig = httpConfig;
   }
@@ -24,10 +24,10 @@ public class SimpleHttpDispatcherHandler implements HttpRequestHandler {
   public HttpResponse handler(HttpRequest httpRequest) throws Exception {
     RequestLine requestLine = httpRequest.getRequestLine();
     String path = requestLine.getPath();
-    HttpRequestRouteHandler handler = httpRoutes.find(path);
+    IHttpRequestHandler handler = httpRoutes.find(path);
     if (handler == null) {
       return this.resp404(httpRequest, requestLine);
-      
+
     }
     HttpResponse httpResponse = null;
     try {
@@ -44,7 +44,7 @@ public class SimpleHttpDispatcherHandler implements HttpRequestHandler {
   public HttpResponse resp404(HttpRequest request, RequestLine requestLine) throws Exception {
     if (httpRoutes != null) {
       String page404 = httpConfig.getPage404();
-      HttpRequestRouteHandler handler = httpRoutes.find(page404);
+      IHttpRequestHandler handler = httpRoutes.find(page404);
       if (handler != null) {
         return handler.handle(request);
       }
@@ -62,7 +62,7 @@ public class SimpleHttpDispatcherHandler implements HttpRequestHandler {
 
     if (httpRoutes != null) {
       String page404 = httpConfig.getPage404();
-      HttpRequestRouteHandler handler = httpRoutes.find(page404);
+      IHttpRequestHandler handler = httpRoutes.find(page404);
       if (handler != null) {
         return handler.handle(request);
       }
@@ -73,12 +73,11 @@ public class SimpleHttpDispatcherHandler implements HttpRequestHandler {
 
   @Override
   public HttpConfig getHttpConfig(HttpRequest request) {
-    return null;
+    return request.getHttpConfig();
   }
 
   @Override
   public void clearStaticResCache() {
 
   }
-
 }

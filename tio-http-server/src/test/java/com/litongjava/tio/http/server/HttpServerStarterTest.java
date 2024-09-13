@@ -5,11 +5,12 @@ import java.io.IOException;
 import com.litongjava.tio.http.common.HttpConfig;
 import com.litongjava.tio.http.common.HttpRequest;
 import com.litongjava.tio.http.common.HttpResponse;
-import com.litongjava.tio.http.common.handler.HttpRequestHandler;
-import com.litongjava.tio.http.server.handler.SimpleHttpDispatcherHandler;
-import com.litongjava.tio.http.server.router.RequestRoute;
+import com.litongjava.tio.http.common.handler.ITioHttpRequestHandler;
+import com.litongjava.tio.http.server.handler.DefaultHttpRequestDispatcher;
 import com.litongjava.tio.http.server.router.DefaultHttpReqeustRoute;
+import com.litongjava.tio.http.server.router.HttpRequestRouter;
 import com.litongjava.tio.http.server.util.Resps;
+import com.litongjava.tio.utils.resp.RespVo;
 
 public class HttpServerStarterTest {
 
@@ -17,18 +18,23 @@ public class HttpServerStarterTest {
     // 手动添加路由
     HttpServerStarterTest controller = new HttpServerStarterTest();
 
-    RequestRoute simpleHttpRoutes = new DefaultHttpReqeustRoute();
+    HttpRequestRouter simpleHttpRoutes = new DefaultHttpReqeustRoute();
     simpleHttpRoutes.add("/", controller::index);
-    simpleHttpRoutes.add("/login", controller::login);
+    simpleHttpRoutes.add("/text", controller::text);
     simpleHttpRoutes.add("/exception", controller::exception);
+
+    simpleHttpRoutes.add("/json", (request) -> {
+      return new HttpResponse(request).setJson(RespVo.ok("ok"));
+    });
     //
     HttpConfig httpConfig;
-    HttpRequestHandler requestHandler;
+    ITioHttpRequestHandler requestHandler;
     HttpServerStarter httpServerStarter;
 
     // httpConfig
     httpConfig = new HttpConfig(80, null, null, null);
-    requestHandler = new SimpleHttpDispatcherHandler(httpConfig, simpleHttpRoutes);
+
+    requestHandler = new DefaultHttpRequestDispatcher(httpConfig, simpleHttpRoutes);
     httpServerStarter = new HttpServerStarter(httpConfig, requestHandler);
     httpServerStarter.start();
   }
@@ -38,7 +44,7 @@ public class HttpServerStarterTest {
 
   }
 
-  private HttpResponse login(HttpRequest request) {
+  private HttpResponse text(HttpRequest request) {
     return Resps.txt(request, "login");
   }
 

@@ -12,7 +12,7 @@ import com.litongjava.tio.http.common.HttpRequest;
 import com.litongjava.tio.http.common.HttpRequestDecoder;
 import com.litongjava.tio.http.common.HttpResponse;
 import com.litongjava.tio.http.common.HttpResponseEncoder;
-import com.litongjava.tio.http.common.handler.HttpRequestHandler;
+import com.litongjava.tio.http.common.handler.ITioHttpRequestHandler;
 import com.litongjava.tio.server.intf.ServerAioHandler;
 
 /**
@@ -23,13 +23,13 @@ import com.litongjava.tio.server.intf.ServerAioHandler;
 public class HttpServerAioHandler implements ServerAioHandler {
   public static final String REQUEST_KEY = "tio_request_key";
   protected HttpConfig httpConfig;
-  private HttpRequestHandler requestHandler;
+  private ITioHttpRequestHandler requestHandler;
 
   /**
    * @author tanyaowu 2016年11月18日 上午9:13:15
    *
    */
-  public HttpServerAioHandler(HttpConfig httpConfig, HttpRequestHandler requestHandler) {
+  public HttpServerAioHandler(HttpConfig httpConfig, ITioHttpRequestHandler requestHandler) {
     this.httpConfig = httpConfig;
     this.requestHandler = requestHandler;
   }

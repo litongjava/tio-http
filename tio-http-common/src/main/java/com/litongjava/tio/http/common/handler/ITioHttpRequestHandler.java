@@ -10,7 +10,7 @@ import com.litongjava.tio.http.common.RequestLine;
  * @author tanyaowu 
  * 2017年8月30日 上午9:22:50
  */
-public interface HttpRequestHandler {
+public interface ITioHttpRequestHandler {
   /**
    * 处理请求
    * @param packet

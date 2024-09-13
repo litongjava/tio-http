@@ -82,12 +82,7 @@ public class HttpResponseEncoder {
 
     HttpResponseStatus httpResponseStatus = httpResponse.getStatus();
 
-    // byte[] respLineStatusBytes = getBytes(Integer.toString(httpResponseStatus.getStatus()));
-    // byte[] respLineDescriptionBytes = getBytes(httpResponseStatus.getDescription());
-   // http1_1Bytes.length + httpResponseStatus.getHeaderBinary().length + 3; //一个空格+\r\n
     int respLineLength = httpResponseStatus.responseLineBinary.length;
-
-    // StringBuilder sb = new StringBuilder(512);
 
     Map<HeaderName, HeaderValue> headers = httpResponse.getHeaders();
     boolean isNotAddContentLength = httpResponse.isStream() || httpResponse.hasCountContentLength();
@@ -95,12 +90,6 @@ public class HttpResponseEncoder {
       httpResponse.addHeader(HeaderName.Content_Length, HeaderValue.from(Integer.toString(bodyLength)));
     }
     int headerLength = httpResponse.getHeaderByteCount();
-
-    // for (Entry<String, String> entry : headerSet) {
-    // headerLength += entry.getKey().length();
-    // headerLength += (entry.getValue().length() * 3);
-    // }
-    // headerLength += (headers.size() * 3); //冒号和\r\n
 
     if (httpResponse.getCookies() != null) {
       for (Cookie cookie : httpResponse.getCookies()) {

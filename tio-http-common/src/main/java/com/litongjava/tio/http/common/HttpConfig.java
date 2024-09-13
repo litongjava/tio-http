@@ -17,7 +17,7 @@ import java.util.TreeSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.litongjava.tio.http.common.handler.HttpRequestHandler;
+import com.litongjava.tio.http.common.handler.ITioHttpRequestHandler;
 import com.litongjava.tio.http.common.session.HttpSession;
 import com.litongjava.tio.http.common.session.id.ISessionIdGenerator;
 import com.litongjava.tio.http.common.session.limiter.SessionRateLimiter;
@@ -139,7 +139,7 @@ public class HttpConfig {
   private String page404 = "/404.html";
   private String page500 = "/500.html";
   private ISessionIdGenerator sessionIdGenerator;
-  private HttpRequestHandler httpRequestHandler;
+  private ITioHttpRequestHandler httpRequestHandler;
   /**
    * ip被拉黑时，服务器给的响应，如果是null，服务器会直接断开连接
    */
@@ -599,14 +599,14 @@ public class HttpConfig {
   /**
    * @return the httpRequestHandler
    */
-  public HttpRequestHandler getHttpRequestHandler() {
+  public ITioHttpRequestHandler getHttpRequestHandler() {
     return httpRequestHandler;
   }
 
   /**
    * @param httpRequestHandler the httpRequestHandler to set
    */
-  public void setHttpRequestHandler(HttpRequestHandler httpRequestHandler) {
+  public void setHttpRequestHandler(ITioHttpRequestHandler httpRequestHandler) {
     this.httpRequestHandler = httpRequestHandler;
   }
 

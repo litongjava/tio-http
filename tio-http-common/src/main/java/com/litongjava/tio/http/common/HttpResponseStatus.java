@@ -196,6 +196,11 @@ public enum HttpResponseStatus {
 
   public byte[] responseLineBinary;
 
+  HttpResponseStatus(int status, String description) {
+    String headerText = status + " " + description;
+    build("1.1", status, description, headerText);
+  }
+
   HttpResponseStatus(int status, String description, String headerText) {
     build("1.1", status, description, headerText);
   }
@@ -211,11 +216,13 @@ public enum HttpResponseStatus {
   public HttpResponseStatus changeVersion(String version) {
     return build(version, this.status, this.description, this.headerText);
   }
-  
+
   HttpResponseStatus build(String version, int status, String description) {
+    String headerText = status + " " + description;
     this.status = status;
     this.description = description;
-    this.headerBinary = this.headerText.getBytes();
+    this.headerText = headerText;
+    this.headerBinary = headerText.getBytes();
     this.responseLine = "HTTP/" + version + " " + headerText + SysConst.CRLF;
     this.responseLineBinary = responseLine.getBytes();
     return this;
@@ -233,7 +240,7 @@ public enum HttpResponseStatus {
     this.status = status;
     this.description = description;
     this.headerText = headerText;
-    this.headerBinary = this.headerText.getBytes();
+    this.headerBinary = headerText.getBytes();
     this.responseLine = "HTTP/" + version + " " + headerText + SysConst.CRLF;
     this.responseLineBinary = responseLine.getBytes();
     return this;
@@ -288,7 +295,5 @@ public enum HttpResponseStatus {
   public void setResponseLineBinary(byte[] responseLineBinary) {
     this.responseLineBinary = responseLineBinary;
   }
-
-
 
 }
