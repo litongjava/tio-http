@@ -1,6 +1,6 @@
 package com.litongjava.tio.http.server.router;
 
-import com.litongjava.tio.http.server.handler.IHttpRequestHandler;
+import com.litongjava.tio.http.server.handler.HttpRequestHandler;
 
 public interface HttpRequestRouter {
 
@@ -9,12 +9,12 @@ public interface HttpRequestRouter {
    * @param path
    * @param handler
    */
-  public void add(String path, IHttpRequestHandler handler);
+  public void add(String path, HttpRequestHandler handler);
 
   /**
    * 查找路由
    * @param path
    * @return
    */
-  public IHttpRequestHandler find(String path);
+  public HttpRequestHandler find(String path);
 }

@@ -24,7 +24,7 @@ public class DefaultHttpRequestDispatcher implements ITioHttpRequestHandler {
   public HttpResponse handler(HttpRequest httpRequest) throws Exception {
     RequestLine requestLine = httpRequest.getRequestLine();
     String path = requestLine.getPath();
-    IHttpRequestHandler handler = httpRoutes.find(path);
+    HttpRequestHandler handler = httpRoutes.find(path);
     if (handler == null) {
       return this.resp404(httpRequest, requestLine);
 
@@ -44,9 +44,11 @@ public class DefaultHttpRequestDispatcher implements ITioHttpRequestHandler {
   public HttpResponse resp404(HttpRequest request, RequestLine requestLine) throws Exception {
     if (httpRoutes != null) {
       String page404 = httpConfig.getPage404();
-      IHttpRequestHandler handler = httpRoutes.find(page404);
-      if (handler != null) {
-        return handler.handle(request);
+      if (page404 != null) {
+        HttpRequestHandler handler = httpRoutes.find(page404);
+        if (handler != null) {
+          return handler.handle(request);
+        }
       }
     }
 
@@ -62,7 +64,7 @@ public class DefaultHttpRequestDispatcher implements ITioHttpRequestHandler {
 
     if (httpRoutes != null) {
       String page404 = httpConfig.getPage404();
-      IHttpRequestHandler handler = httpRoutes.find(page404);
+      HttpRequestHandler handler = httpRoutes.find(page404);
       if (handler != null) {
         return handler.handle(request);
       }

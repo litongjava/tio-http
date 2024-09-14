@@ -4,29 +4,28 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.litongjava.tio.http.server.handler.IHttpRequestHandler;
+import com.litongjava.tio.http.server.handler.HttpRequestHandler;
 
-public class DefaultHttpReqeustRoute implements HttpRequestRouter {
-  Map<String, IHttpRequestHandler> requestMapping = new ConcurrentHashMap<>();
+public class DefaultHttpReqeustRouter implements HttpRequestRouter {
+  Map<String, HttpRequestHandler> requestMapping = new ConcurrentHashMap<>();
 
-  public void add(String path, IHttpRequestHandler handler) {
+  public void add(String path, HttpRequestHandler handler) {
     requestMapping.put(path, handler);
   }
 
   /**
-   * find route
-   * /* 表示匹配任何以特定路径开始的路径，/** 表示匹配该路径及其下的任何子路径
+   * find route /* 表示匹配任何以特定路径开始的路径，/** 表示匹配该路径及其下的任何子路径
    */
-  public IHttpRequestHandler find(String path) {
-    IHttpRequestHandler httpRequestRouteHandler = requestMapping.get(path);
+  public HttpRequestHandler find(String path) {
+    HttpRequestHandler httpRequestRouteHandler = requestMapping.get(path);
     if (httpRequestRouteHandler != null) {
       return httpRequestRouteHandler;
     }
 
     // Check for wildcard matches
-    Set<Map.Entry<String, IHttpRequestHandler>> entrySet = requestMapping.entrySet();
+    Set<Map.Entry<String, HttpRequestHandler>> entrySet = requestMapping.entrySet();
 
-    for (Map.Entry<String, IHttpRequestHandler> entry : entrySet) {
+    for (Map.Entry<String, HttpRequestHandler> entry : entrySet) {
       String key = entry.getKey();
 
       if (key.endsWith("/*")) {

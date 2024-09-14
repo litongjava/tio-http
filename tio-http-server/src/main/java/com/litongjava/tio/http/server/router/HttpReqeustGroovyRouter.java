@@ -1,6 +1,6 @@
 package com.litongjava.tio.http.server.router;
 
-import com.litongjava.tio.http.server.handler.IHttpRequestHandler;
+import com.litongjava.tio.http.server.handler.HttpRequestHandler;
 
 /**
  * 从数据库中加载路由
@@ -14,12 +14,12 @@ public interface HttpReqeustGroovyRouter {
    * @param path
    * @param handler
    */
-  public void add(String path, IHttpRequestHandler handler);
+  public void add(String path, HttpRequestHandler handler);
 
   /**
    * 查找路由
    * @param path
    * @return
    */
-  public IHttpRequestHandler find(String path);
+  public HttpRequestHandler find(String path);
 }
