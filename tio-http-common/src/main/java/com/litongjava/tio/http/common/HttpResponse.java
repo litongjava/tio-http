@@ -96,9 +96,7 @@ public class HttpResponse extends HttpPacket {
         break;
 
       default:
-//        if (StrUtil.equals(connection, HttpConst.RequestHeaderValue.Connection.close)) {
-//        } else {
-//        }
+        this.status = HttpResponseStatus.C200;
         break;
       }
     }

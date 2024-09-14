@@ -27,8 +27,7 @@ import com.litongjava.tio.utils.hutool.FileUtil;
 import com.litongjava.tio.utils.hutool.StrUtil;
 
 /**
- * @author tanyaowu
- * 2017年8月15日 下午1:21:14
+ * @author tanyaowu 2017年8月15日 下午1:21:14
  */
 public class HttpConfig {
   private static Logger log = LoggerFactory.getLogger(HttpConfig.class);
@@ -69,7 +68,7 @@ public class HttpConfig {
    */
   private int maxLengthOfMultiBody = MAX_LENGTH_OF_MULTI_BODY;
   /**
-   *POST体的最大长度默认值（2M）
+   * POST体的最大长度默认值（2M）
    */
   public static final int MAX_LENGTH_OF_POST_BODY = 1024 * 1024 * 2;
   /**
@@ -87,10 +86,7 @@ public class HttpConfig {
    */
   private boolean useSession = true;
   /**
-   * 是否兼容1.0
-   * true：兼容
-   * false：不兼容
-   * 默认兼容
+   * 是否兼容1.0 true：兼容 false：不兼容 默认兼容
    */
   public boolean compatible1_0 = true;
   /**
@@ -136,8 +132,10 @@ public class HttpConfig {
    * 静态资源缓存时间，如果小于等于0则不缓存，单位：秒
    */
   private int maxLiveTimeOfStaticRes = MAX_LIVETIME_OF_STATICRES;
-  private String page404 = "/404.html";
-  private String page500 = "/500.html";
+//  private String page404 = "/404.html";
+  private String page404 = null;
+//  private String page500 = "/500.html";
+  private String page500 = null;
   private ISessionIdGenerator sessionIdGenerator;
   private ITioHttpRequestHandler httpRequestHandler;
   /**
@@ -149,9 +147,7 @@ public class HttpConfig {
    */
   private boolean isProxied = false;
   /**
-   * 示例：
-   * 1、classpath中：classpath:page
-   * 2、绝对路径：/page
+   * 示例： 1、classpath中：classpath:page 2、绝对路径：/page
    */
   private String pageRoot = null; // FileUtil.getAbsolutePath("page");//"/page";
   private boolean pageInClasspath = false;
@@ -281,7 +277,7 @@ public class HttpConfig {
   /**
    * 
    * @param request
-   * @param path 形如 /xx/aa.html
+   * @param path    形如 /xx/aa.html
    * @return
    * @throws Exception
    * @author tanyaowu
@@ -385,14 +381,12 @@ public class HttpConfig {
   }
 
   /**
-   * 静态文件路径，必须先设置好pageRoot后再用
-   * key:  文件名后缀
-   * path: 访问路径  如 /user/set.html
+   * 静态文件路径，必须先设置好pageRoot后再用 key: 文件名后缀 path: 访问路径 如 /user/set.html
    */
   private Map<String, Set<String>> staticPathsMap = null;
 
   /**
-   * path: 访问路径  如 /user/set.html
+   * path: 访问路径 如 /user/set.html
    */
   private Set<String> staticPaths = null;
 
@@ -484,6 +478,7 @@ public class HttpConfig {
 
   /**
    * 获取文件的URL访问路径
+   * 
    * @param file
    * @return
    * @throws IOException
@@ -506,7 +501,7 @@ public class HttpConfig {
    * 
    * @param pageRoot 如果是以"classpath:"开头，则从classpath中查找，否则视为普通的文件路径
    * @author tanyaowu
-   * @throws IOException 
+   * @throws IOException
    */
   public void setPageRoot(String pageRoot) throws IOException {
     staticPathsMap = null;
@@ -540,9 +535,9 @@ public class HttpConfig {
 
   /**
    * 
-   * @param domain 形如www.t-io.org的域名，也可以是形如.t-io.org这样的通配域名
+   * @param domain   形如www.t-io.org的域名，也可以是形如.t-io.org这样的通配域名
    * @param pageRoot 如果是以"classpath:"开头，则从classpath中查找，否则视为普通的文件路径
-   * @throws IOException 
+   * @throws IOException
    */
   public void addDomainPage(String domain, String pageRoot) throws IOException {
     // File pageRootFile = fromPath(pageRoot);
@@ -650,6 +645,7 @@ public class HttpConfig {
 
   /**
    * 根据sessionId获取HttpSession对象
+   * 
    * @param sessionId
    * @return
    */

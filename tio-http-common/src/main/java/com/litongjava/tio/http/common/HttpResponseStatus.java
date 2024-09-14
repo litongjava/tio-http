@@ -229,8 +229,10 @@ public enum HttpResponseStatus {
   }
 
   HttpResponseStatus build(String version, int status) {
+    String headerText = status + " " + description;
     this.status = status;
-    this.headerBinary = this.headerText.getBytes();
+    this.headerText = headerText;
+    this.headerBinary = headerText.getBytes();
     this.responseLine = "HTTP/" + version + " " + headerText + SysConst.CRLF;
     this.responseLineBinary = responseLine.getBytes();
     return this;
@@ -247,10 +249,11 @@ public enum HttpResponseStatus {
   }
 
   public HttpResponseStatus build(int status, String description) {
+    String headerText = status + " " + description;
     this.status = status;
     this.description = description;
-    this.headerText = status + " " + description + " ";
-    this.headerBinary = this.headerText.getBytes();
+    this.headerText = headerText;
+    this.headerBinary = headerText.getBytes();
     this.responseLine = "HTTP/1.1 " + headerText + SysConst.CRLF;
     this.responseLineBinary = responseLine.getBytes();
     return this;
