@@ -63,11 +63,14 @@ public class DefaultHttpRequestDispatcher implements ITioHttpRequestHandler {
     }
 
     if (httpRoutes != null) {
-      String page404 = httpConfig.getPage404();
-      HttpRequestHandler handler = httpRoutes.find(page404);
-      if (handler != null) {
-        return handler.handle(request);
+      String page500 = httpConfig.getPage500();
+      if (page500 != null) {
+        HttpRequestHandler handler = httpRoutes.find(page500);
+        if (handler != null) {
+          return handler.handle(request);
+        }
       }
+
     }
 
     return Resps.resp500(request, requestLine, httpConfig, throwable);

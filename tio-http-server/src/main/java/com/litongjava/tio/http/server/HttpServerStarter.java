@@ -12,7 +12,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.concurrent.ThreadPoolExecutor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +25,6 @@ import com.litongjava.tio.http.common.handler.ITioHttpRequestHandler;
 import com.litongjava.tio.http.common.session.id.impl.UUIDSessionIdGenerator;
 import com.litongjava.tio.server.ServerTioConfig;
 import com.litongjava.tio.server.TioServer;
-import com.litongjava.tio.utils.Threads;
 import com.litongjava.tio.utils.cache.AbsCache;
 import com.litongjava.tio.utils.cache.CacheFactory;
 import com.litongjava.tio.utils.cache.mapcache.ConcurrentMapCacheFactory;
@@ -34,7 +32,6 @@ import com.litongjava.tio.utils.http.HttpUtils;
 import com.litongjava.tio.utils.hutool.FileUtil;
 import com.litongjava.tio.utils.hutool.StrUtil;
 import com.litongjava.tio.utils.json.Json;
-import com.litongjava.tio.utils.thread.pool.SynThreadPoolExecutor;
 
 import okhttp3.Response;
 
@@ -62,18 +59,6 @@ public class HttpServerStarter {
    * @author tanyaowu
    */
   public HttpServerStarter(HttpConfig httpConfig, ITioHttpRequestHandler requestHandler) {
-    this(httpConfig, requestHandler, null, null);
-  }
-
-  /**
-   * 
-   * @param httpConfig
-   * @param requestHandler
-   * @param tioExecutor
-   * @param groupExecutor
-   * @author tanyaowu
-   */
-  public HttpServerStarter(HttpConfig httpConfig, ITioHttpRequestHandler requestHandler, SynThreadPoolExecutor tioExecutor, ThreadPoolExecutor groupExecutor) {
     // preAccessFileType.add("css");
     // preAccessFileType.add("js");
     // preAccessFileType.add("jsp");
@@ -82,15 +67,7 @@ public class HttpServerStarter {
     // preAccessFileType.add("xml");
     // preAccessFileType.add("htm");
 
-    if (tioExecutor == null) {
-      tioExecutor = Threads.getTioExecutor();
-    }
-
-    if (groupExecutor == null) {
-      groupExecutor = Threads.getGroupExecutor();
-    }
-
-    init(httpConfig, requestHandler, tioExecutor, groupExecutor);
+    init(httpConfig, requestHandler);
   }
 
   /**
@@ -125,7 +102,7 @@ public class HttpServerStarter {
     return serverTioConfig;
   }
 
-  private void init(HttpConfig httpConfig, ITioHttpRequestHandler requestHandler, SynThreadPoolExecutor tioExecutor, ThreadPoolExecutor groupExecutor) {
+  private void init(HttpConfig httpConfig, ITioHttpRequestHandler requestHandler) {
     String system_timer_period = System.getProperty("tio.system.timer.period");
     if (StrUtil.isBlank(system_timer_period)) {
       System.setProperty("tio.system.timer.period", "50");
@@ -143,8 +120,6 @@ public class HttpServerStarter {
     serverTioConfig = new ServerTioConfig(name);
     serverTioConfig.setServerAioListener(httpServerAioListener);
     serverTioConfig.setServerAioHandler(httpServerAioHandler);
-    serverTioConfig.setTioExecutor(tioExecutor);
-    serverTioConfig.setGroupExecutor(groupExecutor);
     serverTioConfig.setHeartbeatTimeout(1000 * 20);
     serverTioConfig.setShortConnection(true);
     serverTioConfig.setReadBufferSize(TcpConst.MAX_DATA_LENGTH);
@@ -189,7 +164,6 @@ public class HttpServerStarter {
       }
     }
 
-    
     tioServer.start(this.httpConfig.getBindIp(), this.httpConfig.getBindPort());
 
     if (preAccess) {
