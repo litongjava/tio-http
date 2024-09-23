@@ -9,11 +9,11 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.litongjava.model.sys.SysConst;
 import com.litongjava.tio.core.ChannelContext;
 import com.litongjava.tio.core.TioConfig;
 import com.litongjava.tio.http.common.utils.HttpDateTimer;
 import com.litongjava.tio.http.common.utils.HttpGzipUtils;
-import com.litongjava.tio.utils.SysConst;
 import com.litongjava.tio.utils.environment.EnvUtils;
 import com.litongjava.tio.utils.hutool.StrUtil;
 
@@ -55,7 +55,7 @@ public class HttpResponseEncoder {
           throw new RuntimeException(e);
         }
         if (body == null) {
-          body = com.litongjava.tio.utils.SysConst.NULL;
+          body = SysConst.NULL;
         }
         byte[] bodyBs = new byte[jsonpBytes.length + 1 + body.length + 1];
         System.arraycopy(jsonpBytes, 0, bodyBs, 0, jsonpBytes.length);

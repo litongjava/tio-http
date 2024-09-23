@@ -2,6 +2,7 @@ package com.litongjava.tio.http.server;
 
 import java.io.IOException;
 
+import com.litongjava.model.body.RespBodyVo;
 import com.litongjava.tio.http.common.HttpConfig;
 import com.litongjava.tio.http.common.HttpRequest;
 import com.litongjava.tio.http.common.HttpResponse;
@@ -10,7 +11,6 @@ import com.litongjava.tio.http.server.handler.DefaultHttpRequestDispatcher;
 import com.litongjava.tio.http.server.router.DefaultHttpReqeustRouter;
 import com.litongjava.tio.http.server.router.HttpRequestRouter;
 import com.litongjava.tio.http.server.util.Resps;
-import com.litongjava.tio.utils.resp.RespVo;
 
 public class HttpServerStarterTest {
 
@@ -24,7 +24,7 @@ public class HttpServerStarterTest {
     simpleHttpRoutes.add("/exception", controller::exception);
 
     simpleHttpRoutes.add("/json", (request) -> {
-      return new HttpResponse(request).setJson(RespVo.ok("ok"));
+      return new HttpResponse(request).setJson(RespBodyVo.ok("ok"));
     });
     //
     HttpConfig httpConfig;

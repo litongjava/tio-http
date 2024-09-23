@@ -1,6 +1,6 @@
 package com.litongjava.tio.http.server.model;
 
-import com.litongjava.tio.http.server.annotation.EnableCORS;
+import com.litongjava.annotation.EnableCORS;
 
 public class HttpCors {
   private String allowOrigin = "*";

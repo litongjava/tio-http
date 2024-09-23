@@ -12,12 +12,12 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.litongjava.model.sys.SysConst;
 import com.litongjava.tio.core.ChannelContext;
 import com.litongjava.tio.core.Node;
 import com.litongjava.tio.core.Tio;
 import com.litongjava.tio.http.common.HttpConst.RequestBodyFormat;
 import com.litongjava.tio.http.common.session.HttpSession;
-import com.litongjava.tio.utils.SysConst;
 import com.litongjava.tio.utils.SystemTimer;
 import com.litongjava.tio.utils.hutool.StrUtil;
 
@@ -723,8 +723,7 @@ public class HttpRequest extends HttpPacket {
 
   public StringBuffer getRequestURL() {
     StringBuffer stringBuffer = new StringBuffer();
-    stringBuffer.append(requestLine.getProtocol().toLowerCase()).append("://").append(host)
-        .append(requestLine.getPath());
+    stringBuffer.append(requestLine.getProtocol().toLowerCase()).append("://").append(host).append(requestLine.getPath());
     return stringBuffer;
   }
 
@@ -732,8 +731,8 @@ public class HttpRequest extends HttpPacket {
    * eg:GET
    * @return
    */
-  public String getMethod() {
-    return requestLine.getMethod().toString();
+  public HttpMethod getMethod() {
+    return requestLine.getMethod();
   }
 
   public RequestDispatcher getRequestDispatcher(String path) {

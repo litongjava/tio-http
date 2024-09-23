@@ -9,8 +9,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import com.litongjava.model.sys.SysConst;
 import com.litongjava.tio.http.common.utils.HttpGzipUtils;
-import com.litongjava.tio.utils.SysConst;
 import com.litongjava.tio.utils.hutool.ClassUtil;
 import com.litongjava.tio.utils.hutool.StrUtil;
 import com.litongjava.tio.utils.json.Json;
@@ -308,11 +308,6 @@ public class HttpResponse extends HttpPacket {
     this.status = custom;
   }
 
-  public void setStatus(int status) {
-    HttpResponseStatus custom = HttpResponseStatus.CUSTOM.build(version, status);
-    this.status = custom;
-  }
-
   public boolean hasGzipped() {
     return hasGzipped;
   }
@@ -493,5 +488,124 @@ public class HttpResponse extends HttpPacket {
 
   public boolean hasCountContentLength() {
     return hasCountContentLength;
+  }
+
+  public void setStatus(int code) {
+    switch (code) {
+    case 100:
+      this.status = HttpResponseStatus.C100;
+      break;
+    case 101:
+      this.status = HttpResponseStatus.C101;
+      break;
+    case 200:
+      this.status = HttpResponseStatus.C200;
+      break;
+    case 201:
+      this.status = HttpResponseStatus.C201;
+      break;
+    case 202:
+      this.status = HttpResponseStatus.C202;
+      break;
+    case 203:
+      this.status = HttpResponseStatus.C203;
+      break;
+    case 204:
+      this.status = HttpResponseStatus.C204;
+      break;
+    case 205:
+      this.status = HttpResponseStatus.C205;
+      break;
+    case 206:
+      this.status = HttpResponseStatus.C206;
+      break;
+    case 300:
+      this.status = HttpResponseStatus.C300;
+      break;
+    case 301:
+      this.status = HttpResponseStatus.C301;
+      break;
+    case 302:
+      this.status = HttpResponseStatus.C302;
+      break;
+    case 303:
+      this.status = HttpResponseStatus.C303;
+      break;
+    case 304:
+      this.status = HttpResponseStatus.C304;
+      break;
+    case 305:
+      this.status = HttpResponseStatus.C305;
+      break;
+    case 307:
+      this.status = HttpResponseStatus.C307;
+      break;
+    case 400:
+      this.status = HttpResponseStatus.C400;
+      break;
+    case 401:
+      this.status = HttpResponseStatus.C401;
+      break;
+    case 403:
+      this.status = HttpResponseStatus.C403;
+      break;
+    case 404:
+      this.status = HttpResponseStatus.C404;
+      break;
+    case 405:
+      this.status = HttpResponseStatus.C405;
+      break;
+    case 406:
+      this.status = HttpResponseStatus.C406;
+      break;
+    case 407:
+      this.status = HttpResponseStatus.C407;
+      break;
+    case 408:
+      this.status = HttpResponseStatus.C408;
+      break;
+    case 409:
+      this.status = HttpResponseStatus.C409;
+      break;
+    case 410:
+      this.status = HttpResponseStatus.C410;
+      break;
+    case 411:
+      this.status = HttpResponseStatus.C411;
+      break;
+    case 412:
+      this.status = HttpResponseStatus.C412;
+      break;
+    case 413:
+      this.status = HttpResponseStatus.C413;
+      break;
+    case 414:
+      this.status = HttpResponseStatus.C414;
+      break;
+    case 416:
+      this.status = HttpResponseStatus.C416;
+      break;
+    case 500:
+      this.status = HttpResponseStatus.C500;
+      break;
+    case 501:
+      this.status = HttpResponseStatus.C501;
+      break;
+    case 502:
+      this.status = HttpResponseStatus.C502;
+      break;
+    case 503:
+      this.status = HttpResponseStatus.C503;
+      break;
+    case 504:
+      this.status = HttpResponseStatus.C504;
+      break;
+    case 505:
+      this.status = HttpResponseStatus.C505;
+      break;
+    default:
+      this.status = HttpResponseStatus.CUSTOM.build(version, code);
+      break;
+    }
   }
 }
