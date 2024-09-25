@@ -518,36 +518,11 @@ public class HttpConfig {
 
   /**
    * 
-   * @param path 如果是以"classpath:"开头，则从classpath中查找，否则视为普通的文件路径
-   * @return
-   */
-  // public static File fromPath(String path) {
-  // if (path == null) {
-  // return null;
-  // }
-  //
-  // if (StrUtil.startWithIgnoreCase(path, "classpath:")) {
-  // return new File(ResourceUtil.getAbsolutePath(path));
-  // } else {
-  // return new File(path);
-  // }
-  // }
-
-  /**
-   * 
    * @param domain   形如www.t-io.org的域名，也可以是形如.t-io.org这样的通配域名
    * @param pageRoot 如果是以"classpath:"开头，则从classpath中查找，否则视为普通的文件路径
    * @throws IOException
    */
   public void addDomainPage(String domain, String pageRoot) throws IOException {
-    // File pageRootFile = fromPath(pageRoot);
-    // if (!pageRootFile.exists()) {
-    // throw new IOException("文件【" + pageRoot + "】不存在");
-    // }
-    //
-    // if (!pageRootFile.isDirectory()) {
-    // throw new IOException("文件【" + pageRoot + "】不是目录");
-    // }
 
     if (domainPageMap == null) {
       synchronized (this) {
