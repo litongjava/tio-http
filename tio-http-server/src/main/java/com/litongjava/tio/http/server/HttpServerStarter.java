@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import com.litongjava.tio.core.TcpConst;
 import com.litongjava.tio.http.common.HttpConfig;
-import com.litongjava.tio.http.common.HttpUuid;
+import com.litongjava.tio.http.common.HttpId;
 import com.litongjava.tio.http.common.RequestHeaderKey;
 import com.litongjava.tio.http.common.TioConfigKey;
 import com.litongjava.tio.http.common.handler.ITioHttpRequestHandler;
@@ -130,7 +130,7 @@ public class HttpServerStarter {
     serverTioConfig.setDefaultIpRemovalListenerWrapper();
     tioServer = new TioServer(serverTioConfig);
 
-    HttpUuid imTioUuid = new HttpUuid();
+    HttpId imTioUuid = new HttpId();
     serverTioConfig.setTioUuid(imTioUuid);
   }
 

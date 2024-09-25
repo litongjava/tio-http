@@ -23,7 +23,7 @@ public class HttpServerStarterTest {
     simpleHttpRoutes.add("/text", controller::text);
     simpleHttpRoutes.add("/exception", controller::exception);
 
-    simpleHttpRoutes.add("/json", (request) -> {
+    simpleHttpRoutes.add("/ok", (request) -> {
       return new HttpResponse(request).setJson(RespBodyVo.ok("ok"));
     });
     //

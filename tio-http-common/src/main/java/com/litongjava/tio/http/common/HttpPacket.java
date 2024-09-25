@@ -6,8 +6,8 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.litongjava.aio.Packet;
 import com.litongjava.model.sys.SysConst;
-import com.litongjava.tio.core.intf.Packet;
 
 /**
  *

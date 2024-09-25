@@ -114,7 +114,7 @@ public class HttpConfig {
   /**
    * 如果访问路径是以"/"结束，则实际访问路径会自动加上welcomeFile，从而变成形如"/index.html"的路径
    */
-  private String welcomeFile = null; // "index.html";
+  private String welcomeFile = null;
   /**
    * 允许访问的域名，如果不限制，则为null
    */
@@ -132,9 +132,9 @@ public class HttpConfig {
    * 静态资源缓存时间，如果小于等于0则不缓存，单位：秒
    */
   private int maxLiveTimeOfStaticRes = MAX_LIVETIME_OF_STATICRES;
-//  private String page404 = "/404.html";
+  //  private String page404 = "/404.html";
   private String page404 = null;
-//  private String page500 = "/500.html";
+  //  private String page500 = "/500.html";
   private String page500 = null;
   private ISessionIdGenerator sessionIdGenerator;
   private ITioHttpRequestHandler httpRequestHandler;
@@ -162,7 +162,7 @@ public class HttpConfig {
    * value: 域名对应的页面根目录<br>
    */
   private volatile Map<String, String> domainPageMap = null; // new HashMap<>();
-  public boolean checkHost = true;
+  public boolean checkHost = false;
   private String name = null;
   /**
    * jsonp时，回调参数名
@@ -503,10 +503,10 @@ public class HttpConfig {
    * @author tanyaowu
    * @throws IOException
    */
-  public void setPageRoot(String pageRoot) throws IOException {
+  public void setPageRoot(String pageRoot) {
     staticPathsMap = null;
     if (StrUtil.startWith(pageRoot, "classpath:")) {
-      this.pageRoot = pageRoot.substring("classpath:".length());// .replaceFirst("classpath:", "classpath:/");
+      this.pageRoot = pageRoot.substring("classpath:".length());
       if (this.pageRoot.startsWith("/")) {
         this.pageRoot = this.pageRoot.substring(1);
       }
