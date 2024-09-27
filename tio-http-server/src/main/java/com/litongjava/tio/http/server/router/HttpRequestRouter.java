@@ -1,5 +1,7 @@
 package com.litongjava.tio.http.server.router;
 
+import java.util.Map;
+
 import com.litongjava.tio.http.server.handler.HttpRequestHandler;
 
 public interface HttpRequestRouter {
@@ -17,4 +19,6 @@ public interface HttpRequestRouter {
    * @return
    */
   public HttpRequestHandler find(String path);
+
+  public Map<String, HttpRequestHandler> all();
 }
