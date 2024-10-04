@@ -3,6 +3,7 @@ package com.litongjava.tio.http.common;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -10,6 +11,7 @@ import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.litongjava.constatns.ServerConfigKeys;
 import com.litongjava.model.sys.SysConst;
 import com.litongjava.tio.core.ChannelContext;
 import com.litongjava.tio.core.Node;
@@ -48,6 +50,7 @@ public class HttpRequestDecoder {
    */
   public static final int MAX_LENGTH_OF_REQUESTLINE = 2048;
 
+  public static boolean PRINT_PACKET = EnvUtils.getBoolean(ServerConfigKeys.SERVER_HTTP_REQUEST_PRINT_PACKET, false);
 
   /**
    * @author tanyaowu
@@ -57,6 +60,7 @@ public class HttpRequestDecoder {
   public HttpRequestDecoder() {
 
   }
+
   /**
    * 
    * @param buffer
@@ -69,8 +73,14 @@ public class HttpRequestDecoder {
    * @throws TioDecodeException
    * @author tanyaowu
    */
-  public static HttpRequest decode(ByteBuffer buffer, int limit, int position, int readableLength,
-      ChannelContext channelContext, HttpConfig httpConfig) throws TioDecodeException {
+  public static HttpRequest decode(ByteBuffer buffer, int limit, int position, int readableLength, ChannelContext channelContext, HttpConfig httpConfig) throws TioDecodeException {
+
+    if (PRINT_PACKET) {
+      buffer.mark();
+      String request = StandardCharsets.UTF_8.decode(buffer).toString();
+      buffer.reset();
+      log.info("request:{}", request);
+    }
     RequestLine firstLine = null;
 
     // request line start
@@ -95,8 +105,7 @@ public class HttpRequestDecoder {
     } else {
       contentLength = Integer.parseInt(contentLengthStr);
       if (contentLength > httpConfig.getMaxLengthOfPostBody()) {
-        throw new TioDecodeException("post body length is too big[" + contentLength + "], max length is "
-            + httpConfig.getMaxLengthOfPostBody() + " byte");
+        throw new TioDecodeException("post body length is too big[" + contentLength + "], max length is " + httpConfig.getMaxLengthOfPostBody() + " byte");
       }
     }
 
@@ -168,27 +177,6 @@ public class HttpRequestDecoder {
       // decodeParams(httpRequest.getParams(), firstLine.getQuery(), httpRequest.getCharset(), channelContext);
       // }
     }
-    // ----------------------------------------------- request body end
-
-    // 解析User_Agent(浏览器操作系统等信息)
-    // String User_Agent = headers.get(RequestHeaderKey.User_Agent);
-    // if (StrUtil.isNotBlank(User_Agent)) {
-    // // long start = System.currentTimeMillis();
-    // UserAgentAnalyzer userAgentAnalyzer = UserAgentAnalyzerFactory.getUserAgentAnalyzer();
-    // UserAgent userAgent = userAgentAnalyzer.parse(User_Agent);
-    // httpRequest.setUserAgent(userAgent);
-    // }
-
-    // StringBuilder logstr = new StringBuilder();
-    // logstr.append("\r\n------------------ websocket header start ------------------------\r\n");
-    // logstr.append(firstLine.getInitStr()).append(SysConst.CRLF);
-    // Set<Entry<String, String>> entrySet = headers.entrySet();
-    // for (Entry<String, String> entry : entrySet) {
-    // logstr.append(StrUtil.leftPad(entry.getKey(), 30)).append(" : ").append(entry.getValue()).append(SysConst.CRLF);
-    // }
-    // logstr.append("------------------ websocket header start ------------------------\r\n");
-    // log.error(logstr.toString());
-
     return httpRequest;
   }
 
@@ -201,8 +189,7 @@ public class HttpRequestDecoder {
    * @author tanyaowu
    * @throws TioDecodeException 
    */
-  public static void decodeParams(Map<String, Object[]> params, String queryString, String charset,
-      ChannelContext channelContext) throws TioDecodeException {
+  public static void decodeParams(Map<String, Object[]> params, String queryString, String charset, ChannelContext channelContext) throws TioDecodeException {
     if (StrUtil.isBlank(queryString)) {
       return;
     }
@@ -214,7 +201,7 @@ public class HttpRequestDecoder {
       if (keyvalueArr.length == 2) {
         value1 = keyvalueArr[1];
       } else if (keyvalueArr.length > 2) {
-        throw new TioDecodeException(queryString+" contain multi" + SysConst.STR_EQ);
+        throw new TioDecodeException(queryString + " contain multi" + SysConst.STR_EQ);
       }
 
       String key = keyvalueArr[0];
@@ -253,50 +240,11 @@ public class HttpRequestDecoder {
    * @throws TioDecodeException
    * @author tanyaowu
    */
-  private static void parseBody(HttpRequest httpRequest, RequestLine firstLine, byte[] bodyBytes,
-      ChannelContext channelContext, HttpConfig httpConfig) throws TioDecodeException {
+  private static void parseBody(HttpRequest httpRequest, RequestLine firstLine, byte[] bodyBytes, ChannelContext channelContext, HttpConfig httpConfig) throws TioDecodeException {
     parseBodyFormat(httpRequest, httpRequest.getHeaders());
     RequestBodyFormat bodyFormat = httpRequest.getBodyFormat();
 
     httpRequest.setBody(bodyBytes);
-
-    // if (bodyFormat == RequestBodyFormat.MULTIPART) {
-    // if (log.isInfoEnabled()) {
-    // String bodyString = null;
-    // if (bodyBytes != null && bodyBytes.length > 0) {
-    // if (log.isDebugEnabled()) {
-    // try {
-    // bodyString = new String(bodyBytes, httpRequest.getCharset());
-    // log.debug("{} multipart body value\r\n{}", channelContext, bodyString);
-    // } catch (UnsupportedEncodingException e) {
-    // log.error(channelContext.toString(), e);
-    // }
-    // }
-    // }
-    // }
-    //
-    // //【multipart/form-data; boundary=----WebKitFormBoundaryuwYcfA2AIgxqIxA0】
-    // String initboundary = HttpParseUtils.getPerprotyEqualValue(httpRequest.getHeaders(), RequestHeaderKey.Content_Type, "boundary");
-    // log.debug("{}, initboundary:{}", channelContext, initboundary);
-    // HttpMultiBodyDecoder.decode(httpRequest, firstLine, bodyBytes, initboundary, channelContext, httpConfig);
-    // } else {
-    // String bodyString = null;
-    // if (bodyBytes != null && bodyBytes.length > 0) {
-    // try {
-    // bodyString = new String(bodyBytes, httpRequest.getCharset());
-    // httpRequest.setBodyString(bodyString);
-    // if (log.isInfoEnabled()) {
-    // log.info("{} body value\r\n{}", channelContext, bodyString);
-    // }
-    // } catch (UnsupportedEncodingException e) {
-    // log.error(channelContext.toString(), e);
-    // }
-    // }
-    //
-    // if (bodyFormat == RequestBodyFormat.URLENCODED) {
-    // parseUrlencoded(httpRequest, firstLine, bodyBytes, bodyString, channelContext);
-    // }
-    // }
 
     switch (bodyFormat) {
     case MULTIPART:
@@ -316,7 +264,7 @@ public class HttpRequestDecoder {
 
       // 【multipart/form-data; boundary=----WebKitFormBoundaryuwYcfA2AIgxqIxA0】
       String contentType = httpRequest.getHeader(RequestHeaderKey.Content_Type);
-      String initboundary = HttpParseUtils.getSubAttribute(contentType, "boundary");// .getPerprotyEqualValue(httpRequest.getHeaders(), RequestHeaderKey.Content_Type, "boundary");
+      String initboundary = HttpParseUtils.getSubAttribute(contentType, "boundary");
       if (log.isDebugEnabled()) {
         log.debug("{}, initboundary:{}", channelContext, initboundary);
       }
@@ -409,12 +357,7 @@ public class HttpRequestDecoder {
    * @throws TioDecodeException
    * @author tanyaowu
    */
-  public static boolean parseHeaderLine(ByteBuffer buffer, Map<String, String> headers, int hasReceivedHeaderLength,
-      HttpConfig httpConfig) throws TioDecodeException {
-    // if (!buffer.hasArray()) {
-    // return parseHeaderLine2(buffer, headers, hasReceivedHeaderLength, httpConfig);
-    // }
-
+  public static boolean parseHeaderLine(ByteBuffer buffer, Map<String, String> headers, int hasReceivedHeaderLength, HttpConfig httpConfig) throws TioDecodeException {
     byte[] allbs = buffer.array();
     int initPosition = buffer.position();
     int lastPosition = initPosition;
@@ -489,15 +432,12 @@ public class HttpRequestDecoder {
     int lineLength = buffer.position() - initPosition; // 这一行(header line)的字节数
     // log.error("lineLength:{}, headerLength:{}, headers:\r\n{}", lineLength, hasReceivedHeaderLength, Json.toFormatedJson(headers));
     if (lineLength > MAX_LENGTH_OF_HEADERLINE) {
-      // log.error("header line is too long, max length of header line is " + MAX_LENGTH_OF_HEADERLINE);
       throw new TioDecodeException("header line is too long, max length of header line is " + MAX_LENGTH_OF_HEADERLINE);
     }
 
     if (needIteration) {
       int headerLength = lineLength + hasReceivedHeaderLength; // header占用的字节数
-      // log.error("allHeaderLength:{}", allHeaderLength);
       if (headerLength > MAX_LENGTH_OF_HEADER) {
-        // log.error("header is too long, max length of header is " + MAX_LENGTH_OF_HEADER);
         throw new TioDecodeException("header is too long, max length of header is " + MAX_LENGTH_OF_HEADER);
       }
       return parseHeaderLine(buffer, headers, headerLength, httpConfig);
@@ -514,8 +454,7 @@ public class HttpRequestDecoder {
    * @author tanyaowu
    */
   @SuppressWarnings("unused")
-  private static boolean parseHeaderLine2(ByteBuffer buffer, Map<String, String> headers, int headerLength,
-      HttpConfig httpConfig) throws TioDecodeException {
+  private static boolean parseHeaderLine2(ByteBuffer buffer, Map<String, String> headers, int headerLength, HttpConfig httpConfig) throws TioDecodeException {
     int initPosition = buffer.position();
     int lastPosition = initPosition;
     int remaining = buffer.remaining();
@@ -630,8 +569,7 @@ public class HttpRequestDecoder {
    * 2017年2月23日 下午1:37:51
    *
    */
-  public static RequestLine parseRequestLine(ByteBuffer buffer, ChannelContext channelContext)
-      throws TioDecodeException {
+  public static RequestLine parseRequestLine(ByteBuffer buffer, ChannelContext channelContext) throws TioDecodeException {
 
     byte[] allbs = buffer.array();
 
@@ -722,8 +660,7 @@ public class HttpRequestDecoder {
   }
 
   @SuppressWarnings("unused")
-  private static RequestLine parseRequestLine2(ByteBuffer buffer, ChannelContext channelContext)
-      throws TioDecodeException {
+  private static RequestLine parseRequestLine2(ByteBuffer buffer, ChannelContext channelContext) throws TioDecodeException {
     int initPosition = buffer.position();
     // int remaining = buffer.remaining();
     String methodStr = null;
@@ -826,10 +763,8 @@ public class HttpRequestDecoder {
    * @author tanyaowu
    * @throws TioDecodeException 
    */
-  private static void parseUrlencoded(HttpRequest httpRequest, RequestLine firstLine, byte[] bodyBytes,
-      String bodyString, ChannelContext channelContext) throws TioDecodeException {
+  private static void parseUrlencoded(HttpRequest httpRequest, RequestLine firstLine, byte[] bodyBytes, String bodyString, ChannelContext channelContext) throws TioDecodeException {
     decodeParams(httpRequest.getParams(), bodyString, httpRequest.getCharset(), channelContext);
   }
-
 
 }
