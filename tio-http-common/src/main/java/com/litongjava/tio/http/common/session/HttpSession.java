@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import com.litongjava.tio.http.common.HttpConfig;
 import com.litongjava.tio.utils.SystemTimer;
+import com.litongjava.tio.utils.json.JsonUtils;
 
 /**
  *
@@ -113,17 +114,14 @@ public class HttpSession implements java.io.Serializable {
    * @author tanyaowu
    */
   public void setAttribute(String key, Serializable value, HttpConfig httpConfig) {
-    data.put(key, value);
+    String jsonValue = JsonUtils.toJson(value);
+    data.put(key, jsonValue);
     update(httpConfig);
   }
 
   public void update(HttpConfig httpConfig) {
     httpConfig.getSessionStore().put(id, this);
   }
-
-  // public void setData(Map<String, Serializable> data) {
-  // this.data = data;
-  // }
 
   public void setId(String id) {
     this.id = id;

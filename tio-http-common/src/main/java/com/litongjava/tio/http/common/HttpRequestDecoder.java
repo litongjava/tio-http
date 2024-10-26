@@ -124,9 +124,6 @@ public class HttpRequestDecoder {
     // request header end
 
     // ----------------------------------------------- request body start
-
-    // httpRequest.setHttpConfig((HttpConfig) channelContext.tioConfig.getAttribute(TioConfigKey.HTTP_SERVER_CONFIG));
-
     String realIp = HttpIpUtils.getRealIp(channelContext, httpConfig, headers);
     if (Tio.IpBlacklist.isInBlacklist(channelContext.tioConfig, realIp)) {
       throw new TioDecodeException("[" + realIp + "] in black list");
@@ -151,11 +148,6 @@ public class HttpRequestDecoder {
     httpRequest.setHttpConfig(httpConfig);
     httpRequest.setHeaders(headers);
     httpRequest.setContentLength(contentLength);
-    // if (appendRequestHeaderString) {
-    // httpRequest.setHeaderString(headerSb.toString());
-    // } else {
-    // httpRequest.setHeaderString("");
-    // }
 
     String connection = headers.get(RequestHeaderKey.Connection);
     if (connection != null) {
@@ -173,9 +165,6 @@ public class HttpRequestDecoder {
       // 解析消息体
       parseBody(httpRequest, firstLine, bodyBytes, channelContext, httpConfig);
     } else {
-      // if (StrUtil.isNotBlank(firstLine.getQuery())) {
-      // decodeParams(httpRequest.getParams(), firstLine.getQuery(), httpRequest.getCharset(), channelContext);
-      // }
     }
     return httpRequest;
   }
@@ -327,7 +316,7 @@ public class HttpRequestDecoder {
     }
 
     if (StrUtil.isNotBlank(contentType)) {
-      String charset = HttpParseUtils.getSubAttribute(contentType, "charset");// .getPerprotyEqualValue(headers, RequestHeaderKey.Content_Type, "charset");
+      String charset = HttpParseUtils.getSubAttribute(contentType, "charset");
       if (StrUtil.isNotBlank(charset)) {
         httpRequest.setCharset(charset);
       } else {
@@ -430,7 +419,6 @@ public class HttpRequestDecoder {
     }
 
     int lineLength = buffer.position() - initPosition; // 这一行(header line)的字节数
-    // log.error("lineLength:{}, headerLength:{}, headers:\r\n{}", lineLength, hasReceivedHeaderLength, Json.toFormatedJson(headers));
     if (lineLength > MAX_LENGTH_OF_HEADERLINE) {
       throw new TioDecodeException("header line is too long, max length of header line is " + MAX_LENGTH_OF_HEADERLINE);
     }

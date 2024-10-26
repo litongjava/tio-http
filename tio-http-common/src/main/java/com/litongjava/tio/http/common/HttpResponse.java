@@ -490,7 +490,7 @@ public class HttpResponse extends HttpPacket {
     return hasCountContentLength;
   }
 
-  public void setStatus(int code) {
+  public HttpResponse setStatus(int code) {
     switch (code) {
     case 100:
       this.status = HttpResponseStatus.C100;
@@ -607,5 +607,6 @@ public class HttpResponse extends HttpPacket {
       this.status = HttpResponseStatus.CUSTOM.build(version, code);
       break;
     }
+    return this;
   }
 }

@@ -67,7 +67,11 @@ public class HttpServerAioHandler implements ServerAioHandler {
       if (channelContext.tioConfig.ipBlacklist.isInBlacklist(ip)) {
         HttpResponse httpResponse = request.httpConfig.getRespForBlackIp();
         if (httpResponse != null) {
-          Tio.send(channelContext, httpResponse);
+          if(httpResponse.isBlockSend()) {
+            Tio.bSend(channelContext, httpResponse);
+          }else {
+            Tio.send(channelContext, httpResponse);
+          }
           return;
         } else {
           Tio.remove(channelContext, ip + "in the blacklist");
@@ -78,7 +82,7 @@ public class HttpServerAioHandler implements ServerAioHandler {
 
     HttpResponse httpResponse = requestHandler.handler(request);
     if (httpResponse != null && httpResponse.isSend()) {
-      Tio.send(channelContext, httpResponse);
+      Tio.bSend(channelContext, httpResponse);
     }
   }
 

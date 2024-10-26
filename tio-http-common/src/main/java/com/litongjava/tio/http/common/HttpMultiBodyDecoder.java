@@ -95,17 +95,6 @@ public class HttpMultiBodyDecoder {
 
   private static Logger log = LoggerFactory.getLogger(HttpMultiBodyDecoder.class);
 
-  // public static int processReadIndex(ByteBuffer buffer)
-  // {
-  // int newReaderIndex = buffer.readerIndex();
-  // if (newReaderIndex < buffer.capacity())
-  // {
-  // buffer.readerIndex(newReaderIndex + 1);
-  // return 1;
-  // }
-  // return 0;
-  // }
-
   /**
    * 
    * @param request
@@ -117,8 +106,7 @@ public class HttpMultiBodyDecoder {
    * @throws TioDecodeException
    * @author tanyaowu
    */
-  public static void decode(HttpRequest request, RequestLine firstLine, byte[] bodyBytes, String initboundary,
-      ChannelContext channelContext, HttpConfig httpConfig) throws TioDecodeException {
+  public static void decode(HttpRequest request, RequestLine firstLine, byte[] bodyBytes, String initboundary, ChannelContext channelContext, HttpConfig httpConfig) throws TioDecodeException {
     if (StrUtil.isBlank(initboundary)) {
       throw new TioDecodeException("boundary is null");
     }
@@ -131,19 +119,15 @@ public class HttpMultiBodyDecoder {
     String boundary = "--" + initboundary;
     String endBoundary = boundary + "--";
 
-    // int boundaryLength = boundary.getBytes().length;
     Step step = Step.BOUNDARY;
-    // int bufferLength = buffer.capacity();
     try {
       label1: while (true) {
         if (step == Step.BOUNDARY) {
           String line = ByteBufferUtils.readLine(buffer, request.getCharset(), HttpConfig.MAX_LENGTH_OF_BOUNDARY);
-          // int offset = HttpMultiBodyDecoder.processReadIndex(buffer);
           if (boundary.equals(line)) {
             step = Step.HEADER;
           } else if (endBoundary.equals(line)) // 结束了
           {
-            // int ss = buffer.readerIndex() + 2 - offset;
             break;
           } else {
             throw new TioDecodeException("line need:" + boundary + ", but is: " + line + "");
@@ -167,8 +151,7 @@ public class HttpMultiBodyDecoder {
         }
 
         if (step == Step.BODY) {
-          Step newParseStep = parseBody(multiBodyHeader, request, buffer, boundary, endBoundary, channelContext,
-              httpConfig);
+          Step newParseStep = parseBody(multiBodyHeader, request, buffer, boundary, endBoundary, channelContext, httpConfig);
           step = newParseStep;
 
           if (step == Step.END) {
@@ -182,9 +165,7 @@ public class HttpMultiBodyDecoder {
     } catch (UnsupportedEncodingException e) {
       log.error(channelContext.toString(), e);
     } finally {
-      long end = SystemTimer.currTime;
-      long iv = end - start;
-      log.info("解析耗时:{}ms", iv);
+      log.info("Parsing time:{}ms", SystemTimer.currTime - start);
     }
 
   }
@@ -234,8 +215,7 @@ public class HttpMultiBodyDecoder {
    * @author tanyaowu
    * @param httpConfig 
    */
-  public static Step parseBody(Header header, HttpRequest request, ByteBuffer buffer, String boundary,
-      String endBoundary, ChannelContext channelContext, HttpConfig httpConfig)
+  public static Step parseBody(Header header, HttpRequest request, ByteBuffer buffer, String boundary, String endBoundary, ChannelContext channelContext, HttpConfig httpConfig)
       throws UnsupportedEncodingException, LengthOverflowException, TioDecodeException {
     int initPosition = buffer.position();
 
@@ -287,8 +267,7 @@ public class HttpMultiBodyDecoder {
    * @param header
    * @author tanyaowu
    */
-  public static void parseHeader(List<String> lines, Header header, ChannelContext channelContext)
-      throws TioDecodeException {
+  public static void parseHeader(List<String> lines, Header header, ChannelContext channelContext) throws TioDecodeException {
     if (lines == null || lines.size() == 0) {
       throw new TioDecodeException("multipart_form_data 格式不对，没有头部信息");
     }
