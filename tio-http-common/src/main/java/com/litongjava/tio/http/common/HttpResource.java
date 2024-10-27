@@ -9,45 +9,45 @@ import java.io.InputStream;
  */
 public class HttpResource {
 
-	private String		path		= null;
-	private InputStream	inputStream	= null;
-	private File		file		= null;
+  private String path = null;
+  private InputStream inputStream = null;
+  private File file = null;
 
-	public HttpResource(String path, InputStream inputStream, File file) {
-		super();
-		this.path = path;
-		this.inputStream = inputStream;
-		this.file = file;
-	}
+  public HttpResource(String path, InputStream inputStream, File file) {
+    super();
+    this.path = path;
+    this.inputStream = inputStream;
+    this.file = file;
+  }
 
-	/**
-	 * 
-	 */
-	public HttpResource() {
-	}
+  /**
+   * 
+   */
+  public HttpResource() {
+  }
 
-	public String getPath() {
-		return path;
-	}
+  public String getPath() {
+    return path;
+  }
 
-	public void setPath(String path) {
-		this.path = path;
-	}
+  public void setPath(String path) {
+    this.path = path;
+  }
 
-	public InputStream getInputStream() {
-		return inputStream;
-	}
+  public InputStream getInputStream() {
+    return inputStream;
+  }
 
-	public void setInputStream(InputStream inputStream) {
-		this.inputStream = inputStream;
-	}
+  public void setInputStream(InputStream inputStream) {
+    this.inputStream = inputStream;
+  }
 
-	public File getFile() {
-		return file;
-	}
+  public File getFile() {
+    return file;
+  }
 
-	public void setFile(File file) {
-		this.file = file;
-	}
+  public void setFile(File file) {
+    this.file = file;
+  }
 
 }

@@ -35,13 +35,6 @@ public class StrCache {
 
   }
 
-  // public static String get(byte[] allbs, int start, int len) {
-  // byte[] bs = new byte[len];
-  // System.arraycopy(allbs, start, bs, 0, len);
-  //
-  // return get(bs);
-  // }
-
   /**
    * 
    * @param allbs

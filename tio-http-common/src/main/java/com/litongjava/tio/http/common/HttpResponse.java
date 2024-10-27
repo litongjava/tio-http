@@ -20,7 +20,7 @@ import com.litongjava.tio.utils.json.Json;
  */
 public class HttpResponse extends HttpPacket {
   private static final long serialVersionUID = -3512681144230291786L;
-  public static final HttpResponse NULL_RESPONSE = new HttpResponse();
+  public transient static final HttpResponse NULL_RESPONSE = new HttpResponse();
   /**
    * 服务器端用（因为服务器端可以直接枚举）
    */
@@ -33,17 +33,17 @@ public class HttpResponse extends HttpPacket {
   /**
    * 是否后续返回流格式,如果是则在相应时不计算Content-Length
    */
-  private boolean stream = false;
+  private transient boolean stream = false;
   /**
    * 是否需要改发改数据包,如果该数据包已经发送或者即将发送,可以在也业务中将该值设置为false,防止重复发送数据包
    */
-  private boolean send = true;
+  private transient boolean send = true;
   /**
    * 不计算Content-Length
    */
-  private boolean hasCountContentLength = false;
-  private HttpRequest request = null;
-  private List<Cookie> cookies = null;
+  private transient boolean hasCountContentLength = false;
+  private transient HttpRequest request = null;
+  private transient List<Cookie> cookies = null;
   private Map<HeaderName, HeaderValue> headers = new HashMap<>();
   private int headerByteCount = 2;
   /**
@@ -54,11 +54,11 @@ public class HttpResponse extends HttpPacket {
   /**
    * 忽略ip访问统计
    */
-  private boolean skipIpStat = false;
+  private transient boolean skipIpStat = false;
   /**
    * 忽略token访问统计
    */
-  private boolean skipTokenStat = false;
+  private transient boolean skipTokenStat = false;
 
   private String version;
 

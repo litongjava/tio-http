@@ -1,5 +1,6 @@
 package com.litongjava.tio.http.common;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -7,7 +8,8 @@ import java.util.Map;
  * @author tanyaowu 
  * 2018年7月1日 上午9:51:04
  */
-public class HeaderName {
+public class HeaderName implements Serializable {
+  private static final long serialVersionUID = 312702602569090773L;
   private static final Map<String, HeaderName> map = new HashMap<>();
   public static final HeaderName SET_COOKIE = new HeaderName(ResponseHeaderKey.Set_Cookie);
   public static final HeaderName CONTENT_TYPE = new HeaderName(ResponseHeaderKey.Content_Type);
@@ -16,12 +18,9 @@ public class HeaderName {
   public static final HeaderName Connection = new HeaderName(ResponseHeaderKey.Connection);
   public static final HeaderName Keep_Alive = new HeaderName(ResponseHeaderKey.Keep_Alive);
   public static final HeaderName Content_Length = new HeaderName(ResponseHeaderKey.Content_Length);
-  public static final HeaderName Access_Control_Allow_Origin = new HeaderName(
-      ResponseHeaderKey.Access_Control_Allow_Origin);
-  public static final HeaderName Access_Control_Allow_Headers = new HeaderName(
-      ResponseHeaderKey.Access_Control_Allow_Headers);
-  public static final HeaderName Access_Control_Allow_Methods = new HeaderName(
-      ResponseHeaderKey.Access_Control_Allow_Methods);
+  public static final HeaderName Access_Control_Allow_Origin = new HeaderName(ResponseHeaderKey.Access_Control_Allow_Origin);
+  public static final HeaderName Access_Control_Allow_Headers = new HeaderName(ResponseHeaderKey.Access_Control_Allow_Headers);
+  public static final HeaderName Access_Control_Allow_Methods = new HeaderName(ResponseHeaderKey.Access_Control_Allow_Methods);
   public static final HeaderName Access_Control_Max_Age = new HeaderName(ResponseHeaderKey.Access_Control_Max_Age);
 
   public static final HeaderName Content_Disposition = new HeaderName(ResponseHeaderKey.Content_Disposition);
@@ -39,8 +38,7 @@ public class HeaderName {
   public static final HeaderName Cache_Control = new HeaderName(ResponseHeaderKey.Cache_Control);
   public static final HeaderName tio_from_cache = new HeaderName(ResponseHeaderKey.tio_from_cache);
   public static final HeaderName tio_webpack_used_cache = new HeaderName(ResponseHeaderKey.tio_webpack_used_cache);
-  public static final HeaderName Access_Control_Allow_Credentials = new HeaderName(
-      ResponseHeaderKey.Access_Control_Allow_Credentials);
+  public static final HeaderName Access_Control_Allow_Credentials = new HeaderName(ResponseHeaderKey.Access_Control_Allow_Credentials);
   public static final HeaderName Vary = new HeaderName(ResponseHeaderKey.vary);
   public static final HeaderName Origin = new HeaderName(ResponseHeaderKey.origin);
 

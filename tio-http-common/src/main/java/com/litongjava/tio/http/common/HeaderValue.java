@@ -1,8 +1,13 @@
 package com.litongjava.tio.http.common;
 
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
 import com.litongjava.tio.utils.hutool.StrUtil;
 
@@ -10,7 +15,9 @@ import com.litongjava.tio.utils.hutool.StrUtil;
  * @author tanyaowu 
  * 2018年7月1日 上午9:51:04
  */
-public class HeaderValue {
+public class HeaderValue implements Serializable {
+
+  private static final long serialVersionUID = -4825039947418801490L;
 
   public static class EnumerableValue {
     private static final Map<String, HeaderValue> map = new HashMap<>();
@@ -76,8 +83,7 @@ public class HeaderValue {
     public static final HeaderValue TEXT_PLAIN_TXT = HeaderValue.Content_Type.from(MimeType.TEXT_PLAIN_TXT.getType());
     public static final HeaderValue TEXT_PLAIN_JSON = HeaderValue.Content_Type.from(MimeType.TEXT_PLAIN_JSON.getType());
     public static final HeaderValue TEXT_HTML_HTML = HeaderValue.Content_Type.from(MimeType.TEXT_HTML_HTML.getType());
-    public static final HeaderValue APPLICATION_ACAD_DWG = HeaderValue.Content_Type
-        .from(MimeType.APPLICATION_ACAD_DWG.getType());
+    public static final HeaderValue APPLICATION_ACAD_DWG = HeaderValue.Content_Type.from(MimeType.APPLICATION_ACAD_DWG.getType());
     public static final HeaderValue DEFAULT_TYPE = HeaderValue.Content_Type.from("application/octet-stream");
   }
 
@@ -98,7 +104,6 @@ public class HeaderValue {
   }
 
   public final String value;
-
   public final byte[] bytes;
 
   private HeaderValue(String name) {
@@ -147,5 +152,20 @@ public class HeaderValue {
     } else if (!value.equals(other.value))
       return false;
     return true;
+  }
+
+  public long getValueAsLong() {
+    return Long.parseLong(value);
+  }
+
+  public static HeaderValue fromLong(long value) {
+    return new HeaderValue(String.valueOf(value));
+  }
+
+  public static HeaderValue getLastModifiedHeader(long timestampMillis) {
+    SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
+    sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+    String value = sdf.format(new Date(timestampMillis));
+    return new HeaderValue(String.valueOf(value));
   }
 }
