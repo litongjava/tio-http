@@ -3,7 +3,6 @@ package com.litongjava.tio.http.common;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
@@ -285,7 +284,6 @@ public class HttpConfig {
   public HttpResource getResource(HttpRequest request, String path) throws Exception {
     String pageRoot = getPageRoot(request);
     HttpResource httpResource = null;
-    // File file = null;
     if (pageRoot != null) {
       if (StrUtil.endWith(path, "/")) {
         path = path + "index.html";
@@ -297,8 +295,7 @@ public class HttpConfig {
         if (url != null) {
           String protocol = url.getProtocol();
           if (Objects.equals(protocol, "jar")) {
-            InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(complatePath);
-            httpResource = new HttpResource(path, inputStream, null);
+            httpResource = new HttpResource(path, url, null);
           } else {
             File file = new File(url.toURI());
             if (file.exists()) {

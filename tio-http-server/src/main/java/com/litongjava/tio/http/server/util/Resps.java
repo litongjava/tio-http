@@ -2,10 +2,10 @@ package com.litongjava.tio.http.server.util;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.util.Date;
@@ -24,7 +24,6 @@ import com.litongjava.tio.http.common.HttpResponseStatus;
 import com.litongjava.tio.http.common.MimeType;
 import com.litongjava.tio.http.common.RequestHeaderKey;
 import com.litongjava.tio.http.common.RequestLine;
-import com.litongjava.tio.utils.IoUtils;
 import com.litongjava.tio.utils.environment.EnvUtils;
 import com.litongjava.tio.utils.hutool.ClassUtil;
 import com.litongjava.tio.utils.hutool.FileUtil;
@@ -156,7 +155,6 @@ public class Resps {
     String filename = fileOnServer.getName();
     String extension = FileUtil.extName(filename);
     ret = bytes(request, bodyBytes, extension);
-    // ret.addHeader(HeaderName.Content_Disposition, HeaderValue.from("attachment;filename=" + fileOnServer.getName()));
     ret.setLastModified(HeaderValue.from(lastModified.getTime() + ""));
     return ret;
   }
@@ -179,28 +177,14 @@ public class Resps {
         return file(request, file);
       }
 
-      InputStream inputStream = httpResource.getInputStream();
-      byte[] bs = IoUtils.toByteArray(inputStream);
-      return Resps.bytes(request, bs, FileUtil.extName(path));
+      URL url = httpResource.getUrl();
+      if (url != null) {
+        byte[] bs = FileUtil.readUrlAsBytes(url);
+        return Resps.bytes(request, bs, FileUtil.extName(path));
+      }
+      return Resps.resp404(request);
     }
   }
-
-  /**
-   *
-   * @param request
-   * @param path 文件在服务器上的相对pageRoot的路径，形如："/user/index.html"
-   * @param httpConfig
-   * @return
-   * @throws IOException
-   * @author: tanyaowu
-   */
-  // public static HttpResponse file(HttpRequest request, String path, HttpConfig httpConfig) throws Exception {
-  // File file = httpConfig.getFile(request, path);//(pageRoot + path);
-  // if (!file.exists()) {
-  // return resp404(request, request.getRequestLine(), httpConfig);
-  // }
-  // return file(request, file);
-  // }
 
   /**
    * @param request
@@ -210,23 +194,14 @@ public class Resps {
    * @throws Exception
    * @author: tanyaowu
    */
-  public static HttpResponse resp404(HttpRequest request, RequestLine requestLine, HttpConfig httpConfig)
-      throws Exception {
+  public static HttpResponse resp404(HttpRequest request, RequestLine requestLine, HttpConfig httpConfig) throws Exception {
     String file404 = httpConfig.getPage404();
     HttpResource httpResource = request.httpConfig.getResource(request, file404);
     if (httpResource != null) {
       file404 = httpResource.getPath();
-      HttpResponse ret = Resps.forward(request,
-          file404 + "?tio_initpath=" + URLEncoder.encode(requestLine.getPathAndQuery(), httpConfig.getCharset()));
+      HttpResponse ret = Resps.forward(request, file404 + "?tio_initpath=" + URLEncoder.encode(requestLine.getPathAndQuery(), httpConfig.getCharset()));
       return ret;
     }
-
-    // File file = httpConfig.getFile(request, file404);// new File(pageRoot + file404);
-    // if (file.exists()) {
-    // HttpResponse ret = Resps.redirect(request, file404 + "?tio_initpath=" + requestLine.getPathAndQuery());
-    // return ret;
-    // }
-
     HttpResponse ret = Resps.html(request, "404");
     ret.setStatus(HttpResponseStatus.C404);
     return ret;
@@ -272,8 +247,7 @@ public class Resps {
    * @return
    * @throws Exception
    */
-  public static HttpResponse resp500(HttpRequest request, RequestLine requestLine, HttpConfig httpConfig,
-      Throwable throwable) throws Exception {
+  public static HttpResponse resp500(HttpRequest request, RequestLine requestLine, HttpConfig httpConfig, Throwable throwable) throws Exception {
     String file500 = httpConfig.getPage500();
     HttpResource httpResource = request.httpConfig.getResource(request, file500);
 
@@ -361,8 +335,7 @@ public class Resps {
    * @return
    * @author tanyaowu
    */
-  public static HttpResponse bytesWithHeaders(HttpRequest request, byte[] bodyBytes,
-      Map<HeaderName, HeaderValue> headers) {
+  public static HttpResponse bytesWithHeaders(HttpRequest request, byte[] bodyBytes, Map<HeaderName, HeaderValue> headers) {
     HttpResponse ret = new HttpResponse(request);
     ret.setBody(bodyBytes);
     ret.addHeaders(headers);
@@ -444,8 +417,7 @@ public class Resps {
    * @author tanyaowu
    */
   public static HttpResponse js(HttpRequest request, String bodyString, String charset) {
-    HttpResponse ret = string(request, bodyString, charset,
-        getMimeTypeStr(MimeType.APPLICATION_JAVASCRIPT_JS, charset));
+    HttpResponse ret = string(request, bodyString, charset, getMimeTypeStr(MimeType.APPLICATION_JAVASCRIPT_JS, charset));
     return ret;
   }
 
@@ -496,8 +468,7 @@ public class Resps {
       if (body.getClass() == String.class || ClassUtil.isBasicType(body.getClass())) {
         response = string(response, body + "", charset, getMimeTypeStr(MimeType.TEXT_PLAIN_JSON, charset));
       } else {
-        response = string(response, Json.getJson().toJson(body), charset,
-            getMimeTypeStr(MimeType.TEXT_PLAIN_JSON, charset));
+        response = string(response, Json.getJson().toJson(body), charset, getMimeTypeStr(MimeType.TEXT_PLAIN_JSON, charset));
       }
     }
     return response;
@@ -590,12 +561,12 @@ public class Resps {
    */
   public static HttpResponse string(HttpRequest request, String bodyString, String charset, String mimeTypeStr) {
     HttpResponse ret = new HttpResponse(request);
-//
-//		//处理jsonp
-//		String jsonp = request.getParam(request.httpConfig.getJsonpParamName());
-//		if (StrUtil.isNotBlank(jsonp)) {
-//			bodyString = jsonp + "(" + bodyString + ")";
-//		}
+    //
+    //		//处理jsonp
+    //		String jsonp = request.getParam(request.httpConfig.getJsonpParamName());
+    //		if (StrUtil.isNotBlank(jsonp)) {
+    //			bodyString = jsonp + "(" + bodyString + ")";
+    //		}
 
     if (bodyString != null) {
       if (charset == null) {
