@@ -216,28 +216,6 @@ public class Resps {
     return resp404(request, request.requestLine, request.httpConfig);
   }
 
-  // /**
-  // *
-  // * @param newPath
-  // * @param request
-  // * @return
-  // * @throws Exception
-  // * @author tanyaowu
-  // */
-  // public static HttpResponse forward(String newPath, HttpRequest request) throws Exception {
-  // RequestLine requestLine = request.getRequestLine();
-  // HttpConfig httpConfig = request.getHttpConfig();
-  //
-  // httpConfig.getContextPath()
-  //
-  // if (newPath != null) {
-  // requestLine.setPath(newPath);
-  // }
-  //
-  // HttpRequestHandler httpRequestHandler = request.getHttpConfig().getHttpRequestHandler();
-  // return httpRequestHandler.handler(request);
-  // }
-
   /**
    *
    * @param request
@@ -474,7 +452,7 @@ public class Resps {
     return response;
   }
 
-  private static String getMimeTypeStr(MimeType mimeType, String charset) {
+  public static String getMimeTypeStr(MimeType mimeType, String charset) {
     if (charset == null) {
       return mimeType.getType();
     } else {
@@ -561,12 +539,6 @@ public class Resps {
    */
   public static HttpResponse string(HttpRequest request, String bodyString, String charset, String mimeTypeStr) {
     HttpResponse ret = new HttpResponse(request);
-    //
-    //		//处理jsonp
-    //		String jsonp = request.getParam(request.httpConfig.getJsonpParamName());
-    //		if (StrUtil.isNotBlank(jsonp)) {
-    //			bodyString = jsonp + "(" + bodyString + ")";
-    //		}
 
     if (bodyString != null) {
       if (charset == null) {
