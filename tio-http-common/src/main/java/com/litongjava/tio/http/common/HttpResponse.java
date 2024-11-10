@@ -411,6 +411,17 @@ public class HttpResponse extends HttpPacket {
     return this;
   }
 
+  public HttpResponse setBodyString(String bodyString, String charset) {
+    if (bodyString != null) {
+      try {
+        setBody(bodyString.getBytes(charset));
+      } catch (UnsupportedEncodingException e) {
+        throw new RuntimeException(e);
+      }
+    }
+    return this;
+  }
+
   public HttpResponse setString(String bodyString, String charset, String mimeTypeStr) {
     if (bodyString != null) {
       if (charset == null) {
@@ -609,4 +620,5 @@ public class HttpResponse extends HttpPacket {
     }
     return this;
   }
+
 }
