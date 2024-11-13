@@ -50,6 +50,10 @@ public class SsePacket extends HttpResponsePacket {
     this.data = data;
   }
 
+  public SsePacket(String data) {
+    this.data = data.getBytes();
+  }
+
   public SsePacket id(int i) {
     eventId = ((long) i);
     return this;
