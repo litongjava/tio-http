@@ -7,7 +7,7 @@ import com.litongjava.tio.core.Tio;
 import com.litongjava.tio.http.common.encoder.ChunkEncoder;
 import com.litongjava.tio.http.common.sse.ChunkedPacket;
 
-public class SSEEmitter {
+public class SseEmitter {
 
   public static String LFLF = "\n\n";
 
