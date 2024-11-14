@@ -40,7 +40,11 @@ public class HeaderName implements Serializable {
   public static final HeaderName tio_webpack_used_cache = new HeaderName(ResponseHeaderKey.tio_webpack_used_cache);
   public static final HeaderName Access_Control_Allow_Credentials = new HeaderName(ResponseHeaderKey.Access_Control_Allow_Credentials);
   public static final HeaderName Vary = new HeaderName(ResponseHeaderKey.vary);
+  public static final HeaderName Allow = new HeaderName(ResponseHeaderKey.allow);
   public static final HeaderName Origin = new HeaderName(ResponseHeaderKey.origin);
+  public static final HeaderName X_Content_Type_Options = new HeaderName(ResponseHeaderKey.x_content_type_options);
+  public static final HeaderName Referrer_Policy = new HeaderName(ResponseHeaderKey.referrer_policy);;
+  public static final HeaderName Cross_Origin_Opener_Policy = new HeaderName(ResponseHeaderKey.cross_origin_opener_policy);;
 
   public final String name;
 

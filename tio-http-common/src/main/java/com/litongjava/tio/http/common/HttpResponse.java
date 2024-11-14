@@ -124,8 +124,9 @@ public class HttpResponse extends HttpPacket {
     return super.keepedConnection;
   }
 
-  public boolean setSend(boolean send) {
-    return this.send = send;
+  public HttpResponse setSend(boolean send) {
+    this.send = send;
+    return this;
   }
 
   public boolean isSend() {

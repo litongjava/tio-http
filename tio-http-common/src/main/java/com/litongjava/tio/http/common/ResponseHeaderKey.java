@@ -85,6 +85,10 @@ public interface ResponseHeaderKey {
    */
   String tio_webpack_used_cache = "tio-webpack-used-cache";
   String vary = "vary";
+  String allow = "allow";
   String origin = "origin";
+  String x_content_type_options = "X-Content-Type-Options";
+  String referrer_policy = "Referrer-Policy";
+  String cross_origin_opener_policy="Cross-Origin-Opener-Policy";
 
 }
