@@ -160,7 +160,7 @@ public class HttpServerStarter {
       }
 
       if (httpConfig.getSessionIdGenerator() == null) {
-        httpConfig.setSessionIdGenerator(UUIDSessionIdGenerator.instance);
+        httpConfig.setSessionIdGenerator(UUIDSessionIdGenerator.INSTANCE);
       }
     }
 

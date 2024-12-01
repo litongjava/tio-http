@@ -21,11 +21,11 @@ public class HttpPacket extends Packet {
   private String headerString = SysConst.BLANK;
 
   public void setKeepedConnectin(boolean keepedConnection) {
-    super.keepedConnection = keepedConnection;
+    super.keepConnection = keepedConnection;
   }
 
   public boolean isKeepedConnection() {
-    return super.keepedConnection;
+    return super.keepConnection;
   }
 
   /**

@@ -11,7 +11,7 @@ import com.litongjava.tio.http.common.session.id.ISessionIdGenerator;
  * 2017年8月15日 上午10:53:39
  */
 public class UUIDSessionIdGenerator implements ISessionIdGenerator {
-  public final static UUIDSessionIdGenerator instance = new UUIDSessionIdGenerator();
+  public final static UUIDSessionIdGenerator INSTANCE = new UUIDSessionIdGenerator();
 
   /**
    *

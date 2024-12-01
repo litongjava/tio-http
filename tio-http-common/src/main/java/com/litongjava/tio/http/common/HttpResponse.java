@@ -116,14 +116,6 @@ public class HttpResponse extends HttpPacket {
     HttpGzipUtils.gzip(this);
   }
 
-  public void setKeepedConnectin(boolean keepedConnection) {
-    super.keepedConnection = keepedConnection;
-  }
-
-  public boolean isKeepedConnection() {
-    return super.keepedConnection;
-  }
-
   public HttpResponse setSend(boolean send) {
     this.send = send;
     return this;
@@ -621,5 +613,4 @@ public class HttpResponse extends HttpPacket {
     }
     return this;
   }
-
 }

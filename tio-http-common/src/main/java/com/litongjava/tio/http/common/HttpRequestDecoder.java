@@ -11,7 +11,7 @@ import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.litongjava.constatns.ServerConfigKeys;
+import com.litongjava.constants.ServerConfigKeys;
 import com.litongjava.model.sys.SysConst;
 import com.litongjava.tio.core.ChannelContext;
 import com.litongjava.tio.core.Node;

@@ -7,7 +7,7 @@ import com.litongjava.tio.http.server.handler.HttpRequestHandler;
  * @author Tong Li
  *
  */
-public interface HttpReqeustGroovyRouter {
+public interface HttpRequestGroovyRouter {
 
   /**
    * 添加路由
