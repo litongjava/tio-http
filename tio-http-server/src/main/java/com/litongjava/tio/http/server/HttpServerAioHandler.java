@@ -59,7 +59,6 @@ public class HttpServerAioHandler implements ServerAioHandler {
   @Override
   public void handler(Packet packet, ChannelContext channelContext) throws Exception {
     HttpRequest request = (HttpRequest) packet;
-    // request.setHttpConfig(requestHandler.getHttpConfig(request));
 
     String ip = request.getClientIp();
 
@@ -67,9 +66,9 @@ public class HttpServerAioHandler implements ServerAioHandler {
       if (channelContext.tioConfig.ipBlacklist.isInBlacklist(ip)) {
         HttpResponse httpResponse = request.httpConfig.getRespForBlackIp();
         if (httpResponse != null) {
-          if(httpResponse.isBlockSend()) {
+          if (httpResponse.isBlockSend()) {
             Tio.bSend(channelContext, httpResponse);
-          }else {
+          } else {
             Tio.send(channelContext, httpResponse);
           }
           return;
@@ -81,7 +80,7 @@ public class HttpServerAioHandler implements ServerAioHandler {
     }
 
     HttpResponse httpResponse = requestHandler.handler(request);
-    if (httpResponse != null && httpResponse.isSend()) {
+    if (httpResponse != null && httpResponse.isSent()) {
       Tio.bSend(channelContext, httpResponse);
     }
   }

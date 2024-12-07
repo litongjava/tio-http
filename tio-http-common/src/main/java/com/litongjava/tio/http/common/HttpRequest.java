@@ -645,7 +645,7 @@ public class HttpRequest extends HttpPacket {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append(this.requestLine.toString()).append(SysConst.CRLF);
+    sb.append(this.requestLine.toString());
 
     if (this.getHeaderString() != null) {
       sb.append(this.getHeaderString()).append(SysConst.CRLF);

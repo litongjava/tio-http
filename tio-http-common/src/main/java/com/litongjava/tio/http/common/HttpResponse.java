@@ -12,7 +12,6 @@ import java.util.Set;
 import com.litongjava.model.sys.SysConst;
 import com.litongjava.tio.http.common.utils.HttpGzipUtils;
 import com.litongjava.tio.utils.hutool.ClassUtil;
-import com.litongjava.tio.utils.hutool.StrUtil;
 import com.litongjava.tio.utils.json.Json;
 
 /**
@@ -37,7 +36,7 @@ public class HttpResponse extends HttpPacket {
   /**
    * 是否需要改发改数据包,如果该数据包已经发送或者即将发送,可以在也业务中将该值设置为false,防止重复发送数据包
    */
-  private transient boolean send = true;
+  private transient boolean sent = true;
   /**
    * 不计算Content-Length
    */
@@ -85,7 +84,7 @@ public class HttpResponse extends HttpPacket {
       switch (version) {
       case HttpConst.HttpVersion.V1_0:
         this.status = HttpResponseStatus.C200.changeVersion(version);
-        if (StrUtil.equals(connection, HttpConst.RequestHeaderValue.Connection.keep_alive)) {
+        if (HttpConst.RequestHeaderValue.Connection.keep_alive.equals(connection)) {
           addHeader(HeaderName.Connection, HeaderValue.Connection.keep_alive);
           addHeader(HeaderName.Keep_Alive, HeaderValue.Keep_Alive.TIMEOUT_10_MAX_20);
         } else {
@@ -96,6 +95,9 @@ public class HttpResponse extends HttpPacket {
         break;
 
       default:
+        if (HttpConst.RequestHeaderValue.Connection.close.equals(connection)) {
+          setKeepedConnectin(false);
+        }
         this.status = HttpResponseStatus.C200;
         break;
       }
@@ -116,13 +118,13 @@ public class HttpResponse extends HttpPacket {
     HttpGzipUtils.gzip(this);
   }
 
-  public HttpResponse setSend(boolean send) {
-    this.send = send;
+  public HttpResponse setSent(boolean b) {
+    this.sent = b;
     return this;
   }
 
-  public boolean isSend() {
-    return send;
+  public boolean isSent() {
+    return sent;
   }
 
   /**
