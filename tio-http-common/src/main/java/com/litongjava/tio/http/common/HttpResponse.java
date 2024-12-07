@@ -36,7 +36,7 @@ public class HttpResponse extends HttpPacket {
   /**
    * 是否需要改发改数据包,如果该数据包已经发送或者即将发送,可以在也业务中将该值设置为false,防止重复发送数据包
    */
-  private transient boolean sent = true;
+  private transient boolean send = true;
   /**
    * 不计算Content-Length
    */
@@ -118,13 +118,13 @@ public class HttpResponse extends HttpPacket {
     HttpGzipUtils.gzip(this);
   }
 
-  public HttpResponse setSent(boolean b) {
-    this.sent = b;
+  public HttpResponse setSend(boolean b) {
+    this.send = b;
     return this;
   }
 
-  public boolean isSent() {
-    return sent;
+  public boolean isSend() {
+    return send;
   }
 
   /**
