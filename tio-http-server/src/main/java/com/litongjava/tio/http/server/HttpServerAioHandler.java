@@ -80,7 +80,7 @@ public class HttpServerAioHandler implements ServerAioHandler {
     }
 
     HttpResponse httpResponse = requestHandler.handler(request);
-    if (httpResponse != null && httpResponse.isSent()) {
+    if (httpResponse != null && httpResponse.isSend()) {
       Tio.bSend(channelContext, httpResponse);
     }
   }

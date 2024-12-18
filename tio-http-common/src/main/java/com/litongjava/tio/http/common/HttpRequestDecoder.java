@@ -123,7 +123,7 @@ public class HttpRequestDecoder {
     }
     // request header end
 
-    // ----------------------------------------------- request body start
+    // request body start
     String realIp = HttpIpUtils.getRealIp(channelContext, httpConfig, headers);
     if (Tio.IpBlacklist.isInBlacklist(channelContext.tioConfig, realIp)) {
       throw new TioDecodeException("[" + realIp + "] in black list");
@@ -153,6 +153,36 @@ public class HttpRequestDecoder {
     if (connection != null) {
       httpRequest.setConnection(connection.toLowerCase());
     }
+
+    // 1.0
+    String httpVersion = firstLine.getVersion();
+
+    boolean keepAlive = true; // 默认值
+
+    if ("1.1".equalsIgnoreCase(httpVersion)) {
+      // 在 HTTP/1.1 中，默认保持连接，除非明确指定 'Connection: close'
+      if ("close".equalsIgnoreCase(connection)) {
+        keepAlive = false;
+      }
+
+    } else if ("1.0".equalsIgnoreCase(httpVersion)) {
+      // 在 HTTP/1.0 中，默认关闭连接，除非明确指定 'Connection: keep-alive'
+      if ("keep-alive".equalsIgnoreCase(connection)) {
+        keepAlive = true;
+      } else {
+        keepAlive = false;
+      }
+
+    } else {
+      // 对于其他 HTTP 版本，可以根据服务器策略进行处理
+      // 这里默认保持连接，除非明确指定 'Connection: close'
+      if ("close".equalsIgnoreCase(connection)) {
+        keepAlive = false;
+      }
+    }
+
+    // 设置 keepConnection 标志
+    httpRequest.setKeepConnection(keepAlive);
 
     if (StrUtil.isNotBlank(firstLine.queryString)) {
       decodeParams(httpRequest.getParams(), firstLine.queryString, httpRequest.getCharset(), channelContext);
