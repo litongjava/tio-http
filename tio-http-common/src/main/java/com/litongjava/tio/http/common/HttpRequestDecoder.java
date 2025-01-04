@@ -96,7 +96,14 @@ public class HttpRequestDecoder {
     // request header start
     boolean headerCompleted = parseHeaderLine(buffer, headers, 0, httpConfig);
     if (!headerCompleted) {
-      return null;
+      if (firstLine.method == HttpMethod.GET) {
+        if (!buffer.hasRemaining()) {
+          headerCompleted = true;
+        }
+      } else {
+        return null;
+      }
+
     }
     String contentLengthStr = headers.get(RequestHeaderKey.Content_Length);
 
@@ -220,7 +227,18 @@ public class HttpRequestDecoder {
       if (keyvalueArr.length == 2) {
         value1 = keyvalueArr[1];
       } else if (keyvalueArr.length > 2) {
-        throw new TioDecodeException(queryString + " contain multi" + SysConst.STR_EQ);
+        String errorMsg = "Invalid query parameter format in query string, contain multi ==:" + queryString;
+        log.warn(errorMsg);
+
+        HttpResponse httpResponse = new HttpResponse();
+        httpResponse.setStatus(HttpResponseStatus.C400);
+        httpResponse.setBody(errorMsg.getBytes(StandardCharsets.UTF_8));
+
+        // 发送响应并关闭连接
+        Tio.bSend(channelContext, httpResponse);
+        Tio.close(channelContext, "Invalid query parameter format");
+
+        return;
       }
 
       String key = keyvalueArr[0];
