@@ -339,6 +339,10 @@ public class Resps {
     return html(response, bodyString, response.getHttpRequest().httpConfig.getCharset());
   }
 
+  public static HttpResponse xml(HttpResponse response, String bodyString) {
+    return xml(response, bodyString, response.getHttpRequest().httpConfig.getCharset());
+  }
+
   /**
    * @param request
    * @param newPath
@@ -371,6 +375,10 @@ public class Resps {
    */
   public static HttpResponse html(HttpResponse response, String bodyString, String charset) {
     return string(response, bodyString, charset, getMimeTypeStr(MimeType.TEXT_HTML_HTML, charset));
+  }
+
+  public static HttpResponse xml(HttpResponse response, String bodyString, String charset) {
+    return string(response, bodyString, charset, getMimeTypeStr(MimeType.APPLICATION_XML_XML, charset));
   }
 
   /**
