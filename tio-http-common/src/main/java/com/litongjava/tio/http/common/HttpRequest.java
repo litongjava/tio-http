@@ -175,6 +175,10 @@ public class HttpRequest extends HttpPacket {
     return host;
   }
 
+  public String getAuthorization() {
+    return this.headers.get(RequestHeaderKey.Authorization);
+  }
+
   /**
    * 获取真实的客户端ip
    * @return
@@ -738,4 +742,5 @@ public class HttpRequest extends HttpPacket {
   public RequestDispatcher getRequestDispatcher(String path) {
     return new RequestDispatcher(path);
   }
+
 }

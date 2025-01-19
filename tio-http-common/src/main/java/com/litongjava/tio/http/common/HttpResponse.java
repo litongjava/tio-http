@@ -375,6 +375,7 @@ public class HttpResponse extends HttpPacket {
     this.setContentType("text/event-stream;charset=" + charset);
     this.addHeader(HeaderName.Connection, HeaderValue.from("keep-alive"));
     this.stream = true;
+    this.keepConnection = true;
     return this;
   }
 
