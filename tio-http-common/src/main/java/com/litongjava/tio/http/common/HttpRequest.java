@@ -475,6 +475,15 @@ public class HttpRequest extends HttpPacket {
     return Float.parseFloat(value);
   }
 
+  public Boolean getBoolean(String name) {
+    String value = getParam(name);
+    if (StrUtil.isBlank(value)) {
+      return null;
+    }
+
+    return Boolean.valueOf(value);
+  }
+
   /**
    * 
    * @param name
