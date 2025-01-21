@@ -178,6 +178,14 @@ public class HttpRequest extends HttpPacket {
   public String getAuthorization() {
     return this.headers.get(RequestHeaderKey.Authorization);
   }
+  
+  public String getReferer() {
+    return getHeader(RequestHeaderKey.Referer);
+  }
+  
+  public String getOrigin() {
+    return getHeader(RequestHeaderKey.Origin);
+  }
 
   /**
    * 获取真实的客户端ip
@@ -693,10 +701,6 @@ public class HttpRequest extends HttpPacket {
     this.connection = connection;
   }
 
-  public String getReferer() {
-    return getHeader(RequestHeaderKey.Referer);
-  }
-
   public boolean isNeedForward() {
     return needForward;
   }
@@ -751,5 +755,7 @@ public class HttpRequest extends HttpPacket {
   public RequestDispatcher getRequestDispatcher(String path) {
     return new RequestDispatcher(path);
   }
+
+
 
 }
