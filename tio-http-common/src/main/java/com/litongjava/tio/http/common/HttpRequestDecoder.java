@@ -112,7 +112,13 @@ public class HttpRequestDecoder {
     } else {
       contentLength = Integer.parseInt(contentLengthStr);
       if (contentLength > httpConfig.getMaxLengthOfPostBody()) {
-        throw new TioDecodeException("post body length is too big[" + contentLength + "], max length is " + httpConfig.getMaxLengthOfPostBody() + " byte");
+        String message = "post body length is too big[" + contentLength + "], max length is " + httpConfig.getMaxLengthOfPostBody() + " byte";
+        log.error(message);
+        HttpResponse httpResponse = new HttpResponse();
+        httpResponse.setStatus(413);
+        httpResponse.setString(message);
+        Tio.bSend(channelContext, httpResponse);
+        Tio.close(channelContext, "Payload Too Large");
       }
     }
 
