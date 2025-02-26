@@ -401,8 +401,21 @@ public class HttpRequestDecoder {
    * @author tanyaowu
    */
   public static boolean parseHeaderLine(ByteBuffer buffer, Map<String, String> headers, int hasReceivedHeaderLength, HttpConfig httpConfig) throws TioDecodeException {
-    byte[] allbs = buffer.array();
-    int initPosition = buffer.position();
+
+    byte[] allbs;
+    int arrayOffset = 0;
+    int initPosition = buffer.position(); // 记录初始 position
+    if (buffer.hasArray()) {
+      allbs = buffer.array();
+      arrayOffset = buffer.arrayOffset();
+    } else {
+      buffer.mark();
+      allbs = new byte[buffer.remaining()];
+      buffer.get(allbs);
+      buffer.reset();
+      // 对 DirectBuffer，下标起始位置应为 0
+    }
+
     int lastPosition = initPosition;
     int remaining = buffer.remaining();
     if (remaining == 0) {
@@ -431,7 +444,8 @@ public class HttpRequestDecoder {
       if (name == null) {
         if (b == SysConst.COL) {
           int len = buffer.position() - lastPosition - 1;
-          name = StrCache.get(allbs, lastPosition, len);
+          //name = StrCache.get(allbs, lastPosition, len);
+          name = StrCache.get(allbs, lastPosition - initPosition + arrayOffset, len);
           // name = new String(allbs, lastPosition, len);
           lastPosition = buffer.position();
         } else if (b == SysConst.LF) {
@@ -456,7 +470,8 @@ public class HttpRequestDecoder {
           if (lastByte == SysConst.CR) {
             len = buffer.position() - lastPosition - 2;
           }
-          value = new String(allbs, lastPosition, len);
+          //value = new String(allbs, lastPosition, len);
+          value = new String(allbs, lastPosition - initPosition + arrayOffset, len);
           lastPosition = buffer.position();
 
           headers.put(StrCache.getLowercase(name), StrUtil.trimEnd(value));
@@ -613,7 +628,15 @@ public class HttpRequestDecoder {
    */
   public static RequestLine parseRequestLine(ByteBuffer buffer, ChannelContext channelContext) throws TioDecodeException {
 
-    byte[] allbs = buffer.array();
+    byte[] allbs;
+    if (buffer.hasArray()) {
+      allbs = buffer.array();
+    } else {
+      buffer.mark();
+      allbs = new byte[buffer.remaining()];
+      buffer.get(allbs);
+      buffer.reset();
+    }
 
     int initPosition = buffer.position();
 
