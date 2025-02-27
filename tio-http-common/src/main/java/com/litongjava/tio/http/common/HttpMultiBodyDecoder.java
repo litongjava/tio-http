@@ -19,8 +19,7 @@ import com.litongjava.tio.utils.SystemTimer;
 import com.litongjava.tio.utils.hutool.StrUtil;
 
 /**
- * @author tanyaowu
- * 2017年7月26日 下午2:20:43
+ * 解析上传文件
  */
 public class HttpMultiBodyDecoder {
   public static class Header {
@@ -73,16 +72,10 @@ public class HttpMultiBodyDecoder {
   }
 
   /**
-   * 【
    * Content-Disposition: form-data; name="uploadFile"; filename=""
    * Content-Type: application/octet-stream
-   * 】
    *
-   * 【
    * Content-Disposition: form-data; name="end"
-   * 】
-   * @author tanyaowu
-   * 2017年7月27日 上午10:18:01
    */
   public static interface MultiBodyHeaderKey {
     String Content_Disposition = "Content-Disposition".toLowerCase();
@@ -171,38 +164,7 @@ public class HttpMultiBodyDecoder {
   }
 
   /**
-   * 返回值不包括最后的\r\n
-   * @param buffer
-   * @param charset
-   * @return
-   * @throws UnsupportedEncodingException
-   */
-  // public static String getLine(ByteBuffer buffer, String charset) throws UnsupportedEncodingException {
-  // char lastByte = 0; // 上一个字节
-  // int initPosition = buffer.position();
-  //
-  // while (buffer.hasRemaining()) {
-  // char b = (char) buffer.get();
-  //
-  // if (b == '\n') {
-  // if (lastByte == '\r') {
-  // int startIndex = initPosition;
-  // int endIndex = buffer.position() - 2;
-  // int length = endIndex - startIndex;
-  // byte[] dst = new byte[length];
-  //
-  // System.arraycopy(buffer.array(), startIndex, dst, 0, length);
-  // String line = new String(dst, charset);
-  // return line;
-  // }
-  // }
-  // lastByte = b;
-  // }
-  // return null;
-  // }
-
-  /**
-   * 
+   * 解析请求体
    * @param header
    * @param request
    * @param buffer
@@ -255,14 +217,11 @@ public class HttpMultiBodyDecoder {
   }
 
   /**
-   * 【
    * Content-Disposition: form-data; name="uploadFile"; filename=""
    * Content-Type: application/octet-stream
-   * 】
    *
-   * 【
    * Content-Disposition: form-data; name="end"
-   * 】
+  
    * @param lines
    * @param header
    * @author tanyaowu
@@ -294,34 +253,6 @@ public class HttpMultiBodyDecoder {
       log.error(channelContext.toString(), e);
       throw new TioDecodeException(e.toString());
     }
-
-    // for (int i = 0; i < lines.size(); i++) {
-    // String line = lines.get(i);
-    // if (i == 0) {
-    // String[] mapStrings = StrUtil.split(line, ";");
-    // String s = mapStrings[0];//
-    //
-    // String[] namekeyvalue = StrUtil.split(mapStrings[1], "=");
-    // header.setName(namekeyvalue[1].substring(1, namekeyvalue[1].length() - 1));
-    //
-    // if (mapStrings.length == 3) {
-    // String[] finenamekeyvalue = StrUtil.split(mapStrings[2], "=");
-    // String filename = finenamekeyvalue[1].substring(1, finenamekeyvalue[1].length() - 1);
-    // header.setFilename(FilenameUtils.getName(filename));
-    // }
-    // } else if (i == 1) {
-    // String[] map = StrUtil.split(line, ":");
-    // String contentType = map[1].trim();//
-    // header.setContentType(contentType);
-    // }
-    // }
-  }
-
-  /**
-   *
-   */
-  public HttpMultiBodyDecoder() {
-
   }
 
 }
