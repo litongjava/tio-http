@@ -127,6 +127,7 @@ public class HttpRequestDecoder {
 
     int notReceivedLength = allNeedLength - readableLength; // 尚未接收到的数据长度
     if (notReceivedLength > 0) {
+      // 重置 position，使得下次 decode 时能从头开始读取已接收的数据
       if (notReceivedLength > channelContext.getReadBufferSize()) {
         channelContext.setReadBufferSize(notReceivedLength);
       }
@@ -390,230 +391,70 @@ public class HttpRequestDecoder {
         || contentType.startsWith(MimeType.TEXT_PLAIN_JSON.getType());
   }
 
-  /**
-   * 解析请求头的每一行
-   * @param buffer
-   * @param headers
-   * @param hasReceivedHeaderLength
-   * @param httpConfig
-   * @return 头部是否解析完成，true: 解析完成, false: 没有解析完成
-   * @throws TioDecodeException
-   * @author tanyaowu
-   */
-  public static boolean parseHeaderLine(ByteBuffer buffer, Map<String, String> headers, int hasReceivedHeaderLength, HttpConfig httpConfig) throws TioDecodeException {
-
-    byte[] allbs;
-    int arrayOffset = 0;
-    int initPosition = buffer.position(); // 记录初始 position
-    if (buffer.hasArray()) {
-      allbs = buffer.array();
-      arrayOffset = buffer.arrayOffset();
-    } else {
-      buffer.mark();
-      allbs = new byte[buffer.remaining()];
-      buffer.get(allbs);
-      buffer.reset();
-      // 对 DirectBuffer，下标起始位置应为 0
-    }
-
-    int lastPosition = initPosition;
-    int remaining = buffer.remaining();
-    if (remaining == 0) {
-      return false;
-    } else if (remaining > 1) {
-      byte b1 = buffer.get();
-      byte b2 = buffer.get();
-      if (SysConst.CR == b1 && SysConst.LF == b2) {
-        return true;
-      } else if (SysConst.LF == b1) {
-        return true;
-      }
-    } else {
-      if (SysConst.LF == buffer.get()) {
-        return true;
-      }
-    }
-
-    String name = null;
-    String value = null;
-    boolean hasValue = false;
-
-    boolean needIteration = false;
+  private static String readLine(ByteBuffer buffer) {
+    // 记录当前起始位置
+    int startPosition = buffer.position();
+    // 搜索 CRLF 结束符
     while (buffer.hasRemaining()) {
       byte b = buffer.get();
-      if (name == null) {
-        if (b == SysConst.COL) {
-          int len = buffer.position() - lastPosition - 1;
-          //name = StrCache.get(allbs, lastPosition, len);
-          name = StrCache.get(allbs, lastPosition - initPosition + arrayOffset, len);
-          // name = new String(allbs, lastPosition, len);
-          lastPosition = buffer.position();
-        } else if (b == SysConst.LF) {
-          byte lastByte = buffer.get(buffer.position() - 2);
-          int len = buffer.position() - lastPosition - 1;
-          if (lastByte == SysConst.CR) {
-            len = buffer.position() - lastPosition - 2;
-          }
-          name = StrCache.get(allbs, lastPosition, len);
-          // name = new String(allbs, lastPosition, len);
-          lastPosition = buffer.position();
-          headers.put(StrCache.getLowercase(name), "");
-
-          needIteration = true;
-          break;
-        }
-        continue;
-      } else if (value == null) {
-        if (b == SysConst.LF) {
-          byte lastByte = buffer.get(buffer.position() - 2);
-          int len = buffer.position() - lastPosition - 1;
-          if (lastByte == SysConst.CR) {
-            len = buffer.position() - lastPosition - 2;
-          }
-          //value = new String(allbs, lastPosition, len);
-          value = new String(allbs, lastPosition - initPosition + arrayOffset, len);
-          lastPosition = buffer.position();
-
-          headers.put(StrCache.getLowercase(name), StrUtil.trimEnd(value));
-          needIteration = true;
-          break;
-        } else {
-          if (!hasValue && b == SysConst.SPACE) {
-            lastPosition = buffer.position();
+      if (b == SysConst.CR) {
+        if (buffer.hasRemaining()) {
+          byte next = buffer.get();
+          if (next == SysConst.LF) {
+            // 找到 CRLF，计算这一行的长度
+            int endPosition = buffer.position() - 2;
+            int length = endPosition - startPosition;
+            byte[] lineBytes = new byte[length];
+            // 恢复到起始位置，读取这一行的字节
+            buffer.position(startPosition);
+            buffer.get(lineBytes);
+            // 跳过 CRLF
+            buffer.get(); // CR
+            buffer.get(); // LF
+            return new String(lineBytes, StandardCharsets.UTF_8);
           } else {
-            hasValue = true;
+            // 如果 CR 后面不是 LF，则将指针回退一位
+            buffer.position(buffer.position() - 1);
           }
         }
       }
     }
-
-    int lineLength = buffer.position() - initPosition; // 这一行(header line)的字节数
-    if (lineLength > MAX_LENGTH_OF_HEADERLINE) {
-      throw new TioDecodeException("header line is too long, max length of header line is " + MAX_LENGTH_OF_HEADERLINE);
-    }
-
-    if (needIteration) {
-      int headerLength = lineLength + hasReceivedHeaderLength; // header占用的字节数
-      if (headerLength > MAX_LENGTH_OF_HEADER) {
-        throw new TioDecodeException("header is too long, max length of header is " + MAX_LENGTH_OF_HEADER);
-      }
-      return parseHeaderLine(buffer, headers, headerLength, httpConfig);
-    }
-
-    return false;
+    // 没有找到完整的行，恢复位置
+    buffer.position(startPosition);
+    return null;
   }
 
-  /**
-   * 解析请求头的每一行
-   * @param line
-   * @param headers
-   * @return 头部是否解析完成，true: 解析完成, false: 没有解析完成
-   * @author tanyaowu
-   */
-  @SuppressWarnings("unused")
-  private static boolean parseHeaderLine2(ByteBuffer buffer, Map<String, String> headers, int headerLength, HttpConfig httpConfig) throws TioDecodeException {
-    int initPosition = buffer.position();
-    int lastPosition = initPosition;
-    int remaining = buffer.remaining();
-    if (remaining == 0) {
-      return false;
-    } else if (remaining > 1) {
-      byte b1 = buffer.get();
-      byte b2 = buffer.get();
-      if (SysConst.CR == b1 && SysConst.LF == b2) {
-        return true;
-      } else if (SysConst.LF == b1) {
+  public static boolean parseHeaderLine(ByteBuffer buffer, Map<String, String> headers, int hasReceivedHeaderLength, HttpConfig httpConfig) throws TioDecodeException {
+    // 循环读取每一行 header
+    while (true) {
+      // 如果没有足够数据来读取一行，则返回 false
+      String line = readLine(buffer);
+      if (line == null) {
+        return false;
+      }
+      // 如果读取到空行（即仅包含 CRLF），说明 header 结束
+      if (line.trim().isEmpty()) {
         return true;
       }
-    } else {
-      if (SysConst.LF == buffer.get()) {
-        return true;
+      // 检查单行长度是否超出限制
+      if (line.length() > MAX_LENGTH_OF_HEADERLINE) {
+        throw new TioDecodeException("header line is too long, max length of header line is " + MAX_LENGTH_OF_HEADERLINE);
       }
-    }
-
-    String name = null;
-    String value = null;
-    boolean hasValue = false;
-
-    boolean needIteration = false;
-    while (buffer.hasRemaining()) {
-      byte b = buffer.get();
-      if (name == null) {
-        if (b == SysConst.COL) {
-          int nowPosition = buffer.position();
-          byte[] bs = new byte[nowPosition - lastPosition - 1];
-          buffer.position(lastPosition);
-          buffer.get(bs);
-          name = new String(bs);
-          lastPosition = nowPosition;
-          buffer.position(nowPosition);
-        } else if (b == SysConst.LF) {
-          int nowPosition = buffer.position();
-          byte[] bs = null;
-          byte lastByte = buffer.get(nowPosition - 2);
-
-          if (lastByte == SysConst.CR) {
-            bs = new byte[nowPosition - lastPosition - 2];
-          } else {
-            bs = new byte[nowPosition - lastPosition - 1];
-          }
-
-          buffer.position(lastPosition);
-          buffer.get(bs);
-          name = new String(bs);
-          lastPosition = nowPosition;
-          buffer.position(nowPosition);
-
-          headers.put(name.toLowerCase(), null);
-          needIteration = true;
-          break;
-          // return true;
-        }
-        continue;
-      } else if (value == null) {
-        if (b == SysConst.LF) {
-          int nowPosition = buffer.position();
-          byte[] bs = null;
-          byte lastByte = buffer.get(nowPosition - 2);
-
-          if (lastByte == SysConst.CR) {
-            bs = new byte[nowPosition - lastPosition - 2];
-          } else {
-            bs = new byte[nowPosition - lastPosition - 1];
-          }
-
-          buffer.position(lastPosition);
-          buffer.get(bs);
-          value = new String(bs);
-          lastPosition = nowPosition;
-          buffer.position(nowPosition);
-
-          headers.put(name.toLowerCase(), StrUtil.trimEnd(value));
-          needIteration = true;
-          break;
-          // return true;
-        } else {
-          if (!hasValue && b == SysConst.SPACE) {
-            lastPosition = buffer.position();
-          } else {
-            hasValue = true;
-          }
-        }
+      // 累计 header 总长度检查
+      hasReceivedHeaderLength += line.getBytes(StandardCharsets.UTF_8).length + 2; // 加上 CRLF
+      if (hasReceivedHeaderLength > MAX_LENGTH_OF_HEADER) {
+        throw new TioDecodeException("header is too long, max length of header is " + MAX_LENGTH_OF_HEADER);
       }
-    }
-
-    if (needIteration) {
-      int myHeaderLength = buffer.position() - initPosition;
-      if (myHeaderLength > MAX_LENGTH_OF_HEADER) {
-        throw new TioDecodeException("header is too long");
+      // 按照冒号分割 header 名和值
+      int colonIndex = line.indexOf(':');
+      if (colonIndex == -1) {
+        // 如果没有冒号，则认为是无效的 header 行，可以选择抛出异常或跳过
+        throw new TioDecodeException("Invalid header line: " + line);
       }
-      return parseHeaderLine(buffer, headers, myHeaderLength + headerLength, httpConfig);
+      String name = line.substring(0, colonIndex).trim().toLowerCase();
+      String value = line.substring(colonIndex + 1).trim();
+      headers.put(name, value);
     }
-
-    if (remaining > MAX_LENGTH_OF_HEADERLINE) {
-      throw new TioDecodeException("header line is too long");
-    }
-    return false;
   }
 
   /**
