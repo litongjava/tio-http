@@ -10,9 +10,7 @@ import com.litongjava.aio.Packet;
 import com.litongjava.model.sys.SysConst;
 
 /**
- *
  * @author tanyaowu
- *
  */
 public class HttpPacket extends Packet {
   private static final long serialVersionUID = 3903186670675671956L;
