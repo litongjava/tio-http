@@ -278,7 +278,11 @@ public class HttpRequestDecoder {
           if (log.isDebugEnabled()) {
             try {
               bodyString = new String(bodyBytes, httpRequest.getCharset());
-              log.debug("{} multipart body value\r\n{}", channelContext, bodyString);
+              if (bodyString.length() < 2048) {
+                log.debug("{} multipart body value\r\n{}", channelContext, bodyString);
+              } else {
+                log.debug("{} multipart body value\r\n{}", channelContext, bodyString.substring(0, 2048));
+              }
             } catch (UnsupportedEncodingException e) {
               log.error(channelContext.toString(), e);
             }

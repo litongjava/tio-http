@@ -157,10 +157,7 @@ public class HttpMultiBodyDecoder {
       throw new TioDecodeException(loe);
     } catch (UnsupportedEncodingException e) {
       log.error(channelContext.toString(), e);
-    } finally {
-      log.info("Parsing time:{}ms", SystemTimer.currTime - start);
-    }
-
+    } 
   }
 
   /**
