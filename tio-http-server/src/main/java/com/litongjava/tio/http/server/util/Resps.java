@@ -11,9 +11,6 @@ import java.nio.file.Files;
 import java.util.Date;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.litongjava.tio.http.common.HeaderName;
 import com.litongjava.tio.http.common.HeaderValue;
 import com.litongjava.tio.http.common.HttpConfig;
@@ -30,16 +27,14 @@ import com.litongjava.tio.utils.hutool.FileUtil;
 import com.litongjava.tio.utils.hutool.StrUtil;
 import com.litongjava.tio.utils.json.Json;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author tanyaowu
  * 2017年6月29日 下午4:17:24
  */
+@Slf4j
 public class Resps {
-  private static Logger log = LoggerFactory.getLogger(Resps.class);
-
-  private Resps() {
-  }
-
   /**
    * 构建css响应
    * Content-Type: text/css;charset=utf-8
@@ -47,7 +42,6 @@ public class Resps {
    * @param request
    * @param bodyString
    * @return
-   * @author tanyaowu
    */
   public static HttpResponse css(HttpRequest request, String bodyString) {
     return css(request, bodyString, request.httpConfig.getCharset());
@@ -61,7 +55,6 @@ public class Resps {
    * @param bodyString
    * @param charset
    * @return
-   * @author tanyaowu
    */
   public static HttpResponse css(HttpRequest request, String bodyString, String charset) {
     HttpResponse ret = string(request, bodyString, charset, getMimeTypeStr(MimeType.TEXT_CSS_CSS, charset));
@@ -75,7 +68,6 @@ public class Resps {
    * @param bodyBytes
    * @param extension 后缀，可以为空
    * @return
-   * @author tanyaowu
    */
   public static HttpResponse bytes(HttpRequest request, byte[] bodyBytes, String extension) {
     String contentType = null;
@@ -138,7 +130,6 @@ public class Resps {
    * @param fileOnServer
    * @return
    * @throws IOException
-   * @author tanyaowu
    */
   public static HttpResponse file(HttpRequest request, File fileOnServer) throws Exception {
     if (fileOnServer == null || !fileOnServer.exists()) {
@@ -164,7 +155,6 @@ public class Resps {
    * @param path
    * @return
    * @throws Exception
-   * @author tanyaowu
    */
   public static HttpResponse file(HttpRequest request, String path) throws Exception {
     HttpResource httpResource = request.httpConfig.getResource(request, path);
@@ -192,7 +182,6 @@ public class Resps {
    * @param httpConfig
    * @return
    * @throws Exception
-   * @author: tanyaowu
    */
   public static HttpResponse resp404(HttpRequest request, RequestLine requestLine, HttpConfig httpConfig) throws Exception {
     String file404 = httpConfig.getPage404();
@@ -264,7 +253,6 @@ public class Resps {
    * @param bodyBytes
    * @param contentType 形如:application/octet-stream等
    * @return
-   * @author tanyaowu
    */
   public static HttpResponse bytesWithContentType(HttpRequest request, byte[] bodyBytes, String contentType) {
     HttpResponse ret = new HttpResponse(request);
@@ -311,7 +299,6 @@ public class Resps {
    * @param bodyBytes
    * @param headers
    * @return
-   * @author tanyaowu
    */
   public static HttpResponse bytesWithHeaders(HttpRequest request, byte[] bodyBytes, Map<HeaderName, HeaderValue> headers) {
     HttpResponse ret = new HttpResponse(request);
@@ -324,7 +311,6 @@ public class Resps {
    * @param request
    * @param bodyString
    * @return
-   * @author tanyaowu
    */
   public static HttpResponse html(HttpRequest request, String bodyString) {
     return html(request, bodyString, request.httpConfig.getCharset());
@@ -360,7 +346,6 @@ public class Resps {
    * @param bodyString
    * @param charset
    * @return
-   * @author tanyaowu
    */
   public static HttpResponse html(HttpRequest request, String bodyString, String charset) {
     HttpResponse ret = string(request, bodyString, charset, getMimeTypeStr(MimeType.TEXT_HTML_HTML, charset));
@@ -387,7 +372,6 @@ public class Resps {
    * @param request
    * @param bodyString
    * @return
-   * @author tanyaowu
    */
   public static HttpResponse js(HttpRequest request, String bodyString) {
     return js(request, bodyString, request.httpConfig.getCharset());
@@ -400,7 +384,6 @@ public class Resps {
    * @param bodyString
    * @param charset
    * @return
-   * @author tanyaowu
    */
   public static HttpResponse js(HttpRequest request, String bodyString, String charset) {
     HttpResponse ret = string(request, bodyString, charset, getMimeTypeStr(MimeType.APPLICATION_JAVASCRIPT_JS, charset));
@@ -413,7 +396,6 @@ public class Resps {
    * @param request
    * @param body
    * @return
-   * @author tanyaowu
    */
   public static HttpResponse json(HttpRequest request, Object body) {
     return json(request, body, request.httpConfig.getCharset());
@@ -431,7 +413,6 @@ public class Resps {
    * @param body
    * @param charset
    * @return
-   * @author tanyaowu
    */
   public static HttpResponse json(HttpRequest request, Object body, String charset) {
     HttpResponse ret = null;
@@ -474,7 +455,6 @@ public class Resps {
    * @param request
    * @param path
    * @return
-   * @author tanyaowu
    */
   public static HttpResponse redirect(HttpRequest request, String path) {
     return redirect(request, path, HttpResponseStatus.C302);
@@ -529,7 +509,6 @@ public class Resps {
    * @param bodyString
    * @param Content_Type
    * @return
-   * @author tanyaowu
    */
   public static HttpResponse string(HttpRequest request, String bodyString, String Content_Type) {
     return string(request, bodyString, request.httpConfig.getCharset(), Content_Type);
@@ -543,7 +522,6 @@ public class Resps {
    * @param charset
    * @param mimeTypeStr
    * @return
-   * @author tanyaowu
    */
   public static HttpResponse string(HttpRequest request, String bodyString, String charset, String mimeTypeStr) {
     HttpResponse ret = new HttpResponse(request);
@@ -585,7 +563,6 @@ public class Resps {
    * @param request
    * @param lastModifiedOnServer 服务器中资源的lastModified
    * @return
-   * @author tanyaowu
    */
   public static HttpResponse try304(HttpRequest request, long lastModifiedOnServer) {
     String If_Modified_Since = request.getHeader(RequestHeaderKey.If_Modified_Since);// If-Modified-Since
@@ -614,7 +591,6 @@ public class Resps {
    * @param request
    * @param bodyString
    * @return
-   * @author tanyaowu
    */
   public static HttpResponse txt(HttpRequest request, String bodyString) {
     return txt(request, bodyString, request.httpConfig.getCharset());
@@ -625,8 +601,12 @@ public class Resps {
    * @param bodyString
    * @return
    */
-  public static HttpResponse txt(HttpResponse reqponse, String bodyString) {
-    return txt(reqponse, bodyString, reqponse.getHttpRequest().getHttpConfig().getCharset());
+  public static HttpResponse txt(HttpResponse response, String bodyString) {
+    return txt(response, bodyString, response.getHttpRequest().getHttpConfig().getCharset());
+  }
+
+  public static HttpResponse text(HttpResponse response, String bodyString) {
+    return txt(response, bodyString, response.getHttpRequest().getHttpConfig().getCharset());
   }
 
   /**
@@ -635,8 +615,6 @@ public class Resps {
    * @param request
    * @param bodyString
    * @param charset
-   * @return
-   * @author tanyaowu
    */
   public static HttpResponse txt(HttpRequest request, String bodyString, String charset) {
     HttpResponse ret = string(request, bodyString, charset, getMimeTypeStr(MimeType.TEXT_PLAIN_TXT, charset));
@@ -645,6 +623,18 @@ public class Resps {
 
   public static HttpResponse txt(HttpResponse response, String bodyString, String charset) {
     return string(response, bodyString, charset, getMimeTypeStr(MimeType.TEXT_PLAIN_TXT, charset));
+  }
+
+  public static HttpResponse fail(HttpResponse response, String string) {
+    response.setStatus(HttpResponseStatus.C400);
+    response.setString(string);
+    return response;
+  }
+
+  public static HttpResponse error(HttpResponse response, String string) {
+    response.setStatus(HttpResponseStatus.C500);
+    response.setString(string);
+    return response;
   }
 
 }
