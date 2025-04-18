@@ -10,14 +10,20 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import com.litongjava.model.sys.SysConst;
+import com.litongjava.tio.constants.TioCoreConfigKeys;
 import com.litongjava.tio.http.common.utils.HttpGzipUtils;
+import com.litongjava.tio.utils.environment.EnvUtils;
 import com.litongjava.tio.utils.hutool.ClassUtil;
 import com.litongjava.tio.utils.json.Json;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author tanyaowu
  */
+@Slf4j
 public class HttpResponse extends HttpPacket {
+  private final static boolean DIAGNOSTIC_LOG_ENABLED = EnvUtils.getBoolean(TioCoreConfigKeys.TIO_CORE_DIAGNOSTIC, false);
   private static final long serialVersionUID = -3512681144230291786L;
   public transient static final HttpResponse NULL_RESPONSE = new HttpResponse();
   /**
@@ -84,7 +90,7 @@ public class HttpResponse extends HttpPacket {
     if (HttpConst.HttpVersion.V1_0.equals(version)) {
       // 只有在允许兼容 1.0 并且客户端显式要 keep-alive 时才开启
       if (request.httpConfig != null && request.httpConfig.compatible1_0 &&
-          //
+      //
           HttpConst.RequestHeaderValue.Connection.keep_alive.equalsIgnoreCase(conn)) {
         addHeader(HeaderName.Connection, HeaderValue.Connection.keep_alive);
         addHeader(HeaderName.Keep_Alive, HeaderValue.Keep_Alive.TIMEOUT_10_MAX_20);
@@ -108,6 +114,9 @@ public class HttpResponse extends HttpPacket {
     } else {
       addHeader(HeaderName.Connection, HeaderValue.Connection.close);
       setKeepConnection(false);
+    }
+    if (DIAGNOSTIC_LOG_ENABLED) {
+      log.info("keepConnection:{}", isKeepConnection());
     }
 
     // 200 状态设置

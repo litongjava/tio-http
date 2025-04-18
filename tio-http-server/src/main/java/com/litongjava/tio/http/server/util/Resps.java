@@ -196,6 +196,20 @@ public class Resps {
     return ret;
   }
 
+  public static HttpResponse resp404(HttpResponse response, RequestLine requestLine, HttpConfig httpConfig) throws Exception {
+    String file404 = httpConfig.getPage404();
+    HttpRequest request = response.getHttpRequest();
+    HttpResource httpResource = httpConfig.getResource(request, file404);
+    if (httpResource != null) {
+      file404 = httpResource.getPath();
+      HttpResponse ret = Resps.forward(request, file404 + "?tio_initpath=" + URLEncoder.encode(requestLine.getPathAndQuery(), httpConfig.getCharset()));
+      return ret;
+    }
+    HttpResponse ret = Resps.html(response, "404");
+    ret.setStatus(HttpResponseStatus.C404);
+    return ret;
+  }
+
   /**
    * @param request
    * @return

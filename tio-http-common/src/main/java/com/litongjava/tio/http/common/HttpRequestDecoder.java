@@ -461,79 +461,84 @@ public class HttpRequestDecoder {
    * @param channelContext
    */
   public static RequestLine parseRequestLine(ByteBuffer buffer, ChannelContext channelContext) throws TioDecodeException {
-
     byte[] allbs;
+    int offset; // 用来统一索引偏移
+
     if (buffer.hasArray()) {
       allbs = buffer.array();
+      offset = buffer.arrayOffset(); // 通常为0，但为了严谨，使用arrayOffset
     } else {
       buffer.mark();
       allbs = new byte[buffer.remaining()];
       buffer.get(allbs);
       buffer.reset();
+      offset = -buffer.position(); // 直接缓冲区时, buffer.position要从0开始计算，所以设offset为 -position
     }
 
-    int initPosition = buffer.position();
+    int startPos = buffer.position() + offset;
 
-    // int remaining = buffer.remaining();
     String methodStr = null;
     String pathStr = null;
     String queryStr = null;
     String protocol = null;
     String version = null;
-    int lastPosition = initPosition;// buffer.position();
+
+    int initPosition = buffer.position();
+
     while (buffer.hasRemaining()) {
       byte b = buffer.get();
+
       if (methodStr == null) {
         if (b == SysConst.SPACE) {
-          int len = buffer.position() - lastPosition - 1;
-          methodStr = StrCache.get(allbs, lastPosition, len);
-          // methodStr = new String(allbs, lastPosition, len);
-          lastPosition = buffer.position();
-        }
-        // GET,POST,PUT,OPTIONS,没有http的方法名会超过10个字节
-        if (lastPosition > 10) {
-          return null;
+          int len = buffer.position() + offset - startPos - 1;
+          methodStr = StrCache.get(allbs, startPos, len);
+          startPos = buffer.position() + offset;
+        } else if ((buffer.position() + offset - startPos) > 10) {
+          return null; // method too long
         }
         continue;
-      } else if (pathStr == null) {
+      }
+
+      if (pathStr == null) {
         if (b == SysConst.SPACE || b == SysConst.ASTERISK) {
-          int len = buffer.position() - lastPosition - 1;
-          pathStr = StrCache.get(allbs, lastPosition, len);
-          // pathStr = new String(allbs, lastPosition, len);
-          lastPosition = buffer.position();
+          int len = buffer.position() + offset - startPos - 1;
+          pathStr = StrCache.get(allbs, startPos, len);
+          startPos = buffer.position() + offset;
 
           if (b == SysConst.SPACE) {
             queryStr = SysConst.BLANK;
           }
         }
         continue;
-      } else if (queryStr == null) {
+      }
+
+      if (queryStr == null) {
         if (b == SysConst.SPACE) {
-          int len = buffer.position() - lastPosition - 1;
-          queryStr = new String(allbs, lastPosition, len);
-          lastPosition = buffer.position();
+          int len = buffer.position() + offset - startPos - 1;
+          queryStr = new String(allbs, startPos, len);
+          startPos = buffer.position() + offset;
         }
         continue;
-      } else if (protocol == null) {
+      }
+
+      if (protocol == null) {
         if (b == SysConst.BACKSLASH) {
-          int len = buffer.position() - lastPosition - 1;
-          protocol = StrCache.get(allbs, lastPosition, len);
-          // protocol = new String(allbs, lastPosition, len);
-          lastPosition = buffer.position();
+          int len = buffer.position() + offset - startPos - 1;
+          protocol = StrCache.get(allbs, startPos, len);
+          startPos = buffer.position() + offset;
         }
         continue;
-      } else if (version == null) {
+      }
+
+      if (version == null) {
         if (b == SysConst.LF) {
           byte lastByte = buffer.get(buffer.position() - 2);
-          int len = buffer.position() - lastPosition - 1;
+          int len = buffer.position() + offset - startPos - 1;
           if (lastByte == SysConst.CR) {
-            len = buffer.position() - lastPosition - 2;
+            len -= 1;
           }
 
-          version = StrCache.get(allbs, lastPosition, len);
-          // version = new String(allbs, lastPosition, len);
-
-          lastPosition = buffer.position();
+          version = StrCache.get(allbs, startPos, len);
 
           RequestLine requestLine = new RequestLine();
           HttpMethod method = HttpMethod.from(methodStr);
@@ -543,8 +548,6 @@ public class HttpRequestDecoder {
           requestLine.setQueryString(queryStr);
           requestLine.setProtocol(protocol);
           requestLine.setVersion(version);
-
-          // requestLine.setLine(line);
 
           return requestLine;
         }
