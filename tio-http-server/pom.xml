@@ -6,14 +6,14 @@
     <version>3.7.3.v20240601-RELEASE</version>
   </parent>
   <artifactId>tio-http-server</artifactId>
-  <version>3.7.3.v20250401-RELEASE</version>
+  <version>3.7.3.v20250415-RELEASE</version>
   <url>https://github.com/litongjava/tio-http</url>
   <description>tio http server</description>
   <dependencies>
     <dependency>
       <groupId>com.litongjava</groupId>
       <artifactId>tio-http-common</artifactId>
-      <version>3.7.3.v20250401-RELEASE</version>
+      <version>3.7.3.v20250415-RELEASE</version>
     </dependency>
 
     <dependency>
