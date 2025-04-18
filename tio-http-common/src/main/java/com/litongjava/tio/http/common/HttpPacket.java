@@ -15,6 +15,8 @@ import com.litongjava.model.sys.SysConst;
 public class HttpPacket extends Packet {
   private static final long serialVersionUID = 3903186670675671956L;
   private Map<String, Serializable> props = new HashMap<>();
+  private transient Map<String, Object> localProps = new HashMap<>();
+
   protected byte[] body;
   private String headerString = SysConst.BLANK;
 
@@ -24,6 +26,23 @@ public class HttpPacket extends Packet {
 
   public boolean isKeepedConnection() {
     return super.keepConnection;
+  }
+
+  /**
+   * localProps
+   * @param key
+   * @param value
+   */
+  public void setLocalAttribute(String key, Object value) {
+    localProps.put(key, value);
+  }
+
+  public Object getLocalAttribute(String key) {
+    return localProps.get(key);
+  }
+
+  public void removeLocalAttribute(String key) {
+    localProps.remove(key);
   }
 
   /**
