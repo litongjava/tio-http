@@ -28,6 +28,6 @@ public class SessionStroe {
   }
 
   public static boolean containsKey(String sessionId) {
-    return sessionStrMap.contains(sessionId) || sessionObjMap.contains(sessionId);
+    return sessionStrMap.containsKey(sessionId) || sessionObjMap.containsKey(sessionId);
   }
 }

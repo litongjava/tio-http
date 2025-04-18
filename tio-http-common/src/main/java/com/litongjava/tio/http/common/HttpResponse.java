@@ -66,42 +66,52 @@ public class HttpResponse extends HttpPacket {
   }
 
   /**
-   * 
    * @param request
    */
   public HttpResponse(HttpRequest request) {
     this();
     this.request = request;
-    if (request == null) {
+    if (request == null)
       return;
-    }
 
-    String version = request.requestLine.version;
+    String version = request.requestLine.getVersion(); // "1.0" or "1.1"
     this.version = version;
 
-    if (request.httpConfig != null && request.httpConfig.compatible1_0) {
-      String connection = request.getConnection();// StrUtil.lowerCase(request.getHeader(HttpConst.RequestHeaderKey.Connection));
-      switch (version) {
-      case HttpConst.HttpVersion.V1_0:
-        this.status = HttpResponseStatus.C200.changeVersion(version);
-        if (HttpConst.RequestHeaderValue.Connection.keep_alive.equals(connection)) {
-          addHeader(HeaderName.Connection, HeaderValue.Connection.keep_alive);
-          addHeader(HeaderName.Keep_Alive, HeaderValue.Keep_Alive.TIMEOUT_10_MAX_20);
-        } else {
-          // 不保存连接,直接关闭
-          this.status = HttpResponseStatus.C200;
-          setKeepedConnectin(false);
-        }
-        break;
+    // 拿到客户端的 Connection 头（可能为 "keep-alive" / "close" / null）
+    String conn = request.getConnection();
 
-      default:
-        if (HttpConst.RequestHeaderValue.Connection.close.equals(connection)) {
-          setKeepedConnectin(false);
-        }
-        this.status = HttpResponseStatus.C200;
-        break;
+    // HTTP/1.0
+    if (HttpConst.HttpVersion.V1_0.equals(version)) {
+      // 只有在允许兼容 1.0 并且客户端显式要 keep-alive 时才开启
+      if (request.httpConfig != null && request.httpConfig.compatible1_0 &&
+          //
+          HttpConst.RequestHeaderValue.Connection.keep_alive.equalsIgnoreCase(conn)) {
+        addHeader(HeaderName.Connection, HeaderValue.Connection.keep_alive);
+        addHeader(HeaderName.Keep_Alive, HeaderValue.Keep_Alive.TIMEOUT_10_MAX_20);
+        setKeepConnection(true);
+      } else {
+        // 默认关闭
+        addHeader(HeaderName.Connection, HeaderValue.Connection.close);
+        setKeepConnection(false);
       }
+
+      // HTTP/1.1（默认长连接，除非客户端要 close）
+    } else if (HttpConst.HttpVersion.V1_1.equals(version)) {
+      if (HttpConst.RequestHeaderValue.Connection.close.equalsIgnoreCase(conn)) {
+        addHeader(HeaderName.Connection, HeaderValue.Connection.close);
+        setKeepConnection(false);
+      } else {
+        addHeader(HeaderName.Connection, HeaderValue.Connection.keep_alive);
+        setKeepConnection(true);
+      }
+      // 其它版本也按 close 处理
+    } else {
+      addHeader(HeaderName.Connection, HeaderValue.Connection.close);
+      setKeepConnection(false);
     }
+
+    // 200 状态设置
+    this.status = HttpResponseStatus.C200.changeVersion(version);
   }
 
   /**
@@ -129,8 +139,6 @@ public class HttpResponse extends HttpPacket {
 
   /**
    * 支持跨域
-   * 
-   * @author tanyaowu
    */
   public void crossDomain() {
     addHeader(HeaderName.Access_Control_Allow_Origin, HeaderValue.from("*"));

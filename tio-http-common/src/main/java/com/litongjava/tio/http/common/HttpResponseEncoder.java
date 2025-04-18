@@ -6,9 +6,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.litongjava.model.sys.SysConst;
 import com.litongjava.tio.core.ChannelContext;
 import com.litongjava.tio.core.TioConfig;
@@ -17,16 +14,17 @@ import com.litongjava.tio.http.common.utils.HttpGzipUtils;
 import com.litongjava.tio.utils.environment.EnvUtils;
 import com.litongjava.tio.utils.hutool.StrUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * HttpResponseEncoder  
  * @author tanyaowu
  * 2017年8月4日 上午9:41:12
  */
+@Slf4j
 public class HttpResponseEncoder {
-  private static Logger log = LoggerFactory.getLogger(HttpResponseEncoder.class);
   public static final int MAX_HEADER_LENGTH = 20480;
-  public static final int HEADER_SERVER_LENGTH = HeaderName.Server.bytes.length + HeaderValue.Server.TIO.bytes.length
-      + 3;
+  public static final int HEADER_SERVER_LENGTH = HeaderName.Server.bytes.length + HeaderValue.Server.TIO.bytes.length + 3;
   public static final int HEADER_DATE_LENGTH_1 = HeaderName.Date.bytes.length + 3;
   public static final int HEADER_FIXED_LENGTH = HEADER_SERVER_LENGTH + HEADER_DATE_LENGTH_1;
 
@@ -42,8 +40,6 @@ public class HttpResponseEncoder {
     int bodyLength = 0;
     byte[] body = httpResponse.body;
 
-    // 处理jsonp
-    // bodyString = jsonp + "(" + bodyString + ")";
     byte[] jsonpBytes = null;
     HttpRequest httpRequest = httpResponse.getHttpRequest();
     if (httpRequest != null) {
@@ -85,12 +81,14 @@ public class HttpResponseEncoder {
     int respLineLength = httpResponseStatus.responseLineBinary.length;
 
     Map<HeaderName, HeaderValue> headers = httpResponse.getHeaders();
+    // Content_Length
     boolean isNotAddContentLength = httpResponse.isStream() || httpResponse.hasCountContentLength();
     if (!isNotAddContentLength) {
       httpResponse.addHeader(HeaderName.Content_Length, HeaderValue.from(Integer.toString(bodyLength)));
     }
+    
+    //keep alive
     int headerLength = httpResponse.getHeaderByteCount();
-
     if (httpResponse.getCookies() != null) {
       for (Cookie cookie : httpResponse.getCookies()) {
         headerLength += HeaderName.SET_COOKIE.bytes.length;
