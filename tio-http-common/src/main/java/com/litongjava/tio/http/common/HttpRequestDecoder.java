@@ -464,6 +464,7 @@ public class HttpRequestDecoder {
     byte[] allbs;
     int offset; // 用来统一索引偏移
 
+    // 兼容HeapByteBuffer和DirectByteBuffer
     if (buffer.hasArray()) {
       allbs = buffer.array();
       offset = buffer.arrayOffset(); // 通常为0，但为了严谨，使用arrayOffset
