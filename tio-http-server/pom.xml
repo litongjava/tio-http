@@ -6,14 +6,15 @@
     <version>3.7.3.v20240601-RELEASE</version>
   </parent>
   <artifactId>tio-http-server</artifactId>
-  <version>3.7.3.v20250415-RELEASE</version>
+  <version>3.7.3.v20250501-RELEASE</version>
+  <name>tio-http-server</name>
   <url>https://github.com/litongjava/tio-http</url>
   <description>tio http server</description>
   <dependencies>
     <dependency>
       <groupId>com.litongjava</groupId>
       <artifactId>tio-http-common</artifactId>
-      <version>3.7.3.v20250415-RELEASE</version>
+      <version>3.7.3.v20250501-RELEASE</version>
     </dependency>
 
     <dependency>
@@ -145,14 +146,12 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>org.sonatype.plugins</groupId>
-        <artifactId>nexus-staging-maven-plugin</artifactId>
-        <version>1.6.7</version>
+        <groupId>org.sonatype.central</groupId>
+        <artifactId>central-publishing-maven-plugin</artifactId>
+        <version>0.7.0</version>
         <extensions>true</extensions>
         <configuration>
-          <serverId>ossrh</serverId>
-          <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
-          <autoReleaseAfterClose>true</autoReleaseAfterClose>
+          <publishingServerId>central</publishingServerId>
         </configuration>
       </plugin>
     </plugins>
