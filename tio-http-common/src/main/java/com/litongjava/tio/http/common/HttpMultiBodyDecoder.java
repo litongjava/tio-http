@@ -15,7 +15,6 @@ import com.litongjava.tio.core.exception.LengthOverflowException;
 import com.litongjava.tio.core.exception.TioDecodeException;
 import com.litongjava.tio.core.utils.ByteBufferUtils;
 import com.litongjava.tio.http.common.utils.HttpParseUtils;
-import com.litongjava.tio.utils.SystemTimer;
 import com.litongjava.tio.utils.hutool.StrUtil;
 
 /**
@@ -104,8 +103,6 @@ public class HttpMultiBodyDecoder {
       throw new TioDecodeException("boundary is null");
     }
 
-    long start = SystemTimer.currTime;
-
     ByteBuffer buffer = ByteBuffer.wrap(bodyBytes);
     buffer.position(0);
 
@@ -157,7 +154,7 @@ public class HttpMultiBodyDecoder {
       throw new TioDecodeException(loe);
     } catch (UnsupportedEncodingException e) {
       log.error(channelContext.toString(), e);
-    } 
+    }
   }
 
   /**
