@@ -81,7 +81,7 @@ public class HeaderValue implements Serializable {
 
   public static class Content_Type extends EnumerableValue {
     public static final HeaderValue TEXT_PLAIN_TXT = HeaderValue.Content_Type.from(MimeType.TEXT_PLAIN_TXT.getType());
-    public static final HeaderValue TEXT_PLAIN_JSON = HeaderValue.Content_Type.from(MimeType.TEXT_PLAIN_JSON.getType());
+    public static final HeaderValue TEXT_PLAIN_JSON = HeaderValue.Content_Type.from(MimeType.APPLICATION_JSON.getType());
     public static final HeaderValue TEXT_HTML_HTML = HeaderValue.Content_Type.from(MimeType.TEXT_HTML_HTML.getType());
     public static final HeaderValue APPLICATION_ACAD_DWG = HeaderValue.Content_Type.from(MimeType.APPLICATION_ACAD_DWG.getType());
     public static final HeaderValue DEFAULT_TYPE = HeaderValue.Content_Type.from("application/octet-stream");

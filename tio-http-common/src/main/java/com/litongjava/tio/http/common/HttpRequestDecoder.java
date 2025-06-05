@@ -372,7 +372,7 @@ public class HttpRequestDecoder {
   private static boolean isText(String contentType) {
     return contentType.startsWith(HttpConst.RequestHeaderValue.Content_Type.text_plain)
         //
-        || contentType.startsWith(MimeType.TEXT_PLAIN_JSON.getType());
+        || contentType.startsWith(MimeType.APPLICATION_JSON.getType());
   }
 
   /**

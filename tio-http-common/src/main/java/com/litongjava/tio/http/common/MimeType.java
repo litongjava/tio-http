@@ -30,7 +30,7 @@ public enum MimeType {
 
   TEXT_PLAIN_TXT("text/plain", "txt"),
 
-  TEXT_PLAIN_JSON("application/json", "json"),
+  APPLICATION_JSON("application/json", "json"),
 
   VIDEO_AVI_AVI("video/avi", "avi"),
 
@@ -453,20 +453,19 @@ public enum MimeType {
 
   APPLICATION_XFRAME_MIF("application/x-frame", "mif"),
   //
-  APPLICATION_XFREELANCE_PRE("application/x-freelance", "pre"), APPLICATION_XGSP_GSP("application/x-gsp", "gsp"),
-  APPLICATION_XGSS_GSS("application/x-gss", "gss"), APPLICATION_XGTAR_GTAR("application/x-gtar", "gtar"), APPLICATION_XGZIP_GZ("application/x-gzip", "gz"),
-  APPLICATION_XGZIP_GZIP("application/x-gzip", "gzip"), APPLICATION_XHDF_HDF("application/x-hdf", "hdf"), APPLICATION_XHELPFILE_HELP("application/x-helpfile", "help"),
-  APPLICATION_XHELPFILE_HLP("application/x-helpfile", "hlp"), APPLICATION_XHTTPDIMAP_IMAP("application/x-httpd-imap", "imap"), APPLICATION_XIMA_IMA("application/x-ima", "ima"),
-  APPLICATION_XINTERNETTSIGNUP_INS("application/x-internett-signup", "ins"), APPLICATION_XINVENTOR_IV("application/x-inventor", "iv"), APPLICATION_XIP2_IP("application/x-ip2", "ip"),
-  APPLICATION_XJAVACLASS_CLASS("application/x-java-class", "class"), APPLICATION_XJAVACOMMERCE_JCM("application/x-java-commerce", "jcm"), APPLICATION_XJAVASCRIPT_JS("application/x-javascript", "js"),
-  APPLICATION_XKOAN_SKD("application/x-koan", "skd"), APPLICATION_XKOAN_SKM("application/x-koan", "skm"), APPLICATION_XKOAN_SKP("application/x-koan", "skp"),
-  APPLICATION_XKOAN_SKT("application/x-koan", "skt"), APPLICATION_XKSH_KSH("application/x-ksh", "ksh"), APPLICATION_XLATEX_LATEX("application/x-latex", "latex"),
-  APPLICATION_XLATEX_LTX("application/x-latex", "ltx"), APPLICATION_XLHA_LHA("application/x-lha", "lha"), APPLICATION_XLISP_LSP("application/x-lisp", "lsp"),
-  APPLICATION_XLIVESCREEN_IVY("application/x-livescreen", "ivy"), APPLICATION_XLOTUSSCREENCAM_SCM("application/x-lotusscreencam", "scm"), APPLICATION_XLOTUS_WQ1("application/x-lotus", "wq1"),
-  APPLICATION_XLZH_LZH("application/x-lzh", "lzh"), APPLICATION_XLZX_LZX("application/x-lzx", "lzx"), APPLICATION_XMACBINARY_BIN("application/x-macbinary", "bin"),
-  APPLICATION_XMACBINHEX40_HQX("application/x-mac-binhex40", "hqx"), APPLICATION_XMAGICCAPPACKAGE10_MC$("application/x-magic-cap-package-1.0", "mc$"),
-  APPLICATION_XMATHCAD_MCD("application/x-mathcad", "mcd"), APPLICATION_XMEME_MM("application/x-meme", "mm"), APPLICATION_XMIDI_MID("application/x-midi", "mid"),
-  APPLICATION_XMIDI_MIDI("application/x-midi", "midi"),
+  APPLICATION_XFREELANCE_PRE("application/x-freelance", "pre"), APPLICATION_XGSP_GSP("application/x-gsp", "gsp"), APPLICATION_XGSS_GSS("application/x-gss", "gss"),
+  APPLICATION_XGTAR_GTAR("application/x-gtar", "gtar"), APPLICATION_XGZIP_GZ("application/x-gzip", "gz"), APPLICATION_XGZIP_GZIP("application/x-gzip", "gzip"),
+  APPLICATION_XHDF_HDF("application/x-hdf", "hdf"), APPLICATION_XHELPFILE_HELP("application/x-helpfile", "help"), APPLICATION_XHELPFILE_HLP("application/x-helpfile", "hlp"),
+  APPLICATION_XHTTPDIMAP_IMAP("application/x-httpd-imap", "imap"), APPLICATION_XIMA_IMA("application/x-ima", "ima"), APPLICATION_XINTERNETTSIGNUP_INS("application/x-internett-signup", "ins"),
+  APPLICATION_XINVENTOR_IV("application/x-inventor", "iv"), APPLICATION_XIP2_IP("application/x-ip2", "ip"), APPLICATION_XJAVACLASS_CLASS("application/x-java-class", "class"),
+  APPLICATION_XJAVACOMMERCE_JCM("application/x-java-commerce", "jcm"), APPLICATION_XJAVASCRIPT_JS("application/x-javascript", "js"), APPLICATION_XKOAN_SKD("application/x-koan", "skd"),
+  APPLICATION_XKOAN_SKM("application/x-koan", "skm"), APPLICATION_XKOAN_SKP("application/x-koan", "skp"), APPLICATION_XKOAN_SKT("application/x-koan", "skt"),
+  APPLICATION_XKSH_KSH("application/x-ksh", "ksh"), APPLICATION_XLATEX_LATEX("application/x-latex", "latex"), APPLICATION_XLATEX_LTX("application/x-latex", "ltx"),
+  APPLICATION_XLHA_LHA("application/x-lha", "lha"), APPLICATION_XLISP_LSP("application/x-lisp", "lsp"), APPLICATION_XLIVESCREEN_IVY("application/x-livescreen", "ivy"),
+  APPLICATION_XLOTUSSCREENCAM_SCM("application/x-lotusscreencam", "scm"), APPLICATION_XLOTUS_WQ1("application/x-lotus", "wq1"), APPLICATION_XLZH_LZH("application/x-lzh", "lzh"),
+  APPLICATION_XLZX_LZX("application/x-lzx", "lzx"), APPLICATION_XMACBINARY_BIN("application/x-macbinary", "bin"), APPLICATION_XMACBINHEX40_HQX("application/x-mac-binhex40", "hqx"),
+  APPLICATION_XMAGICCAPPACKAGE10_MC$("application/x-magic-cap-package-1.0", "mc$"), APPLICATION_XMATHCAD_MCD("application/x-mathcad", "mcd"), APPLICATION_XMEME_MM("application/x-meme", "mm"),
+  APPLICATION_XMIDI_MID("application/x-midi", "mid"), APPLICATION_XMIDI_MIDI("application/x-midi", "midi"),
   //
   APPLICATION_XMIF_MIF("application/x-mif", "mif"),
   //
@@ -579,9 +578,13 @@ public enum MimeType {
   VIDEO_XMSASF_ASF("video/x-ms-asf", "asf"), VIDEO_XMSASF_ASX("video/x-ms-asf", "asx"), VIDEO_XMSVIDEO_AVI("video/x-msvideo", "avi"), VIDEO_XQTC_QTC("video/x-qtc", "qtc"),
   VIDEO_XSCM_SCM("video/x-scm", "scm"), VIDEO_XSGIMOVIE_MOVIE("video/x-sgi-movie", "movie"), VIDEO_XSGIMOVIE_MV("video/x-sgi-movie", "mv"), WINDOWS_METAFILE_WMF("windows/metafile", "wmf"),
   WWW_MIME_MIME("www/mime", "mime"), XCONFERENCE_XCOOLTALK_ICE("x-conference/x-cooltalk", "ice"), XGL_DRAWING_XGZ("xgl/drawing", "xgz"), XGL_MOVIE_XMZ("xgl/movie", "xmz"),
-  XMUSIC_XMIDI_MID("x-music/x-midi", "mid"), XMUSIC_XMIDI_MIDI("x-music/x-midi", "midi"), XWORLD_X3DMF_3DM("x-world/x-3dmf", "3dm"), XWORLD_X3DMF_3DMF("x-world/x-3dmf", "3dmf"),
-  XWORLD_X3DMF_QD3("x-world/x-3dmf", "qd3"), XWORLD_X3DMF_QD3D("x-world/x-3dmf", "qd3d"), XWORLD_XSVR_SVR("x-world/x-svr", "svr"), XWORLD_XVRML_VRML("x-world/x-vrml", "vrml"),
-  XWORLD_XVRML_WRL("x-world/x-vrml", "wrl"),
+  XMUSIC_XMIDI_MID("x-music/x-midi", "mid"), XMUSIC_XMIDI_MIDI("x-music/x-midi", "midi"),
+  //
+  XWORLD_X3DMF_3DM("x-world/x-3dmf", "3dm"), XWORLD_X3DMF_3DMF("x-world/x-3dmf", "3dmf"),
+  //
+  XWORLD_X3DMF_QD3("x-world/x-3dmf", "qd3"), XWORLD_X3DMF_QD3D("x-world/x-3dmf", "qd3d"),
+  //
+  XWORLD_XSVR_SVR("x-world/x-svr", "svr"), XWORLD_XVRML_VRML("x-world/x-vrml", "vrml"), XWORLD_XVRML_WRL("x-world/x-vrml", "wrl"),
   //
   XWORLD_XVRML_WRZ("x-world/x-vrml", "wrz"), XWORLD_XVRT_VRT("x-world/x-vrt", "vrt");
 

@@ -431,12 +431,12 @@ public class Resps {
   public static HttpResponse json(HttpRequest request, Object body, String charset) {
     HttpResponse ret = null;
     if (body == null) {
-      ret = string(request, "", charset, getMimeTypeStr(MimeType.TEXT_PLAIN_JSON, charset));
+      ret = string(request, "", charset, getMimeTypeStr(MimeType.APPLICATION_JSON, charset));
     } else {
       if (body.getClass() == String.class || ClassUtil.isBasicType(body.getClass())) {
-        ret = string(request, body + "", charset, getMimeTypeStr(MimeType.TEXT_PLAIN_JSON, charset));
+        ret = string(request, body + "", charset, getMimeTypeStr(MimeType.APPLICATION_JSON, charset));
       } else {
-        ret = string(request, Json.getJson().toJson(body), charset, getMimeTypeStr(MimeType.TEXT_PLAIN_JSON, charset));
+        ret = string(request, Json.getJson().toJson(body), charset, getMimeTypeStr(MimeType.APPLICATION_JSON, charset));
       }
     }
     return ret;
@@ -444,12 +444,12 @@ public class Resps {
 
   public static HttpResponse json(HttpResponse response, Object body, String charset) {
     if (body == null) {
-      response = string(response, "", charset, getMimeTypeStr(MimeType.TEXT_PLAIN_JSON, charset));
+      response = string(response, "", charset, getMimeTypeStr(MimeType.APPLICATION_JSON, charset));
     } else {
       if (body.getClass() == String.class || ClassUtil.isBasicType(body.getClass())) {
-        response = string(response, body + "", charset, getMimeTypeStr(MimeType.TEXT_PLAIN_JSON, charset));
+        response = string(response, body + "", charset, getMimeTypeStr(MimeType.APPLICATION_JSON, charset));
       } else {
-        response = string(response, Json.getJson().toJson(body), charset, getMimeTypeStr(MimeType.TEXT_PLAIN_JSON, charset));
+        response = string(response, Json.getJson().toJson(body), charset, getMimeTypeStr(MimeType.APPLICATION_JSON, charset));
       }
     }
     return response;

@@ -12,6 +12,7 @@ import java.util.Set;
 import com.litongjava.model.sys.SysConst;
 import com.litongjava.tio.constants.TioCoreConfigKeys;
 import com.litongjava.tio.http.common.utils.HttpGzipUtils;
+import com.litongjava.tio.http.common.utils.MimeTypeUtils;
 import com.litongjava.tio.utils.environment.EnvUtils;
 import com.litongjava.tio.utils.hutool.ClassUtil;
 import com.litongjava.tio.utils.json.Json;
@@ -454,12 +455,12 @@ public class HttpResponse extends HttpPacket {
   public HttpResponse setJson(Object body) {
     String charset = this.getHttpRequest().getHttpConfig().getCharset();
     if (body == null) {
-      return setString("", charset, getMimeTypeStr(MimeType.TEXT_PLAIN_JSON, charset));
+      return setString("", charset, MimeTypeUtils.getJson(charset));
     } else {
       if (body.getClass() == String.class || ClassUtil.isBasicType(body.getClass())) {
-        return setString(body + "", charset, getMimeTypeStr(MimeType.TEXT_PLAIN_JSON, charset));
+        return setString(body + "", charset, MimeTypeUtils.getJson(charset));
       } else {
-        return setString(Json.getJson().toJson(body), charset, getMimeTypeStr(MimeType.TEXT_PLAIN_JSON, charset));
+        return setString(Json.getJson().toJson(body), charset, MimeTypeUtils.getJson(charset));
       }
     }
   }
@@ -476,21 +477,13 @@ public class HttpResponse extends HttpPacket {
 
   public static HttpResponse json(Object body, String charset) {
     if (body == null) {
-      return string("", charset, getMimeTypeStr(MimeType.TEXT_PLAIN_JSON, charset));
+      return string("", charset, MimeTypeUtils.getJson(charset));
     } else {
       if (body.getClass() == String.class || ClassUtil.isBasicType(body.getClass())) {
-        return string(body + "", charset, getMimeTypeStr(MimeType.TEXT_PLAIN_JSON, charset));
+        return string(body + "", charset, MimeTypeUtils.getJson(charset));
       } else {
-        return string(Json.getJson().toJson(body), charset, getMimeTypeStr(MimeType.TEXT_PLAIN_JSON, charset));
+        return string(Json.getJson().toJson(body), charset, MimeTypeUtils.getJson(charset));
       }
-    }
-  }
-
-  private static String getMimeTypeStr(MimeType mimeType, String charset) {
-    if (charset == null) {
-      return mimeType.getType();
-    } else {
-      return mimeType.getType() + ";charset=" + charset;
     }
   }
 
