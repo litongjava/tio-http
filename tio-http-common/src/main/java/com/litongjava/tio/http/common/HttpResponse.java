@@ -378,7 +378,7 @@ public class HttpResponse extends HttpPacket {
   }
 
   public void setContentType(String contentType) {
-    this.addHeader(HeaderName.Content_Type, HeaderValue.from(contentType));
+    this.addHeader(HeaderName.Content_Type, HeaderValue.Content_Type.from(contentType));
   }
 
   public boolean isStream() {

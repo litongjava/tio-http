@@ -16,11 +16,11 @@ public class MimeTypeUtils {
   }
 
   public static String getTextUTF8() {
-    return APPLICATION_JSON_UTF_8;
+    return TEXT_PLAIN_UTF_8;
   }
 
   public static String getJsonUTF8() {
-    return TEXT_PLAIN_UTF_8;
+    return APPLICATION_JSON_UTF_8;
   }
 
   public static String getJson(String charset) {

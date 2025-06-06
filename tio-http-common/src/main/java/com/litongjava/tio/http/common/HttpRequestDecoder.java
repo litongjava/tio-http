@@ -54,7 +54,6 @@ public class HttpRequestDecoder {
    * @throws TioDecodeException
    */
   public static HttpRequest decode(ByteBuffer buffer, int limit, int position, int readableLength, ChannelContext channelContext, HttpConfig httpConfig) throws TioDecodeException {
-
     if (PRINT_PACKET) {
       buffer.mark();
       String request = StandardCharsets.UTF_8.decode(buffer).toString();
@@ -75,15 +74,9 @@ public class HttpRequestDecoder {
 
     // request header start
     boolean headerCompleted = parseHeader(buffer, headers, 0, httpConfig);
+    // 不论 GET 还是 POST，都 return null
     if (!headerCompleted) {
-      if (firstLine.method == HttpMethod.GET) {
-        if (!buffer.hasRemaining()) {
-          headerCompleted = true;
-        }
-      } else {
-        return null;
-      }
-
+      return null;
     }
     String contentLengthStr = headers.get(RequestHeaderKey.Content_Length);
 
@@ -467,13 +460,15 @@ public class HttpRequestDecoder {
     // 兼容HeapByteBuffer和DirectByteBuffer
     if (buffer.hasArray()) {
       allbs = buffer.array();
-      offset = buffer.arrayOffset(); // 通常为0，但为了严谨，使用arrayOffset
+      // 通常为0，但为了严谨，使用arrayOffset
+      offset = buffer.arrayOffset();
     } else {
       buffer.mark();
       allbs = new byte[buffer.remaining()];
       buffer.get(allbs);
       buffer.reset();
-      offset = -buffer.position(); // 直接缓冲区时, buffer.position要从0开始计算，所以设offset为 -position
+      // 直接缓冲区时, buffer.position要从0开始计算，所以设offset为 -position
+      offset = -buffer.position();
     }
 
     int startPos = buffer.position() + offset;
@@ -543,6 +538,9 @@ public class HttpRequestDecoder {
 
           RequestLine requestLine = new RequestLine();
           HttpMethod method = HttpMethod.from(methodStr);
+          if (method == null) {
+            throw new TioDecodeException("Unsupported HTTP method: " + methodStr);
+          }
           requestLine.setMethod(method);
           requestLine.setPath(pathStr);
           requestLine.setInitPath(pathStr);
