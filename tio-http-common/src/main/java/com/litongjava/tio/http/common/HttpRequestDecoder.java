@@ -34,10 +34,10 @@ public class HttpRequestDecoder {
   public static final int MAX_LENGTH_OF_HEADER = 20480;
 
   //头部，每行最大的字节数
-  public static final int MAX_LENGTH_OF_HEADERLINE = 2048;
+  public static final int MAX_LENGTH_OF_HEADERLINE = 8192;
 
   //请求行的最大长度
-  public static final int MAX_LENGTH_OF_REQUESTLINE = 2048;
+  public static final int MAX_LENGTH_OF_REQUESTLINE = 8192;
 
   // 是否打印请求体
   public static boolean PRINT_PACKET = EnvUtils.getBoolean(ServerConfigKeys.SERVER_HTTP_REQUEST_PRINT_PACKET, false);

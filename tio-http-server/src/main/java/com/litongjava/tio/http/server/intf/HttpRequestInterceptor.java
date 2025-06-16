@@ -16,12 +16,12 @@ public interface HttpRequestInterceptor {
    * @param request
    * @param requestLine
    * @param channelContext
-   * @param responseFromCache 从缓存中获取到的HttpResponse对象
+   * @param httpResponse 从缓存中获取到的HttpResponse对象
    * @return
    * @throws Exception
    * @author tanyaowu
    */
-  public HttpResponse doBeforeHandler(HttpRequest request, RequestLine requestLine, HttpResponse responseFromCache)
+  public HttpResponse doBeforeHandler(HttpRequest request, RequestLine requestLine, HttpResponse httpResponse)
       throws Exception;
 
   /**
