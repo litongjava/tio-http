@@ -172,7 +172,10 @@ public class HttpRequestDecoder {
     httpRequest.setKeepConnection(keepAlive);
 
     if (StrUtil.isNotBlank(firstLine.queryString)) {
-      decodeParams(httpRequest.getParams(), firstLine.queryString, httpRequest.getCharset(), channelContext);
+      boolean decodeParams = decodeParams(httpRequest.getParams(), firstLine.queryString, httpRequest.getCharset(), channelContext);
+      if (!decodeParams) {
+        return null;
+      }
     }
 
     if (contentLength > 0) {
@@ -195,20 +198,20 @@ public class HttpRequestDecoder {
    * @author tanyaowu
    * @throws TioDecodeException 
    */
-  public static void decodeParams(Map<String, Object[]> params, String queryString, String charset, ChannelContext channelContext) throws TioDecodeException {
+  public static boolean decodeParams(Map<String, Object[]> params, String queryString, String charset, ChannelContext channelContext) throws TioDecodeException {
     if (StrUtil.isBlank(queryString)) {
-      return;
+      return true;
     }
 
     String[] keyvalues = queryString.split(SysConst.STR_AMP);
     for (String keyvalue : keyvalues) {
-      String[] keyvalueArr = keyvalue.split(SysConst.STR_EQ);
+      String[] keyvalueArr = keyvalue.split(SysConst.STR_EQ, 2);
       String value1 = null;
       if (keyvalueArr.length == 2) {
         value1 = keyvalueArr[1];
       } else if (keyvalueArr.length > 2) {
         String errorMsg = "Invalid query parameter format in query string, contain multi ==:" + queryString;
-        log.warn(errorMsg);
+        log.error(errorMsg);
 
         HttpResponse httpResponse = new HttpResponse();
         httpResponse.setStatus(HttpResponseStatus.C400);
@@ -217,8 +220,7 @@ public class HttpRequestDecoder {
         // 发送响应并关闭连接
         Tio.bSend(channelContext, httpResponse);
         Tio.close(channelContext, "Invalid query parameter format");
-
-        return;
+        return false;
       }
 
       String key = keyvalueArr[0];
@@ -244,7 +246,7 @@ public class HttpRequestDecoder {
         params.put(key, newExistValue);
       }
     }
-    return;
+    return true;
   }
 
   /**

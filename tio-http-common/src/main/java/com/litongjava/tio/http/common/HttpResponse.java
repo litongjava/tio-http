@@ -187,20 +187,25 @@ public class HttpResponse extends HttpPacket {
     return headers;
   }
 
-  public void addHeader(HeaderName key, HeaderValue value) {
-    headers.put(key, value);
-    headerByteCount += (key.bytes.length + value.bytes.length + 3); // 冒号和\r\n
+  public void setHeader(String name, String value) {
+    this.addHeader(name, value);
+  }
+
+  public void setHeader(HeaderName key, String headeValue) {
+    HeaderValue value = HeaderValue.from(headeValue);
+    this.addHeader(key, value);
   }
 
   public void addHeader(String name, String headeValue) {
     HeaderName key = HeaderName.from(name);
     HeaderValue value = HeaderValue.from(headeValue);
-    headers.put(key, value);
-    headerByteCount += (key.bytes.length + value.bytes.length + 3); // 冒号和\r\n
+    this.addHeader(key, value);
   }
 
-  public void setHeader(String name, String value) {
-    this.addHeader(name, value);
+  public void addHeader(HeaderName key, HeaderValue value) {
+    headers.put(key, value);
+    // 冒号和\r\n
+    headerByteCount += (key.bytes.length + value.bytes.length + 3);
   }
 
   public void addHeaders(Map<HeaderName, HeaderValue> headers) {
@@ -626,4 +631,9 @@ public class HttpResponse extends HttpPacket {
     }
     return this;
   }
+
+  public void setAttachmentFilename(String downloadFilename) {
+    this.setHeader(HeaderName.Content_Disposition, "attachment; filename=\"" + downloadFilename + "\"");
+  }
+
 }

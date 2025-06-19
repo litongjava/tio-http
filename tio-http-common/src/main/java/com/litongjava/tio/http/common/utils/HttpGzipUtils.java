@@ -36,8 +36,6 @@ public class HttpGzipUtils {
     } else {
       if (request != null) {
         log.warn("not support gzip:{}, {}", request.getClientIp(), request.getHeader(RequestHeaderKey.User_Agent));
-      } else {
-        log.warn("request is empty");
       }
     }
   }
