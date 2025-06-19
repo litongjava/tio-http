@@ -475,6 +475,11 @@ public class HttpResponse extends HttpPacket {
     return setJson(body);
   }
 
+  public HttpResponse error(String body) {
+    this.setStatus(HttpResponseStatus.C500);
+    return setString(body);
+  }
+
   public static HttpResponse json(Object body) {
     String charset = Charset.defaultCharset().name();
     return json(body, charset);
