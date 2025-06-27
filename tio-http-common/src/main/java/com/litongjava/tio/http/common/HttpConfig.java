@@ -99,7 +99,6 @@ public class HttpConfig {
    */
   private Integer bindPort = 80;
   private String serverInfo = HttpConst.SERVER_INFO;
-  private String charset = HttpConst.CHARSET_NAME;
   private ICache sessionStore = null;
   public SessionRateLimiter sessionRateLimiter;
   /**
@@ -217,13 +216,6 @@ public class HttpConfig {
    */
   public Integer getBindPort() {
     return bindPort;
-  }
-
-  /**
-   * @return the charset
-   */
-  public String getCharset() {
-    return charset;
   }
 
   /**
@@ -353,13 +345,6 @@ public class HttpConfig {
    */
   public void setBindIp(String bindIp) {
     this.bindIp = bindIp;
-  }
-
-  /**
-   * @param charset the charset to set
-   */
-  public void setCharset(String charset) {
-    this.charset = charset;
   }
 
   /**
@@ -519,7 +504,7 @@ public class HttpConfig {
    * @param pageRoot 如果是以"classpath:"开头，则从classpath中查找，否则视为普通的文件路径
    * @throws IOException
    */
-  public void addDomainPage(String domain, String pageRoot) throws IOException {
+  public void addDomainPage(String domain, String pageRoot, String charset) throws IOException {
 
     if (domainPageMap == null) {
       synchronized (this) {
@@ -532,7 +517,7 @@ public class HttpConfig {
     domainPageMap.put(domain, pageRoot);
 
     if (this.freemarkerConfig != null) {
-      freemarkerConfig.addDomainConfiguration(domain, pageRoot);
+      freemarkerConfig.addDomainConfiguration(domain, pageRoot, charset);
     }
   }
 

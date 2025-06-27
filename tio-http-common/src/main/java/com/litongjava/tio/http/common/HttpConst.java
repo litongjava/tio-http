@@ -1,9 +1,7 @@
 package com.litongjava.tio.http.common;
 
 /**
- *
  * @author tanyaowu
- *
  */
 public interface HttpConst {
 
@@ -34,18 +32,8 @@ public interface HttpConst {
                   Connection : Upgrade
                Cache-Control : no-cache
                       Pragma : no-cache
-   *
-   * @author tanyaowu
-   * 2017年5月27日 下午2:11:57
    */
 
-  // Content-Type: text/html;charset:utf-8;
-
-  /**
-   *
-   * @author tanyaowu
-   * 2017年6月27日 下午8:23:58
-   */
   public interface RequestHeaderValue {
     public interface Connection {
       String keep_alive = "keep-alive"; // .toLowerCase();
@@ -70,11 +58,6 @@ public interface HttpConst {
     }
   }
 
-  /**
-   *
-   * @author tanyaowu
-   * 2017年6月27日 下午8:24:02
-   */
   public interface ResponseHeaderValue {
     public interface Connection {
       String keep_alive = "keep-alive"; // .toLowerCase();
@@ -87,13 +70,6 @@ public interface HttpConst {
     }
   }
 
-  /**
-   *
-   */
   String SERVER_INFO = "t-io";
 
-  /**
-   * 默认规定连接到本服务器的客户端统一用utf-8
-   */
-  String CHARSET_NAME = "utf-8";
 }

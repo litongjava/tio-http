@@ -10,7 +10,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import com.litongjava.model.sys.SysConst;
-import com.litongjava.tio.constants.TioCoreConfigKeys;
+import com.litongjava.tio.consts.TioConst;
+import com.litongjava.tio.consts.TioCoreConfigKeys;
 import com.litongjava.tio.http.common.utils.HttpGzipUtils;
 import com.litongjava.tio.http.common.utils.MimeTypeUtils;
 import com.litongjava.tio.utils.environment.EnvUtils;
@@ -56,7 +57,7 @@ public class HttpResponse extends HttpPacket {
    * 是否已经被gzip压缩过了，防止重复压缩
    */
   private boolean hasGzipped = false;
-  private String charset = HttpConst.CHARSET_NAME;
+  private String charset = TioConst.CHARSET_NAME;
   /**
    * 忽略ip访问统计
    */
@@ -77,9 +78,11 @@ public class HttpResponse extends HttpPacket {
    */
   public HttpResponse(HttpRequest request) {
     this();
-    this.request = request;
-    if (request == null)
+    if (request == null) {
       return;
+    }
+    this.charset = request.getCharset();
+    this.request = request;
 
     String version = request.requestLine.getVersion(); // "1.0" or "1.1"
     this.version = version;
@@ -458,7 +461,7 @@ public class HttpResponse extends HttpPacket {
   }
 
   public HttpResponse setJson(Object body) {
-    String charset = this.getHttpRequest().getHttpConfig().getCharset();
+    String charset = this.getHttpRequest().getChannelContext().getTioConfig().getCharset();
     if (body == null) {
       return setString("", charset, MimeTypeUtils.getJson(charset));
     } else {

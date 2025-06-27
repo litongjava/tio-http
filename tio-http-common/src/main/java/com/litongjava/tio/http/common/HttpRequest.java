@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.litongjava.model.sys.SysConst;
+import com.litongjava.tio.consts.TioConst;
 import com.litongjava.tio.core.ChannelContext;
 import com.litongjava.tio.core.Node;
 import com.litongjava.tio.core.Tio;
@@ -40,7 +41,9 @@ public class HttpRequest extends HttpPacket {
   private String connection;
   private String bodyString;
   private RequestBodyFormat bodyFormat;
-  private String charset = HttpConst.CHARSET_NAME;
+
+  private String charset = TioConst.CHARSET_NAME;
+
   private Boolean isAjax = null;
   @SuppressWarnings("unused")
   private Boolean isSupportGzip = null;
@@ -178,11 +181,11 @@ public class HttpRequest extends HttpPacket {
   public String getAuthorization() {
     return this.headers.get(RequestHeaderKey.Authorization);
   }
-  
+
   public String getReferer() {
     return getHeader(RequestHeaderKey.Referer);
   }
-  
+
   public String getOrigin() {
     return getHeader(RequestHeaderKey.Origin);
   }
@@ -567,6 +570,7 @@ public class HttpRequest extends HttpPacket {
    */
   public void setChannelContext(ChannelContext channelContext) {
     this.channelContext = channelContext;
+    this.charset = channelContext.getTioConfig().getCharset();
   }
 
   /**
@@ -755,7 +759,5 @@ public class HttpRequest extends HttpPacket {
   public RequestDispatcher getRequestDispatcher(String path) {
     return new RequestDispatcher(path);
   }
-
-
 
 }

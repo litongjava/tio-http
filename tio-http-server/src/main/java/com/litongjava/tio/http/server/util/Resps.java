@@ -44,7 +44,8 @@ public class Resps {
    * @return
    */
   public static HttpResponse css(HttpRequest request, String bodyString) {
-    return css(request, bodyString, request.httpConfig.getCharset());
+    String charset = request.getCharset();
+    return css(request, bodyString, charset);
   }
 
   /**
@@ -188,7 +189,8 @@ public class Resps {
     HttpResource httpResource = request.httpConfig.getResource(request, file404);
     if (httpResource != null) {
       file404 = httpResource.getPath();
-      HttpResponse ret = Resps.forward(request, file404 + "?tio_initpath=" + URLEncoder.encode(requestLine.getPathAndQuery(), httpConfig.getCharset()));
+      String charset = request.getCharset();
+      HttpResponse ret = Resps.forward(request, file404 + "?tio_initpath=" + URLEncoder.encode(requestLine.getPathAndQuery(), charset));
       return ret;
     }
     HttpResponse ret = Resps.html(request, "404");
@@ -202,7 +204,8 @@ public class Resps {
     HttpResource httpResource = httpConfig.getResource(request, file404);
     if (httpResource != null) {
       file404 = httpResource.getPath();
-      HttpResponse ret = Resps.forward(request, file404 + "?tio_initpath=" + URLEncoder.encode(requestLine.getPathAndQuery(), httpConfig.getCharset()));
+      String charset = response.getCharset();
+      HttpResponse ret = Resps.forward(request, file404 + "?tio_initpath=" + URLEncoder.encode(requestLine.getPathAndQuery(), charset));
       return ret;
     }
     HttpResponse ret = Resps.html(response, "404");
@@ -327,7 +330,8 @@ public class Resps {
    * @return
    */
   public static HttpResponse html(HttpRequest request, String bodyString) {
-    return html(request, bodyString, request.httpConfig.getCharset());
+    String charset = request.getCharset();
+    return html(request, bodyString, charset);
   }
 
   /**
@@ -336,11 +340,13 @@ public class Resps {
    * @return
    */
   public static HttpResponse html(HttpResponse response, String bodyString) {
-    return html(response, bodyString, response.getHttpRequest().httpConfig.getCharset());
+    String charset = response.getCharset();
+    return html(response, bodyString, charset);
   }
 
   public static HttpResponse xml(HttpResponse response, String bodyString) {
-    return xml(response, bodyString, response.getHttpRequest().httpConfig.getCharset());
+    String charset = response.getCharset();
+    return xml(response, bodyString, charset);
   }
 
   /**
@@ -388,7 +394,8 @@ public class Resps {
    * @return
    */
   public static HttpResponse js(HttpRequest request, String bodyString) {
-    return js(request, bodyString, request.httpConfig.getCharset());
+    String charset = request.getCharset();
+    return js(request, bodyString, charset);
   }
 
   /**
@@ -412,11 +419,12 @@ public class Resps {
    * @return
    */
   public static HttpResponse json(HttpRequest request, Object body) {
-    return json(request, body, request.httpConfig.getCharset());
+    String charset = request.getCharset();
+    return json(request, body, charset);
   }
 
   public static HttpResponse json(HttpResponse response, Object body) {
-    String charset = response.getHttpRequest().getHttpConfig().getCharset();
+    String charset = response.getCharset();
     return json(response, body, charset);
   }
 
@@ -525,7 +533,8 @@ public class Resps {
    * @return
    */
   public static HttpResponse string(HttpRequest request, String bodyString, String Content_Type) {
-    return string(request, bodyString, request.httpConfig.getCharset(), Content_Type);
+    String charset = request.getCharset();
+    return string(request, bodyString, charset, Content_Type);
   }
 
   /**
@@ -607,7 +616,8 @@ public class Resps {
    * @return
    */
   public static HttpResponse txt(HttpRequest request, String bodyString) {
-    return txt(request, bodyString, request.httpConfig.getCharset());
+    String charset = request.getCharset();
+    return txt(request, bodyString, charset);
   }
 
   /**
@@ -616,11 +626,13 @@ public class Resps {
    * @return
    */
   public static HttpResponse txt(HttpResponse response, String bodyString) {
-    return txt(response, bodyString, response.getHttpRequest().getHttpConfig().getCharset());
+    String charset = response.getCharset();
+    return txt(response, bodyString, charset);
   }
 
   public static HttpResponse text(HttpResponse response, String bodyString) {
-    return txt(response, bodyString, response.getHttpRequest().getHttpConfig().getCharset());
+    String charset = response.getCharset();
+    return txt(response, bodyString, charset);
   }
 
   /**
