@@ -653,13 +653,13 @@ public class Resps {
 
   public static HttpResponse fail(HttpResponse response, String string) {
     response.setStatus(HttpResponseStatus.C400);
-    response.setString(string);
+    response.body(string);
     return response;
   }
 
   public static HttpResponse error(HttpResponse response, String string) {
     response.setStatus(HttpResponseStatus.C500);
-    response.setString(string);
+    response.body(string);
     return response;
   }
 

@@ -89,7 +89,7 @@ public class HttpRequestDecoder {
         log.error(message);
         HttpResponse httpResponse = new HttpResponse();
         httpResponse.setStatus(413);
-        httpResponse.setString(message);
+        httpResponse.body(message);
         Tio.bSend(channelContext, httpResponse);
         Tio.close(channelContext, "Payload Too Large");
       }

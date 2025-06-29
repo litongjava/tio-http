@@ -199,10 +199,11 @@ public class HttpResponse extends HttpPacket {
     this.addHeader(key, value);
   }
 
-  public void addHeader(String name, String headeValue) {
+  public HttpResponse addHeader(String name, String headeValue) {
     HeaderName key = HeaderName.from(name);
     HeaderValue value = HeaderValue.from(headeValue);
     this.addHeader(key, value);
+    return this;
   }
 
   public void addHeader(HeaderName key, HeaderValue value) {
@@ -310,214 +311,6 @@ public class HttpResponse extends HttpPacket {
    */
   public void setStaticRes(boolean isStaticRes) {
     this.isStaticRes = isStaticRes;
-  }
-
-  /**
-   * @param status the status to set
-   */
-  public void setStatus(HttpResponseStatus status) {
-    this.status = status;
-  }
-
-  public void setStatus(int status, String description, String headerText) {
-    HttpResponseStatus custom = HttpResponseStatus.CUSTOM.build(version, status, description, headerText);
-    this.status = custom;
-  }
-
-  public void setStatus(int status, String description) {
-    HttpResponseStatus custom = HttpResponseStatus.CUSTOM.build(version, status, description);
-    this.status = custom;
-  }
-
-  public boolean hasGzipped() {
-    return hasGzipped;
-  }
-
-  public void setHasGzipped(boolean hasGzipped) {
-    this.hasGzipped = hasGzipped;
-  }
-
-  public boolean isSkipIpStat() {
-    return skipIpStat;
-  }
-
-  public void setSkipIpStat(boolean skipIpStat) {
-    this.skipIpStat = skipIpStat;
-  }
-
-  public boolean isSkipTokenStat() {
-    return skipTokenStat;
-  }
-
-  public void setSkipTokenStat(boolean skipTokenStat) {
-    this.skipTokenStat = skipTokenStat;
-  }
-
-  public HeaderValue getLastModified() {
-    return this.getHeader(HeaderName.Last_Modified);
-  }
-
-  /**
-   * 
-   * @param name 从HeaderName中找，或者HeaderName.from(name)
-   * @return
-   * @author tanyaowu
-   */
-  public HeaderValue getHeader(HeaderName name) {
-    return headers.get(name);
-  }
-
-  public void setLastModified(HeaderValue lastModified) {
-    if (lastModified != null) {
-      this.addHeader(HeaderName.Last_Modified, lastModified);
-    }
-  }
-
-  @Override
-  public String toString() {
-    return this.status.toString();
-  }
-
-  /**
-   * @return the headerByteCount
-   */
-  public int getHeaderByteCount() {
-    return headerByteCount;
-  }
-
-  public void setContentType(String contentType) {
-    this.addHeader(HeaderName.Content_Type, HeaderValue.Content_Type.from(contentType));
-  }
-
-  public boolean isStream() {
-    return stream;
-  }
-
-  public void setStream(boolean stream) {
-    this.stream = stream;
-  }
-
-  public HttpResponse addServerSentEventsHeader(String charset) {
-    this.setContentType("text/event-stream;charset=" + charset);
-    this.addHeader(HeaderName.Connection, HeaderValue.from("keep-alive"));
-    this.stream = true;
-    this.keepConnection = true;
-    return this;
-  }
-
-  public HttpResponse addServerSentEventsHeader() {
-    return addServerSentEventsHeader("utf-8");
-  }
-
-  public void sendRedirect(String url) {
-    setStatus(HttpResponseStatus.C302);
-    addHeader(HeaderName.Location, HeaderValue.from(url));
-
-  }
-
-  public static HttpResponse string(String bodyString, String charset, String mimeTypeStr) {
-    HttpResponse httpResponse = new HttpResponse();
-    httpResponse.setString(bodyString, charset, mimeTypeStr);
-    return httpResponse;
-  }
-
-  public HttpResponse setString(String bodyString) {
-    if (bodyString != null) {
-      try {
-        setBody(bodyString.getBytes(charset));
-      } catch (UnsupportedEncodingException e) {
-        throw new RuntimeException(e);
-      }
-    }
-    this.addHeader(HeaderName.Content_Type, HeaderValue.Content_Type.TEXT_PLAIN_TXT);
-    return this;
-  }
-
-  public HttpResponse setBodyString(String bodyString, String charset) {
-    if (bodyString != null) {
-      try {
-        setBody(bodyString.getBytes(charset));
-      } catch (UnsupportedEncodingException e) {
-        throw new RuntimeException(e);
-      }
-    }
-    return this;
-  }
-
-  public HttpResponse setString(String bodyString, String charset, String mimeTypeStr) {
-    if (bodyString != null) {
-      if (charset == null) {
-        setBody(bodyString.getBytes());
-      } else {
-        try {
-          setBody(bodyString.getBytes(charset));
-        } catch (UnsupportedEncodingException e) {
-          throw new RuntimeException(e);
-        }
-      }
-    }
-    this.addHeader(HeaderName.Content_Type, HeaderValue.Content_Type.from(mimeTypeStr));
-    return this;
-  }
-
-  public HttpResponse setJson(Object body) {
-    String charset = this.getHttpRequest().getChannelContext().getTioConfig().getCharset();
-    if (body == null) {
-      return setString("", charset, MimeTypeUtils.getJson(charset));
-    } else {
-      if (body.getClass() == String.class || ClassUtil.isBasicType(body.getClass())) {
-        return setString(body + "", charset, MimeTypeUtils.getJson(charset));
-      } else {
-        return setString(Json.getJson().toJson(body), charset, MimeTypeUtils.getJson(charset));
-      }
-    }
-  }
-
-  public HttpResponse fail(Object body) {
-    this.setStatus(400);
-    return setJson(body);
-  }
-
-  public HttpResponse error(String body) {
-    this.setStatus(HttpResponseStatus.C500);
-    return setString(body);
-  }
-
-  public static HttpResponse json(Object body) {
-    String charset = Charset.defaultCharset().name();
-    return json(body, charset);
-  }
-
-  public static HttpResponse json(Object body, String charset) {
-    if (body == null) {
-      return string("", charset, MimeTypeUtils.getJson(charset));
-    } else {
-      if (body.getClass() == String.class || ClassUtil.isBasicType(body.getClass())) {
-        return string(body + "", charset, MimeTypeUtils.getJson(charset));
-      } else {
-        return string(Json.getJson().toJson(body), charset, MimeTypeUtils.getJson(charset));
-      }
-    }
-  }
-
-  public static HttpResponse json(HttpRequest request, Object body) {
-    HttpResponse httpResponse = new HttpResponse(request);
-    return httpResponse.setJson(body);
-  }
-
-  public HttpResponse setHasCountContentLength(boolean b) {
-    this.hasCountContentLength = b;
-    return this;
-  }
-
-  public HttpResponse removeHeaders(String name) {
-    headers.remove(HeaderName.from(name));
-    return this;
-
-  }
-
-  public boolean hasCountContentLength() {
-    return hasCountContentLength;
   }
 
   public HttpResponse setStatus(int code) {
@@ -640,8 +433,242 @@ public class HttpResponse extends HttpPacket {
     return this;
   }
 
+  /**
+   * @param status the status to set
+   */
+  public HttpResponse setStatus(HttpResponseStatus status) {
+    this.status = status;
+    return this;
+  }
+
+  public HttpResponse setStatus(int status, String description) {
+    HttpResponseStatus custom = HttpResponseStatus.CUSTOM.build(version, status, description);
+    this.status = custom;
+    return this;
+  }
+
+  public void setStatus(int status, String description, String headerText) {
+    HttpResponseStatus custom = HttpResponseStatus.CUSTOM.build(version, status, description, headerText);
+    this.status = custom;
+  }
+
+  public boolean hasGzipped() {
+    return hasGzipped;
+  }
+
+  public void setHasGzipped(boolean hasGzipped) {
+    this.hasGzipped = hasGzipped;
+  }
+
+  public boolean isSkipIpStat() {
+    return skipIpStat;
+  }
+
+  public void setSkipIpStat(boolean skipIpStat) {
+    this.skipIpStat = skipIpStat;
+  }
+
+  public boolean isSkipTokenStat() {
+    return skipTokenStat;
+  }
+
+  public void setSkipTokenStat(boolean skipTokenStat) {
+    this.skipTokenStat = skipTokenStat;
+  }
+
+  public HeaderValue getLastModified() {
+    return this.getHeader(HeaderName.Last_Modified);
+  }
+
+  /**
+   * 
+   * @param name 从HeaderName中找，或者HeaderName.from(name)
+   * @return
+   * @author tanyaowu
+   */
+  public HeaderValue getHeader(HeaderName name) {
+    return headers.get(name);
+  }
+
+  public void setLastModified(HeaderValue lastModified) {
+    if (lastModified != null) {
+      this.addHeader(HeaderName.Last_Modified, lastModified);
+    }
+  }
+
+  @Override
+  public String toString() {
+    return this.status.toString();
+  }
+
+  /**
+   * @return the headerByteCount
+   */
+  public int getHeaderByteCount() {
+    return headerByteCount;
+  }
+
+  public void setContentType(String contentType) {
+    this.addHeader(HeaderName.Content_Type, HeaderValue.Content_Type.from(contentType));
+  }
+
+  public boolean isStream() {
+    return stream;
+  }
+
+  public void setStream(boolean stream) {
+    this.stream = stream;
+  }
+
+  public HttpResponse addServerSentEventsHeader(String charset) {
+    this.setContentType("text/event-stream;charset=" + charset);
+    this.addHeader(HeaderName.Connection, HeaderValue.from("keep-alive"));
+    this.stream = true;
+    this.keepConnection = true;
+    return this;
+  }
+
+  public HttpResponse addServerSentEventsHeader() {
+    return addServerSentEventsHeader("utf-8");
+  }
+
+  public void sendRedirect(String url) {
+    setStatus(HttpResponseStatus.C302);
+    addHeader(HeaderName.Location, HeaderValue.from(url));
+
+  }
+
+  public static HttpResponse string(String bodyString, String charset, String mimeTypeStr) {
+    HttpResponse httpResponse = new HttpResponse();
+    httpResponse.setString(bodyString, charset, mimeTypeStr);
+    return httpResponse;
+  }
+
+  public HttpResponse setBodyString(String bodyString) {
+    if (bodyString != null) {
+      try {
+        setBody(bodyString.getBytes(charset));
+      } catch (UnsupportedEncodingException e) {
+        throw new RuntimeException(e);
+      }
+    }
+    this.addHeader(HeaderName.Content_Type, HeaderValue.Content_Type.TEXT_PLAIN_TXT);
+    return this;
+  }
+
+  public HttpResponse setBodyString(String bodyString, String charset) {
+    if (bodyString != null) {
+      try {
+        setBody(bodyString.getBytes(charset));
+      } catch (UnsupportedEncodingException e) {
+        throw new RuntimeException(e);
+      }
+    }
+    return this;
+  }
+
+  public HttpResponse setString(String bodyString, String charset, String mimeTypeStr) {
+    if (bodyString != null) {
+      if (charset == null) {
+        setBody(bodyString.getBytes());
+      } else {
+        try {
+          setBody(bodyString.getBytes(charset));
+        } catch (UnsupportedEncodingException e) {
+          throw new RuntimeException(e);
+        }
+      }
+    }
+    this.addHeader(HeaderName.Content_Type, HeaderValue.Content_Type.from(mimeTypeStr));
+    return this;
+  }
+
+  public HttpResponse setJson(Object body) {
+    String charset = this.getHttpRequest().getChannelContext().getTioConfig().getCharset();
+    if (body == null) {
+      return setString("", charset, MimeTypeUtils.getJson(charset));
+    } else {
+      if (body.getClass() == String.class || ClassUtil.isBasicType(body.getClass())) {
+        return setString(body + "", charset, MimeTypeUtils.getJson(charset));
+      } else {
+        return setString(Json.getJson().toJson(body), charset, MimeTypeUtils.getJson(charset));
+      }
+    }
+  }
+
+  public HttpResponse setHasCountContentLength(boolean b) {
+    this.hasCountContentLength = b;
+    return this;
+  }
+
+  public HttpResponse removeHeaders(String name) {
+    headers.remove(HeaderName.from(name));
+    return this;
+
+  }
+
+  public boolean hasCountContentLength() {
+    return hasCountContentLength;
+  }
+
   public void setAttachmentFilename(String downloadFilename) {
     this.setHeader(HeaderName.Content_Disposition, "attachment; filename=\"" + downloadFilename + "\"");
   }
 
+  public HttpResponse status(int code) {
+    return this.setStatus(code);
+  }
+
+  public HttpResponse status(int status, String description) {
+    return this.setStatus(status, description);
+  }
+
+  public HttpResponse header(String key, String value) {
+    return this.addHeader(key, value);
+  }
+
+  public HttpResponse fail(Object body) {
+    this.setStatus(400);
+    return setJson(body);
+  }
+
+  public HttpResponse error(String body) {
+    this.setStatus(HttpResponseStatus.C500);
+    return setBodyString(body);
+  }
+
+  public static HttpResponse json(Object body) {
+    String charset = Charset.defaultCharset().name();
+    return json(body, charset);
+  }
+
+  public static HttpResponse json(Object body, String charset) {
+    if (body == null) {
+      return string("", charset, MimeTypeUtils.getJson(charset));
+    } else {
+      if (body.getClass() == String.class || ClassUtil.isBasicType(body.getClass())) {
+        return string(body + "", charset, MimeTypeUtils.getJson(charset));
+      } else {
+        return string(Json.getJson().toJson(body), charset, MimeTypeUtils.getJson(charset));
+      }
+    }
+  }
+
+  public static HttpResponse json(HttpRequest request, Object body) {
+    HttpResponse httpResponse = new HttpResponse(request);
+    return httpResponse.setJson(body);
+  }
+
+  public HttpResponse body(String bodyString) {
+    return this.setBodyString(bodyString);
+  }
+
+  public HttpResponse ok(byte[] payload) {
+    setBody(payload);
+    return this;
+  }
+
+  public void disableGzip(boolean b) {
+    this.setHasCountContentLength(b);
+  }
 }
