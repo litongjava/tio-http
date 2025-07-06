@@ -71,16 +71,24 @@ public class HttpResponseEncoder {
     }
 
     if (body != null) {
-      // 处理gzip
-      if (!httpResponse.hasGzipped()) {
-        try {
-          HttpGzipUtils.gzip(httpRequest, httpResponse);
-          body = httpResponse.body;
-        } catch (Exception e) {
-          log.error(e.toString(), e);
+
+      HeaderValue contentType = httpResponse.getContentType();
+      String mime = contentType != null ? contentType.getValue().toLowerCase() : "";
+      // skip gzip
+      if (mime.startsWith("image/") || mime.startsWith("video/") || mime.startsWith("audio/")) {
+        bodyLength = body.length;
+      } else {
+        // gzip
+        if (!httpResponse.hasGzipped()) {
+          try {
+            HttpGzipUtils.gzip(httpRequest, httpResponse);
+            body = httpResponse.body;
+          } catch (Exception e) {
+            log.error("Failed to gzip body", e);
+          }
         }
+        bodyLength = body.length;
       }
-      bodyLength = body.length;
     }
 
     HttpResponseStatus httpResponseStatus = httpResponse.getStatus();

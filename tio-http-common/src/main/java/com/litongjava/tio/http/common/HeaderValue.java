@@ -139,18 +139,23 @@ public class HeaderValue implements Serializable {
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj)
+    if (this == obj) {
       return true;
-    if (obj == null)
+    }
+    if (obj == null) {
       return false;
-    if (getClass() != obj.getClass())
+    }
+    if (getClass() != obj.getClass()) {
       return false;
+    }
     HeaderValue other = (HeaderValue) obj;
     if (value == null) {
-      if (other.value != null)
+      if (other.value != null) {
         return false;
-    } else if (!value.equals(other.value))
+      }
+    } else if (!value.equals(other.value)) {
       return false;
+    }
     return true;
   }
 
@@ -167,5 +172,9 @@ public class HeaderValue implements Serializable {
     sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
     String value = sdf.format(new Date(timestampMillis));
     return new HeaderValue(String.valueOf(value));
+  }
+
+  public String getValue() {
+    return value;
   }
 }
