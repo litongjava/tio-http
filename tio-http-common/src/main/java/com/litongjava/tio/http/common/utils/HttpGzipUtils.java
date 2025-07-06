@@ -21,7 +21,6 @@ public class HttpGzipUtils {
    * gzip
    * @param request
    * @param response
-   * @author tanyaowu
    */
   public static void gzip(HttpRequest request, HttpResponse response) {
     if (response == null) {
@@ -62,6 +61,14 @@ public class HttpGzipUtils {
 
     // 已经gzip过了，就不必再压缩了
     if (response.hasGzipped()) {
+      return;
+    }
+    
+    HeaderValue ct = response.getContentType();
+
+    String mime = ct != null ? ct.getValue().toLowerCase(Locale.ROOT) : "";
+    boolean isBinary = mime.startsWith("image/") || mime.startsWith("video/") || mime.startsWith("audio/");
+    if (isBinary) {
       return;
     }
 
