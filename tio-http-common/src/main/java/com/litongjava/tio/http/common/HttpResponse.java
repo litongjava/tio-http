@@ -512,6 +512,10 @@ public class HttpResponse extends HttpPacket {
     this.addHeader(HeaderName.Content_Type, HeaderValue.Content_Type.from(contentType));
   }
 
+  public void setContentDisposition(String value) {
+    this.addHeader(HeaderName.Content_Disposition, HeaderValue.Content_Type.from(value));
+  }
+
   public boolean isStream() {
     return stream;
   }
@@ -671,4 +675,5 @@ public class HttpResponse extends HttpPacket {
   public void disableGzip(boolean b) {
     this.setHasCountContentLength(b);
   }
+
 }
