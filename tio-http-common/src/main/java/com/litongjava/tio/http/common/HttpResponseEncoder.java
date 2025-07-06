@@ -78,8 +78,9 @@ public class HttpResponseEncoder {
       } catch (Exception e) {
         log.error(e.toString(), e);
       }
+      bodyLength = body.length;
     }
-    bodyLength = body.length;
+    
 
     HttpResponseStatus httpResponseStatus = httpResponse.getStatus();
 
