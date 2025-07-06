@@ -1,5 +1,7 @@
 package com.litongjava.tio.http.common.utils;
 
+import java.util.Locale;
+
 import com.litongjava.tio.http.common.HeaderName;
 import com.litongjava.tio.http.common.HeaderValue;
 import com.litongjava.tio.http.common.HttpRequest;
@@ -16,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class HttpGzipUtils {
   /**
-   * 
+   * gzip
    * @param request
    * @param response
    * @author tanyaowu
@@ -28,6 +30,14 @@ public class HttpGzipUtils {
 
     // 已经gzip过了，就不必再压缩了
     if (response.hasGzipped()) {
+      return;
+    }
+
+    HeaderValue ct = response.getContentType();
+
+    String mime = ct != null ? ct.getValue().toLowerCase(Locale.ROOT) : "";
+    boolean isBinary = mime.startsWith("image/") || mime.startsWith("video/") || mime.startsWith("audio/");
+    if (isBinary) {
       return;
     }
 
