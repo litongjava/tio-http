@@ -667,6 +667,10 @@ public class HttpResponse extends HttpPacket {
     return this.setBodyString(bodyString);
   }
 
+  public HttpResponse body(Object obj) {
+    return this.setJson(obj);
+  }
+
   public HttpResponse ok(byte[] payload) {
     setBody(payload);
     return this;
