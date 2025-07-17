@@ -760,4 +760,37 @@ public class HttpRequest extends HttpPacket {
     return new RequestDispatcher(path);
   }
 
+  public void setUserId(Object userId) {
+    this.setAttribute("userId", userId);
+  }
+
+  public Object getUserId() {
+    return this.getAttribute("userId");
+  }
+
+  public String getUserIdString() {
+    Object attribute = this.getUserId();
+    if (attribute != null) {
+      if (attribute instanceof String) {
+        return (String) attribute;
+      } else {
+        return attribute.toString();
+      }
+    }
+    return null;
+  }
+  
+  public Long getUserIdLong() {
+    Object attribute = this.getAttribute("userId");
+    if (attribute != null) {
+      if (attribute instanceof Long) {
+        return (Long) attribute;
+      } else {
+        return Long.valueOf((String) attribute);
+      }
+    }
+    return null;
+
+  }
+
 }
