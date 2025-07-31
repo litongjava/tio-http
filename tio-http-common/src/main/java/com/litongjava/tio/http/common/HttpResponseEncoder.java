@@ -88,7 +88,7 @@ public class HttpResponseEncoder {
 
     Map<HeaderName, HeaderValue> headers = httpResponse.getHeaders();
     // Content_Length
-    boolean isNotAddContentLength = httpResponse.isStream() || httpResponse.hasCountContentLength();
+    boolean isNotAddContentLength = httpResponse.isStream() || !httpResponse.isAddContentLength();
     if (!isNotAddContentLength) {
       httpResponse.addHeader(HeaderName.Content_Length, HeaderValue.from(Integer.toString(bodyLength)));
     }

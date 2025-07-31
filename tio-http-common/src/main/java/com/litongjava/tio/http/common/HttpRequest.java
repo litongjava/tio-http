@@ -54,7 +54,7 @@ public class HttpRequest extends HttpPacket {
   private String domain = null;
   private String host = null;
 
-  /**该HttpRequest对象的创建时间*/
+  /** 该HttpRequest对象的创建时间 */
   private long createTime = SystemTimer.currTime;
   private boolean closed = false;
   protected Map<String, String> headers = new HashMap<>();
@@ -76,6 +76,7 @@ public class HttpRequest extends HttpPacket {
 
   /**
    * 关闭连接
+   * 
    * @param remark
    */
   public void close(String remark) {
@@ -157,6 +158,7 @@ public class HttpRequest extends HttpPacket {
 
   /**
    * 获取请求头中的User-Agent字段
+   * 
    * @return
    * @author: tanyaowu
    */
@@ -166,6 +168,7 @@ public class HttpRequest extends HttpPacket {
 
   /**
    * 获取请求头中的host字段，形如：www.t-io.org:8080, www.t-io.org等值
+   * 
    * @return
    * @author: tanyaowu
    */
@@ -192,6 +195,7 @@ public class HttpRequest extends HttpPacket {
 
   /**
    * 获取真实的客户端ip
+   * 
    * @return
    * @author tanyaowu
    */
@@ -214,6 +218,7 @@ public class HttpRequest extends HttpPacket {
 
   /**
    * 根据host字段，获取去除端口的纯域名部分的值，形如：www.t-io.org, t-io.org等值
+   * 
    * @return
    * @author tanyaowu
    */
@@ -278,8 +283,8 @@ public class HttpRequest extends HttpPacket {
   }
 
   /**
-  * @param bodyBytes the bodyBytes to set
-  */
+   * @param bodyBytes the bodyBytes to set
+   */
   public void setBodyBytes(byte[] bodyBytes) {
     this.body = bodyBytes;
   }
@@ -363,6 +368,7 @@ public class HttpRequest extends HttpPacket {
 
   /**
    * 把类型为数组的参数值转换成Object，相当于是取了数组的第一个值，便于业务开发（因为大部分参数值其实只有一个）
+   * 
    * @return
    */
   public Map<String, Object> getParam() {
@@ -403,6 +409,7 @@ public class HttpRequest extends HttpPacket {
 
   /**
    * 同getParam(String name)
+   * 
    * @param name
    * @return
    * @author tanyaowu
@@ -503,7 +510,14 @@ public class HttpRequest extends HttpPacket {
    */
   public Object[] getParamArray(String name) {
     Object[] values = params.get(name);
+    if (values == null) {
+      values = params.get(name + "[]");
+    }
     return values;
+  }
+
+  public String[] getParamValues(String name) {
+    return (String[]) getParamArray(name);
   }
 
   public Node getRemote() {
@@ -603,7 +617,8 @@ public class HttpRequest extends HttpPacket {
 
   /**
    * 设置好header后，会把cookie等头部信息也设置好
-   * @param headers the headers to set
+   * 
+   * @param headers        the headers to set
    * @param channelContext
    */
   public void setHeaders(Map<String, String> headers) {
@@ -744,12 +759,14 @@ public class HttpRequest extends HttpPacket {
 
   public StringBuffer getRequestURL() {
     StringBuffer stringBuffer = new StringBuffer();
-    stringBuffer.append(requestLine.getProtocol().toLowerCase()).append("://").append(host).append(requestLine.getPath());
+    stringBuffer.append(requestLine.getProtocol().toLowerCase()).append("://").append(host)
+        .append(requestLine.getPath());
     return stringBuffer;
   }
 
   /**
    * eg:GET
+   * 
    * @return
    */
   public HttpMethod getMethod() {
@@ -779,7 +796,7 @@ public class HttpRequest extends HttpPacket {
     }
     return null;
   }
-  
+
   public Long getUserIdLong() {
     Object attribute = this.getAttribute("userId");
     if (attribute != null) {

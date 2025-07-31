@@ -1,5 +1,6 @@
 package com.litongjava.tio.http.common;
 
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -12,6 +13,9 @@ import java.util.Set;
 import com.litongjava.model.sys.SysConst;
 import com.litongjava.tio.consts.TioConst;
 import com.litongjava.tio.consts.TioCoreConfigKeys;
+import com.litongjava.tio.core.ChannelContext;
+import com.litongjava.tio.core.Tio;
+import com.litongjava.tio.http.common.stream.TioOutputStream;
 import com.litongjava.tio.http.common.utils.HttpGzipUtils;
 import com.litongjava.tio.http.common.utils.MimeTypeUtils;
 import com.litongjava.tio.utils.environment.EnvUtils;
@@ -25,7 +29,8 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class HttpResponse extends HttpPacket {
-  private final static boolean DIAGNOSTIC_LOG_ENABLED = EnvUtils.getBoolean(TioCoreConfigKeys.TIO_CORE_DIAGNOSTIC, false);
+  private final static boolean DIAGNOSTIC_LOG_ENABLED = EnvUtils.getBoolean(TioCoreConfigKeys.TIO_CORE_DIAGNOSTIC,
+      false);
   private static final long serialVersionUID = -3512681144230291786L;
   public transient static final HttpResponse NULL_RESPONSE = new HttpResponse();
   /**
@@ -46,9 +51,9 @@ public class HttpResponse extends HttpPacket {
    */
   private transient boolean send = true;
   /**
-   * 不计算Content-Length
+   * 是否添加Content-Length
    */
-  private transient boolean hasCountContentLength = false;
+  private transient boolean addContentLength = true;
   private transient HttpRequest request = null;
   private transient List<Cookie> cookies = null;
   private Map<HeaderName, HeaderValue> headers = new HashMap<>();
@@ -600,8 +605,8 @@ public class HttpResponse extends HttpPacket {
     }
   }
 
-  public HttpResponse setHasCountContentLength(boolean b) {
-    this.hasCountContentLength = b;
+  public HttpResponse setAddContentLength(boolean b) {
+    this.addContentLength = b;
     return this;
   }
 
@@ -611,8 +616,8 @@ public class HttpResponse extends HttpPacket {
 
   }
 
-  public boolean hasCountContentLength() {
-    return hasCountContentLength;
+  public boolean isAddContentLength() {
+    return addContentLength;
   }
 
   public void setAttachmentFilename(String downloadFilename) {
@@ -677,7 +682,19 @@ public class HttpResponse extends HttpPacket {
   }
 
   public void disableGzip(boolean b) {
-    this.setHasCountContentLength(b);
+    this.setAddContentLength(!b);
+  }
+
+  public OutputStream newOutputStream() {
+    return newOutputStream(request.channelContext);
+  }
+
+  public OutputStream newOutputStream(ChannelContext ctx) {
+    this.addHeader(HeaderName.Transfer_Encoding, HeaderValue.from("chunked"));
+    this.setAddContentLength(false);
+    Tio.bSend(request.channelContext, this);
+    this.setSend(false);
+    return new TioOutputStream(ctx, true);
   }
 
 }

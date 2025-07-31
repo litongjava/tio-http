@@ -170,7 +170,7 @@ public class Resps {
 
       URL url = httpResource.getUrl();
       if (url != null) {
-        byte[] bs = FileUtil.readUrlAsBytes(url);
+        byte[] bs = FileUtil.readBytes(url);
         return Resps.bytes(request, bs, FileUtil.extName(path));
       }
       return Resps.resp404(request);
