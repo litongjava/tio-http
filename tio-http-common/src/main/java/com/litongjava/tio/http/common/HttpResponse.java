@@ -53,7 +53,7 @@ public class HttpResponse extends HttpPacket {
   /**
    * 是否添加Content-Length
    */
-  private transient boolean addContentLength = true;
+  private transient boolean skipAddContentLength = true;
   private transient HttpRequest request = null;
   private transient List<Cookie> cookies = null;
   private Map<HeaderName, HeaderValue> headers = new HashMap<>();
@@ -605,8 +605,8 @@ public class HttpResponse extends HttpPacket {
     }
   }
 
-  public HttpResponse setAddContentLength(boolean b) {
-    this.addContentLength = b;
+  public HttpResponse setSkipAddContentLength(boolean b) {
+    this.skipAddContentLength = b;
     return this;
   }
 
@@ -616,8 +616,8 @@ public class HttpResponse extends HttpPacket {
 
   }
 
-  public boolean isAddContentLength() {
-    return addContentLength;
+  public boolean isSkipAddContentLength() {
+    return skipAddContentLength;
   }
 
   public void setAttachmentFilename(String downloadFilename) {
@@ -682,7 +682,7 @@ public class HttpResponse extends HttpPacket {
   }
 
   public void disableGzip(boolean b) {
-    this.setAddContentLength(!b);
+    this.setSkipAddContentLength(!b);
   }
 
   public OutputStream newOutputStream() {
@@ -691,7 +691,7 @@ public class HttpResponse extends HttpPacket {
 
   public OutputStream newOutputStream(ChannelContext ctx) {
     this.addHeader(HeaderName.Transfer_Encoding, HeaderValue.from("chunked"));
-    this.setAddContentLength(false);
+    this.setSkipAddContentLength(false);
     Tio.bSend(request.channelContext, this);
     this.setSend(false);
     return new TioOutputStream(ctx, true);

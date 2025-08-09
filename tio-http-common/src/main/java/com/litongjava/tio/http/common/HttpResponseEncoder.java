@@ -88,7 +88,7 @@ public class HttpResponseEncoder {
 
     Map<HeaderName, HeaderValue> headers = httpResponse.getHeaders();
     // Content_Length
-    boolean isNotAddContentLength = httpResponse.isStream() || !httpResponse.isAddContentLength();
+    boolean isNotAddContentLength = httpResponse.isStream() || !httpResponse.isSkipAddContentLength();
     if (!isNotAddContentLength) {
       httpResponse.addHeader(HeaderName.Content_Length, HeaderValue.from(Integer.toString(bodyLength)));
     }
@@ -208,8 +208,10 @@ public class HttpResponseEncoder {
     buf.put(HeaderName.Date.bytes).put((byte) ':').put(dateValue.bytes).put(SysConst.CR_LF);
 
     // **Content-Length 头**（必须在其他无长度提示的场景里先写）
-    buf.put(HeaderName.Content_Length.bytes).put((byte) ':').put(lengthBytes).put(SysConst.CR_LF);
-
+    boolean isNotAddContentLength = httpResponse.isStream() || !httpResponse.isSkipAddContentLength();
+    if (!isNotAddContentLength) {
+      buf.put(HeaderName.Content_Length.bytes).put((byte) ':').put(lengthBytes).put(SysConst.CR_LF);
+    }
     // 其它 headers
     for (Entry<HeaderName, HeaderValue> e : headers.entrySet()) {
       buf.put(e.getKey().bytes).put((byte) ':').put(e.getValue().bytes).put(SysConst.CR_LF);
