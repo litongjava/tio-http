@@ -28,7 +28,7 @@ public class HttpGzipUtils {
     }
 
     // 已经gzip过了，就不必再压缩了
-    if (response.hasGzipped()) {
+    if (response.isSkipGzipped()) {
       return;
     }
 
@@ -60,7 +60,7 @@ public class HttpGzipUtils {
     }
 
     // 已经gzip过了，就不必再压缩了
-    if (response.hasGzipped()) {
+    if (response.isSkipGzipped()) {
       return;
     }
     
@@ -81,7 +81,7 @@ public class HttpGzipUtils {
       byte[] bs2 = ZipUtil.gzip(bs);
       if (bs2.length < bs.length) {
         response.setBody(bs2);
-        response.setHasGzipped(true);
+        response.setSkipGzipped(true);
         response.addHeader(HeaderName.Content_Encoding, HeaderValue.Content_Encoding.gzip);
       }
     }

@@ -61,7 +61,7 @@ public class HttpResponse extends HttpPacket {
   /**
    * 是否已经被gzip压缩过了，防止重复压缩
    */
-  private boolean hasGzipped = false;
+  private boolean skipGzipped = false;
   private String charset = TioConst.CHARSET_NAME;
   /**
    * 忽略ip访问统计
@@ -167,7 +167,7 @@ public class HttpResponse extends HttpPacket {
     HttpResponse cloneResponse = new HttpResponse(request);
     cloneResponse.setStatus(response.getStatus());
     cloneResponse.setBody(response.getBody());
-    cloneResponse.setHasGzipped(response.hasGzipped());
+    cloneResponse.setSkipGzipped(response.isSkipGzipped());
     cloneResponse.addHeaders(response.getHeaders());
 
     if (cloneResponse.getCookies() != null) {
@@ -457,12 +457,12 @@ public class HttpResponse extends HttpPacket {
     this.status = custom;
   }
 
-  public boolean hasGzipped() {
-    return hasGzipped;
+  public boolean isSkipGzipped() {
+    return skipGzipped;
   }
 
-  public void setHasGzipped(boolean hasGzipped) {
-    this.hasGzipped = hasGzipped;
+  public void setSkipGzipped(boolean hasGzipped) {
+    this.skipGzipped = hasGzipped;
   }
 
   public boolean isSkipIpStat() {
