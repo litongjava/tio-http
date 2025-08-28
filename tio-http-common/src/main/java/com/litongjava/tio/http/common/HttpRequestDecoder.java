@@ -203,13 +203,14 @@ public class HttpRequestDecoder {
       return true;
     }
 
-    String[] keyvalues = queryString.split(SysConst.STR_AMP);
-    for (String keyvalue : keyvalues) {
-      String[] keyvalueArr = keyvalue.split(SysConst.STR_EQ, 2);
-      String value1 = null;
-      if (keyvalueArr.length == 2) {
-        value1 = keyvalueArr[1];
-      } else if (keyvalueArr.length > 2) {
+    String[] queryStrArray = queryString.split(SysConst.STR_AMP);
+    for (String pair : queryStrArray) {
+      String[] keyAndValueArray = pair.split(SysConst.STR_EQ, 2);
+      String queryParamValue = null;
+      if (keyAndValueArray.length == 2) {
+        queryParamValue = keyAndValueArray[1];
+        
+      } else if (keyAndValueArray.length > 2) {
         String errorMsg = "Invalid query parameter format in query string, contain multi ==:" + queryString;
         log.error(errorMsg);
 
@@ -223,13 +224,13 @@ public class HttpRequestDecoder {
         return false;
       }
 
-      String key = keyvalueArr[0];
+      String key = keyAndValueArray[0];
       String value;
-      if (StrUtil.isBlank(value1)) {
+      if (StrUtil.isBlank(queryParamValue)) {
         value = null;
       } else {
         try {
-          value = URLDecoder.decode(value1, charset);
+          value = URLDecoder.decode(queryParamValue, charset);
         } catch (UnsupportedEncodingException e) {
           throw new TioDecodeException(e);
         }
@@ -257,7 +258,6 @@ public class HttpRequestDecoder {
    * @param channelContext
    * @param httpConfig
    * @throws TioDecodeException
-   * @author tanyaowu
    */
   private static void parseBody(HttpRequest httpRequest, RequestLine firstLine, byte[] bodyBytes, ChannelContext channelContext, HttpConfig httpConfig) throws TioDecodeException {
     parseBodyFormat(httpRequest, httpRequest.getHeaders());

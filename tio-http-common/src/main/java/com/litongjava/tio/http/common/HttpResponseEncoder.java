@@ -19,17 +19,19 @@ import com.litongjava.tio.utils.hutool.StrUtil;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * HttpResponseEncoder  
- * @author tanyaowu
- * 2017年8月4日 上午9:41:12
+ * HttpResponseEncoder
+ * 
+ * @author tanyaowu 2017年8月4日 上午9:41:12
  */
 @Slf4j
 public class HttpResponseEncoder {
   public static final int MAX_HEADER_LENGTH = 20480;
-  public static final int HEADER_SERVER_LENGTH = HeaderName.Server.bytes.length + HeaderValue.Server.TIO.bytes.length + 3;
+  public static final int HEADER_SERVER_LENGTH = HeaderName.Server.bytes.length + HeaderValue.Server.TIO.bytes.length
+      + 3;
   public static final int HEADER_DATE_LENGTH_1 = HeaderName.Date.bytes.length + 3;
   public static final int HEADER_FIXED_LENGTH = HEADER_SERVER_LENGTH + HEADER_DATE_LENGTH_1;
-  private static boolean showServer = EnvUtils.getBoolean(ServerConfigKeys.SERVER_HTTP_RESPONSE_HEANDER_SHOW_SERVER, true);
+  private static boolean showServer = EnvUtils.getBoolean(ServerConfigKeys.SERVER_HTTP_RESPONSE_HEANDER_SHOW_SERVER,
+      true);
 
   /**
    *
@@ -80,7 +82,6 @@ public class HttpResponseEncoder {
       }
       bodyLength = body.length;
     }
-    
 
     HttpResponseStatus httpResponseStatus = httpResponse.getStatus();
 
@@ -88,12 +89,12 @@ public class HttpResponseEncoder {
 
     Map<HeaderName, HeaderValue> headers = httpResponse.getHeaders();
     // Content_Length
-    boolean isNotAddContentLength = httpResponse.isStream() || !httpResponse.isSkipAddContentLength();
-    if (!isNotAddContentLength) {
+    boolean shouldAddContentLength = !httpResponse.isStream() && !httpResponse.isSkipAddContentLength();
+    if (shouldAddContentLength) {
       httpResponse.addHeader(HeaderName.Content_Length, HeaderValue.from(Integer.toString(bodyLength)));
     }
 
-    //keep alive
+    // keep alive
     int headerLength = httpResponse.getHeaderByteCount();
     if (httpResponse.getCookies() != null) {
       for (Cookie cookie : httpResponse.getCookies()) {

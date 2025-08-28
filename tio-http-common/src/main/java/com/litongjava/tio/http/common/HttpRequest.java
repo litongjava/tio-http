@@ -407,6 +407,15 @@ public class HttpRequest extends HttpPacket {
     return (String) getObject(name);
   }
 
+  public String getParam(String name, String defaultValue) {
+    Object value = getObject(name);
+    if (value != null) {
+      return (String) value;
+    } else {
+      return defaultValue;
+    }
+  }
+
   /**
    * 同getParam(String name)
    * 
@@ -448,6 +457,15 @@ public class HttpRequest extends HttpPacket {
     return Integer.parseInt(value);
   }
 
+  public Integer getInt(String name, Integer defaultValue) {
+    Object value = getObject(name);
+    if (value != null) {
+      return Integer.valueOf((String) value);
+    } else {
+      return defaultValue;
+    }
+  }
+
   public Short getShort(String name) {
     String value = getParam(name);
     if (StrUtil.isBlank(value)) {
@@ -473,6 +491,15 @@ public class HttpRequest extends HttpPacket {
     }
 
     return Long.parseLong(value);
+  }
+
+  public Long getLong(String name, Long defaultValue) {
+    Object value = getObject(name);
+    if (value != null) {
+      return Long.valueOf((String) value);
+    } else {
+      return defaultValue;
+    }
   }
 
   public Double getDouble(String name) {

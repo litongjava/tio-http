@@ -53,7 +53,7 @@ public class HttpResponse extends HttpPacket {
   /**
    * 是否添加Content-Length
    */
-  private transient boolean skipAddContentLength = true;
+  private transient boolean skipAddContentLength = false;
   private transient HttpRequest request = null;
   private transient List<Cookie> cookies = null;
   private Map<HeaderName, HeaderValue> headers = new HashMap<>();
