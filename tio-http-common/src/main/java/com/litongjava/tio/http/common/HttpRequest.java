@@ -529,6 +529,14 @@ public class HttpRequest extends HttpPacket {
     return Boolean.valueOf(value);
   }
 
+  public boolean getBool(String key) {
+    String value = getParam(key);
+    if (StrUtil.isBlank(value)) {
+      return false;
+    }
+    return Boolean.valueOf(value);
+  }
+
   /**
    * 
    * @param name
