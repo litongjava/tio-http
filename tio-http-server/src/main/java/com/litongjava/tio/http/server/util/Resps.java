@@ -343,6 +343,11 @@ public class Resps {
     String charset = response.getCharset();
     return html(response, bodyString, charset);
   }
+  
+  public static HttpResponse svg(HttpResponse response, String bodyString) {
+    String charset = response.getCharset();
+    return svg(response, bodyString, charset);
+  }
 
   public static HttpResponse xml(HttpResponse response, String bodyString) {
     String charset = response.getCharset();
@@ -380,6 +385,10 @@ public class Resps {
    */
   public static HttpResponse html(HttpResponse response, String bodyString, String charset) {
     return string(response, bodyString, charset, getMimeTypeStr(MimeType.TEXT_HTML_HTML, charset));
+  }
+  
+  public static HttpResponse svg(HttpResponse response, String bodyString, String charset) {
+    return string(response, bodyString, charset, getMimeTypeStr(MimeType.IMAGE_SVG_SVG, charset));
   }
 
   public static HttpResponse xml(HttpResponse response, String bodyString, String charset) {
@@ -662,5 +671,7 @@ public class Resps {
     response.body(string);
     return response;
   }
+
+ 
 
 }
