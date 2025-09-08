@@ -799,6 +799,15 @@ public class HttpRequest extends HttpPacket {
     return stringBuffer;
   }
 
+  public String getPathVar(String name) {
+    return getParam(name);
+  }
+
+  public Integer getPathVarInt(String name, Integer def) {
+    Integer v = getInt(name);
+    return v != null ? v : def;
+  }
+
   /**
    * eg:GET
    * 
