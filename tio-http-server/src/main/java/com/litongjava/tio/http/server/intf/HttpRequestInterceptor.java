@@ -11,7 +11,7 @@ import com.litongjava.tio.http.common.RequestLine;
 public interface HttpRequestInterceptor {
 
   /**
-   * 在执行org.tio.http.server.handler.IHttpRequestHandler.handler()前会先调用这个方法<br>
+   * 在执行HttpRequestHandler.handler()前会先调用这个方法<br>
    * 如果返回了HttpResponse对象，则后续都不再执行，表示调用栈就此结束<br>
    * @param request
    * @param requestLine
@@ -19,13 +19,12 @@ public interface HttpRequestInterceptor {
    * @param httpResponse 从缓存中获取到的HttpResponse对象
    * @return
    * @throws Exception
-   * @author tanyaowu
    */
   public HttpResponse doBeforeHandler(HttpRequest request, RequestLine requestLine, HttpResponse httpResponse)
       throws Exception;
 
   /**
-   * 在执行org.tio.http.server.handler.IHttpRequestHandler.handler()后会调用此方法，业务层可以统一在这里给HttpResponse作一些修饰
+   * 在执行HttpRequestHandler.handler()后会调用此方法，业务层可以统一在这里给HttpResponse作一些修饰
    * @param request
    * @param requestLine
    * @param response
