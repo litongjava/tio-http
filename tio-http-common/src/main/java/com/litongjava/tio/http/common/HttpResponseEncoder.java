@@ -209,8 +209,8 @@ public class HttpResponseEncoder {
     buf.put(HeaderName.Date.bytes).put((byte) ':').put(dateValue.bytes).put(SysConst.CR_LF);
 
     // **Content-Length 头**（必须在其他无长度提示的场景里先写）
-    boolean isNotAddContentLength = httpResponse.isStream() || !httpResponse.isSkipAddContentLength();
-    if (!isNotAddContentLength) {
+    boolean shouldAddContentLength = !httpResponse.isStream() && !httpResponse.isSkipAddContentLength();
+    if (shouldAddContentLength) {
       buf.put(HeaderName.Content_Length.bytes).put((byte) ':').put(lengthBytes).put(SysConst.CR_LF);
     }
     // 其它 headers

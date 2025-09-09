@@ -691,7 +691,7 @@ public class HttpResponse extends HttpPacket {
 
   public OutputStream newOutputStream(ChannelContext ctx) {
     this.addHeader(HeaderName.Transfer_Encoding, HeaderValue.from("chunked"));
-    this.setSkipAddContentLength(false);
+    this.setSkipAddContentLength(true);
     Tio.bSend(request.channelContext, this);
     this.setSend(false);
     return new TioOutputStream(ctx, true);
