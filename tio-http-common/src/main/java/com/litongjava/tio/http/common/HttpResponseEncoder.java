@@ -1,13 +1,14 @@
 package com.litongjava.tio.http.common;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
 import com.litongjava.constants.ServerConfigKeys;
+import com.litongjava.enhance.buffer.Buffers;
 import com.litongjava.model.sys.SysConst;
 import com.litongjava.tio.core.ChannelContext;
 import com.litongjava.tio.core.TioConfig;
@@ -19,216 +20,249 @@ import com.litongjava.tio.utils.hutool.StrUtil;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * HttpResponseEncoder
- * 
- * @author tanyaowu 2017年8月4日 上午9:41:12
+ * High-performance HttpResponseEncoder 关键思路：不修改 headers、不重复计算、所有长度先算准、一把写完。
  */
 @Slf4j
 public class HttpResponseEncoder {
+  // 常量与固定头部长度估算
   public static final int MAX_HEADER_LENGTH = 20480;
-  public static final int HEADER_SERVER_LENGTH = HeaderName.Server.bytes.length + HeaderValue.Server.TIO.bytes.length
-      + 3;
-  public static final int HEADER_DATE_LENGTH_1 = HeaderName.Date.bytes.length + 3;
-  public static final int HEADER_FIXED_LENGTH = HEADER_SERVER_LENGTH + HEADER_DATE_LENGTH_1;
-  private static boolean showServer = EnvUtils.getBoolean(ServerConfigKeys.SERVER_HTTP_RESPONSE_HEANDER_SHOW_SERVER,
-      true);
+  private static final byte COLON = (byte) ':';
+  private static final byte[] CRLF = SysConst.CR_LF;
+
+  private static final int HEADER_SERVER_LENGTH = HeaderName.Server.bytes.length + HeaderValue.Server.TIO.bytes.length
+      + 3; // ":" + CRLF
+  private static final int HEADER_DATE_LENGTH_PREFIX = HeaderName.Date.bytes.length + 3; // ":" + CRLF
+  @SuppressWarnings("unused")
+  private static final int HEADER_FIXED_LENGTH = HEADER_SERVER_LENGTH + HEADER_DATE_LENGTH_PREFIX;
+
+  private static final boolean showServer = EnvUtils
+      .getBoolean(ServerConfigKeys.SERVER_HTTP_RESPONSE_HEANDER_SHOW_SERVER, true);
 
   /**
-   *
-   * @param httpResponse
-   * @param tioConfig
-   * @param channelContext
-   * @return
+   * 普通/内存体编码
    */
   public static ByteBuffer encode(HttpResponse httpResponse, TioConfig tioConfig, ChannelContext channelContext) {
-    File fileBody = httpResponse.getFileBody();
+    // 文件体特殊通道：只写头部 + 由文件通道写 body
+    final File fileBody = httpResponse.getFileBody();
     if (fileBody != null) {
-      long length = fileBody.length();
+      final long length = fileBody.length();
       return buildHeader(httpResponse, length);
     }
-    int bodyLength = 0;
-    byte[] body = httpResponse.body;
 
-    byte[] jsonpBytes = null;
-    HttpRequest httpRequest = httpResponse.getHttpRequest();
+    Charset cs = Charset.forName(httpResponse.getCharset());
+    byte[] body = httpResponse.body;
+    int bodyLength = 0;
+
+    // JSONP 包装（如需）
+    final HttpRequest httpRequest = httpResponse.getHttpRequest();
     if (httpRequest != null) {
-      String jsonp = httpRequest.getParam(httpRequest.httpConfig.getJsonpParamName());
+      final String jsonp = httpRequest.getParam(httpRequest.httpConfig.getJsonpParamName());
       if (StrUtil.isNotBlank(jsonp)) {
-        try {
-          jsonpBytes = jsonp.getBytes(httpRequest.getCharset());
-        } catch (UnsupportedEncodingException e) {
-          throw new RuntimeException(e);
-        }
-        if (body == null) {
-          body = SysConst.NULL;
-        }
-        byte[] bodyBs = new byte[jsonpBytes.length + 1 + body.length + 1];
-        System.arraycopy(jsonpBytes, 0, bodyBs, 0, jsonpBytes.length);
-        bodyBs[jsonpBytes.length] = SysConst.LEFT_BRACKET;
-        System.arraycopy(body, 0, bodyBs, jsonpBytes.length + 1, body.length);
-        bodyBs[bodyBs.length - 1] = SysConst.RIGHT_BRACKET;
-        body = bodyBs;
-        httpResponse.setBody(bodyBs);
+        final byte[] jsonpBytes = jsonp.getBytes(cs);
+        final byte[] raw = (body != null) ? body : SysConst.NULL;
+        final int len = jsonpBytes.length + 1 + raw.length + 1; // callback( + body + )
+        final byte[] merged = new byte[len];
+        int p = 0;
+        System.arraycopy(jsonpBytes, 0, merged, p, jsonpBytes.length);
+        p += jsonpBytes.length;
+        merged[p++] = SysConst.LEFT_BRACKET;
+        System.arraycopy(raw, 0, merged, p, raw.length);
+        p += raw.length;
+        merged[p] = SysConst.RIGHT_BRACKET;
+        body = merged;
+        httpResponse.setBody(merged);
       }
     }
 
+    // gzip（如需）
     if (body != null) {
-      // gzip
       try {
         HttpGzipUtils.gzip(httpRequest, httpResponse);
         body = httpResponse.body;
       } catch (Exception e) {
         log.error(e.toString(), e);
       }
-      bodyLength = body.length;
+      bodyLength = (body != null ? body.length : 0);
     }
 
-    HttpResponseStatus httpResponseStatus = httpResponse.getStatus();
+    final HttpResponseStatus status = httpResponse.getStatus();
+    final int respLineLength = status.responseLineBinary.length;
 
-    int respLineLength = httpResponseStatus.responseLineBinary.length;
+    // 读取已有 headers（不修改）
+    final Map<HeaderName, HeaderValue> headers = httpResponse.getHeaders();
 
-    Map<HeaderName, HeaderValue> headers = httpResponse.getHeaders();
-    // Content_Length
-    boolean shouldAddContentLength = !httpResponse.isStream() && !httpResponse.isSkipAddContentLength();
+    // 是否需要写 Content-Length（不写入 headers Map，直接写出，避免二次遍历与对象创建）
+    final boolean shouldAddContentLength = !httpResponse.isStream() && !httpResponse.isSkipAddContentLength();
+    final byte[] contentLengthBytes = shouldAddContentLength ? asciiDigits(bodyLength) : null;
+
+    // 预估 header 长度（不含响应行）
+    int headerLength = httpResponse.getHeaderByteCount(); // 仅已有 headers 的字节数
+    // + Server / Date 固定头
+    final byte[] httpDateBytes = HttpDateTimer.httpDateValue.bytes;
+    int fixed = (showServer ? HEADER_SERVER_LENGTH : 0) + HEADER_DATE_LENGTH_PREFIX + httpDateBytes.length;
+
+    // + Content-Length（如果需要且未由外部写入）
     if (shouldAddContentLength) {
-      httpResponse.addHeader(HeaderName.Content_Length, HeaderValue.from(Integer.toString(bodyLength)));
+      headerLength += HeaderName.Content_Length.bytes.length + 1 /* : */ + contentLengthBytes.length + 2 /* CRLF */;
     }
 
-    // keep alive
-    int headerLength = httpResponse.getHeaderByteCount();
+    // + Cookies
     if (httpResponse.getCookies() != null) {
       for (Cookie cookie : httpResponse.getCookies()) {
-        headerLength += HeaderName.SET_COOKIE.bytes.length;
-        byte[] bs;
-        try {
-          bs = cookie.toString().getBytes(httpResponse.getCharset());
-        } catch (UnsupportedEncodingException e) {
-          throw new RuntimeException(e);
+        // 优先复用已有 bytes
+        byte[] bs = cookie.getBytes();
+        if (bs == null) {
+          bs = cookie.toString().getBytes(cs);
+          cookie.setBytes(bs);
         }
-        cookie.setBytes(bs);
-        headerLength += (bs.length);
+        headerLength += HeaderName.SET_COOKIE.bytes.length + 1 /* : */ + bs.length + 2 /* CRLF */;
       }
-      headerLength += httpResponse.getCookies().size() * 3; // 冒号和\r\n
     }
 
-    HeaderValue httpDateValue = HttpDateTimer.httpDateValue;
+    // + 头部结束 CRLF
+    headerLength += fixed + 2;
 
-    headerLength += HEADER_FIXED_LENGTH + httpDateValue.bytes.length;
+    // 分配最终缓冲区
+    ByteBuffer buf = Buffers.DIRECT_POOL.borrow(respLineLength + headerLength + bodyLength);
 
-    ByteBuffer buffer = ByteBuffer.allocate(respLineLength + headerLength + bodyLength);
-    buffer.put(httpResponseStatus.responseLineBinary);
+    // 写响应行
+    buf.put(status.responseLineBinary);
 
+    // Server
     if (showServer) {
-      buffer.put(HeaderName.Server.bytes);
-      buffer.put(SysConst.COL);
-      buffer.put(HeaderValue.Server.TIO.bytes);
-      buffer.put(SysConst.CR_LF);
+      buf.put(HeaderName.Server.bytes).put(COLON).put(HeaderValue.Server.TIO.bytes).put(CRLF);
     }
 
-    buffer.put(HeaderName.Date.bytes);
-    buffer.put(SysConst.COL);
-    buffer.put(httpDateValue.bytes);
-    buffer.put(SysConst.CR_LF);
+    // Date
+    buf.put(HeaderName.Date.bytes).put(COLON).put(httpDateBytes).put(CRLF);
 
-    Set<Entry<HeaderName, HeaderValue>> headerSet = headers.entrySet();
+    // Content-Length（如需）
+    if (shouldAddContentLength) {
+      buf.put(HeaderName.Content_Length.bytes).put(COLON).put(contentLengthBytes).put(CRLF);
+    }
+
+    // 其它 headers（保持已有顺序）
+    final Set<Entry<HeaderName, HeaderValue>> headerSet = headers.entrySet();
     for (Entry<HeaderName, HeaderValue> entry : headerSet) {
-      buffer.put(entry.getKey().bytes);
-      buffer.put(SysConst.COL);
-      buffer.put(entry.getValue().bytes);
-      buffer.put(SysConst.CR_LF);
+      buf.put(entry.getKey().bytes).put(COLON).put(entry.getValue().bytes).put(CRLF);
     }
 
-    // 处理cookie
+    // Cookies
     if (httpResponse.getCookies() != null) {
       for (Cookie cookie : httpResponse.getCookies()) {
-        buffer.put(HeaderName.SET_COOKIE.bytes);
-        buffer.put(SysConst.COL);
-        buffer.put(cookie.getBytes());
-        buffer.put(SysConst.CR_LF);
+        buf.put(HeaderName.SET_COOKIE.bytes).put(COLON).put(cookie.getBytes()).put(CRLF);
       }
     }
 
-    buffer.put(SysConst.CR_LF);
+    // 空行
+    buf.put(CRLF);
 
+    // 写 body
     if (bodyLength > 0) {
-      buffer.put(body);
+      buf.put(body);
     }
-    buffer.flip();
-    return buffer;
+
+    buf.flip();
+    return buf;
   }
 
+  /**
+   * 文件响应：仅构建头部（不把 Content-Length 放进 headers）
+   */
   private static ByteBuffer buildHeader(HttpResponse httpResponse, long contentLength) {
-    HttpResponseStatus status = httpResponse.getStatus();
-    byte[] httpLine = status.responseLineBinary;
-    Map<HeaderName, HeaderValue> headers = httpResponse.getHeaders();
-    HeaderValue dateValue = HttpDateTimer.httpDateValue;
+    final HttpResponseStatus status = httpResponse.getStatus();
+    final byte[] httpLine = status.responseLineBinary;
+    final Map<HeaderName, HeaderValue> headers = httpResponse.getHeaders();
+    final byte[] dateBytes = HttpDateTimer.httpDateValue.bytes;
 
-    // 先把 Content-Length 的 bytes 准备好
-    byte[] lengthBytes = null;
-    try {
-      lengthBytes = String.valueOf(contentLength).getBytes(httpResponse.getCharset());
-    } catch (UnsupportedEncodingException e1) {
-      e1.printStackTrace();
-    }
+    // Content-Length 数字字节（ASCII）
+    final byte[] lengthBytes = asciiDigits(contentLength);
 
-    // 重新计算 header 长度
     int headerLen = 0;
     headerLen += httpLine.length;
 
     if (showServer) {
       headerLen += HEADER_SERVER_LENGTH;
     }
-    headerLen += HEADER_DATE_LENGTH_1 + dateValue.bytes.length;
+    headerLen += HEADER_DATE_LENGTH_PREFIX + dateBytes.length;
 
-    // Content-Length
+    // + Content-Length
     headerLen += HeaderName.Content_Length.bytes.length + 1 + lengthBytes.length + 2;
 
-    // 其它自定义 headers
-    for (Entry<HeaderName, HeaderValue> e : headers.entrySet()) {
-      headerLen += e.getKey().bytes.length + 1 + e.getValue().bytes.length + 2;
-    }
-    // cookies
-    if (httpResponse.getCookies() != null) {
-      for (Cookie c : httpResponse.getCookies()) {
-        byte[] cbytes = c.getBytes();
-        headerLen += HeaderName.SET_COOKIE.bytes.length + 1 + cbytes.length + 2;
-      }
-    }
-    // 结尾的 CRLF
-    headerLen += 2;
-
-    // 构建 buffer
-    ByteBuffer buf = ByteBuffer.allocate(headerLen);
-    buf.put(httpLine);
-
-    if (showServer) {
-      buf.put(HeaderName.Server.bytes).put((byte) ':').put(HeaderValue.Server.TIO.bytes).put(SysConst.CR_LF);
-    }
-
-    // Date 头
-    buf.put(HeaderName.Date.bytes).put((byte) ':').put(dateValue.bytes).put(SysConst.CR_LF);
-
-    // **Content-Length 头**（必须在其他无长度提示的场景里先写）
-    boolean shouldAddContentLength = !httpResponse.isStream() && !httpResponse.isSkipAddContentLength();
-    if (shouldAddContentLength) {
-      buf.put(HeaderName.Content_Length.bytes).put((byte) ':').put(lengthBytes).put(SysConst.CR_LF);
-    }
     // 其它 headers
     for (Entry<HeaderName, HeaderValue> e : headers.entrySet()) {
-      buf.put(e.getKey().bytes).put((byte) ':').put(e.getValue().bytes).put(SysConst.CR_LF);
+      headerLen += e.getKey().bytes.length + 1 + e.getValue().bytes.length + 2;
     }
 
     // Cookies
     if (httpResponse.getCookies() != null) {
       for (Cookie c : httpResponse.getCookies()) {
-        buf.put(HeaderName.SET_COOKIE.bytes).put((byte) ':').put(c.getBytes()).put(SysConst.CR_LF);
+        byte[] cbytes = c.getBytes();
+        if (cbytes == null) {
+          // 尽量避免查字符集：文件响应通常无 cookie 字节缺失，这里兜底一次
+          cbytes = c.toString().getBytes(Charset.forName(httpResponse.getCharset()));
+          c.setBytes(cbytes);
+        }
+        headerLen += HeaderName.SET_COOKIE.bytes.length + 1 + cbytes.length + 2;
       }
     }
 
     // 头部结束空行
-    buf.put(SysConst.CR_LF);
+    headerLen += 2;
+
+    final ByteBuffer buf = ByteBuffer.allocate(headerLen);
+    buf.put(httpLine);
+
+    if (showServer) {
+      buf.put(HeaderName.Server.bytes).put(COLON).put(HeaderValue.Server.TIO.bytes).put(CRLF);
+    }
+
+    buf.put(HeaderName.Date.bytes).put(COLON).put(dateBytes).put(CRLF);
+
+    // Content-Length（直接写，不改 headers）
+    buf.put(HeaderName.Content_Length.bytes).put(COLON).put(lengthBytes).put(CRLF);
+
+    for (Entry<HeaderName, HeaderValue> e : headers.entrySet()) {
+      buf.put(e.getKey().bytes).put(COLON).put(e.getValue().bytes).put(CRLF);
+    }
+
+    if (httpResponse.getCookies() != null) {
+      for (Cookie c : httpResponse.getCookies()) {
+        buf.put(HeaderName.SET_COOKIE.bytes).put(COLON).put(c.getBytes()).put(CRLF);
+      }
+    }
+
+    buf.put(CRLF);
     buf.flip();
     return buf;
   }
 
+  /**
+   * 将 long/int 转 ASCII 数字字节（无中间 String 对象）
+   */
+  private static byte[] asciiDigits(long v) {
+    // 长度估计：最长 20 位（long），用栈式写法避免 String.valueOf()
+    if (v == 0)
+      return new byte[] { '0' };
+    boolean neg = v < 0;
+    long x = neg ? -v : v;
+
+    // 预分配最大 20 + 可选 '-'，然后从末尾回填
+    byte[] buf = new byte[21];
+    int p = buf.length;
+
+    while (x > 0) {
+      long q = x / 10;
+      int d = (int) (x - q * 10);
+      buf[--p] = (byte) ('0' + d);
+      x = q;
+    }
+    if (neg) {
+      buf[--p] = (byte) '-';
+    }
+    int len = buf.length - p;
+    byte[] out = new byte[len];
+    System.arraycopy(buf, p, out, 0, len);
+    return out;
+  }
 }
