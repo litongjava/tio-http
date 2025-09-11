@@ -220,7 +220,10 @@ public class HttpResponseEncoder {
     buf.put(HeaderName.Date.bytes).put(COLON).put(dateBytes).put(CRLF);
 
     // Content-Length（直接写，不改 headers）
-    buf.put(HeaderName.Content_Length.bytes).put(COLON).put(lengthBytes).put(CRLF);
+    final boolean shouldAddContentLength = !httpResponse.isStream() && !httpResponse.isSkipAddContentLength();
+    if (shouldAddContentLength) {
+      buf.put(HeaderName.Content_Length.bytes).put(COLON).put(lengthBytes).put(CRLF);
+    }
 
     for (Entry<HeaderName, HeaderValue> e : headers.entrySet()) {
       buf.put(e.getKey().bytes).put(COLON).put(e.getValue().bytes).put(CRLF);
