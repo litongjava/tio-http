@@ -30,14 +30,12 @@ import com.litongjava.tio.utils.json.Json;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * @author tanyaowu
- * 2017年6月29日 下午4:17:24
+ * @author tanyaowu 2017年6月29日 下午4:17:24
  */
 @Slf4j
 public class Resps {
   /**
-   * 构建css响应
-   * Content-Type: text/css;charset=utf-8
+   * 构建css响应 Content-Type: text/css;charset=utf-8
    *
    * @param request
    * @param bodyString
@@ -49,8 +47,7 @@ public class Resps {
   }
 
   /**
-   * 构建css响应
-   * Content-Type: text/css;charset=utf-8
+   * 构建css响应 Content-Type: text/css;charset=utf-8
    *
    * @param request
    * @param bodyString
@@ -184,13 +181,15 @@ public class Resps {
    * @return
    * @throws Exception
    */
-  public static HttpResponse resp404(HttpRequest request, RequestLine requestLine, HttpConfig httpConfig) throws Exception {
+  public static HttpResponse resp404(HttpRequest request, RequestLine requestLine, HttpConfig httpConfig)
+      throws Exception {
     String file404 = httpConfig.getPage404();
     HttpResource httpResource = request.httpConfig.getResource(request, file404);
     if (httpResource != null) {
       file404 = httpResource.getPath();
       String charset = request.getCharset();
-      HttpResponse ret = Resps.forward(request, file404 + "?tio_initpath=" + URLEncoder.encode(requestLine.getPathAndQuery(), charset));
+      HttpResponse ret = Resps.forward(request,
+          file404 + "?tio_initpath=" + URLEncoder.encode(requestLine.getPathAndQuery(), charset));
       return ret;
     }
     HttpResponse ret = Resps.html(request, "404");
@@ -198,14 +197,16 @@ public class Resps {
     return ret;
   }
 
-  public static HttpResponse resp404(HttpResponse response, RequestLine requestLine, HttpConfig httpConfig) throws Exception {
+  public static HttpResponse resp404(HttpResponse response, RequestLine requestLine, HttpConfig httpConfig)
+      throws Exception {
     String file404 = httpConfig.getPage404();
     HttpRequest request = response.getHttpRequest();
     HttpResource httpResource = httpConfig.getResource(request, file404);
     if (httpResource != null) {
       file404 = httpResource.getPath();
       String charset = response.getCharset();
-      HttpResponse ret = Resps.forward(request, file404 + "?tio_initpath=" + URLEncoder.encode(requestLine.getPathAndQuery(), charset));
+      HttpResponse ret = Resps.forward(request,
+          file404 + "?tio_initpath=" + URLEncoder.encode(requestLine.getPathAndQuery(), charset));
       return ret;
     }
     HttpResponse ret = Resps.html(response, "404");
@@ -231,7 +232,8 @@ public class Resps {
    * @return
    * @throws Exception
    */
-  public static HttpResponse resp500(HttpRequest request, RequestLine requestLine, HttpConfig httpConfig, Throwable throwable) throws Exception {
+  public static HttpResponse resp500(HttpRequest request, RequestLine requestLine, HttpConfig httpConfig,
+      Throwable throwable) throws Exception {
     String file500 = httpConfig.getPage500();
     HttpResource httpResource = request.httpConfig.getResource(request, file500);
 
@@ -283,6 +285,18 @@ public class Resps {
     return ret;
   }
 
+  public static HttpResponse imagePng(HttpResponse ret, byte[] bodyBytes) {
+    ret.setBody(bodyBytes);
+    ret.setContentType(MimeType.IMAGE_PNG_PNG.getType());
+    return ret;
+  }
+
+  public static HttpResponse imageJpeg(HttpResponse ret, byte[] bodyBytes) {
+    ret.setBody(bodyBytes);
+    ret.setContentType(MimeType.IMAGE_JPEG_JPG.getType());
+    return ret;
+  }
+
   /**
    * @param response
    * @param byteOne
@@ -317,7 +331,8 @@ public class Resps {
    * @param headers
    * @return
    */
-  public static HttpResponse bytesWithHeaders(HttpRequest request, byte[] bodyBytes, Map<HeaderName, HeaderValue> headers) {
+  public static HttpResponse bytesWithHeaders(HttpRequest request, byte[] bodyBytes,
+      Map<HeaderName, HeaderValue> headers) {
     HttpResponse ret = new HttpResponse(request);
     ret.setBody(bodyBytes);
     ret.addHeaders(headers);
@@ -343,7 +358,7 @@ public class Resps {
     String charset = response.getCharset();
     return html(response, bodyString, charset);
   }
-  
+
   public static HttpResponse svg(HttpResponse response, String bodyString) {
     String charset = response.getCharset();
     return svg(response, bodyString, charset);
@@ -386,7 +401,7 @@ public class Resps {
   public static HttpResponse html(HttpResponse response, String bodyString, String charset) {
     return string(response, bodyString, charset, getMimeTypeStr(MimeType.TEXT_HTML_HTML, charset));
   }
-  
+
   public static HttpResponse svg(HttpResponse response, String bodyString, String charset) {
     return string(response, bodyString, charset, getMimeTypeStr(MimeType.IMAGE_SVG_SVG, charset));
   }
@@ -416,7 +431,8 @@ public class Resps {
    * @return
    */
   public static HttpResponse js(HttpRequest request, String bodyString, String charset) {
-    HttpResponse ret = string(request, bodyString, charset, getMimeTypeStr(MimeType.APPLICATION_JAVASCRIPT_JS, charset));
+    HttpResponse ret = string(request, bodyString, charset,
+        getMimeTypeStr(MimeType.APPLICATION_JAVASCRIPT_JS, charset));
     return ret;
   }
 
@@ -466,7 +482,8 @@ public class Resps {
       if (body.getClass() == String.class || ClassUtil.isBasicType(body.getClass())) {
         response = string(response, body + "", charset, getMimeTypeStr(MimeType.APPLICATION_JSON, charset));
       } else {
-        response = string(response, Json.getJson().toJson(body), charset, getMimeTypeStr(MimeType.APPLICATION_JSON, charset));
+        response = string(response, Json.getJson().toJson(body), charset,
+            getMimeTypeStr(MimeType.APPLICATION_JSON, charset));
       }
     }
     return response;
@@ -671,7 +688,5 @@ public class Resps {
     response.body(string);
     return response;
   }
-
- 
 
 }
