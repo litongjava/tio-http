@@ -8,10 +8,10 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import com.litongjava.constants.ServerConfigKeys;
-import com.litongjava.enhance.buffer.Buffers;
 import com.litongjava.model.sys.SysConst;
 import com.litongjava.tio.core.ChannelContext;
 import com.litongjava.tio.core.TioConfig;
+import com.litongjava.tio.core.pool.BufferPoolUtils;
 import com.litongjava.tio.http.common.utils.HttpDateTimer;
 import com.litongjava.tio.http.common.utils.HttpGzipUtils;
 import com.litongjava.tio.utils.environment.EnvUtils;
@@ -123,7 +123,7 @@ public class HttpResponseEncoder {
     headerLength += fixed + 2;
 
     // 分配最终缓冲区
-    ByteBuffer buf = Buffers.DIRECT_POOL.borrow(respLineLength + headerLength + bodyLength);
+    ByteBuffer buf = BufferPoolUtils.allocate(TioConfig.WRITE_CHUNK_SIZE, respLineLength + headerLength + bodyLength);
 
     // 写响应行
     buf.put(status.responseLineBinary);
