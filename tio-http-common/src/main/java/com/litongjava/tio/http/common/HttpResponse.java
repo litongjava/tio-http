@@ -517,8 +517,12 @@ public class HttpResponse extends HttpPacket {
     this.addHeader(HeaderName.Content_Type, HeaderValue.Content_Type.from(contentType));
   }
 
+  public void setContentLength(long totalBytes) {
+    this.addHeader(HeaderName.Content_Length, HeaderValue.from(String.valueOf(totalBytes)));
+  }
+
   public void setContentDisposition(String value) {
-    this.addHeader(HeaderName.Content_Disposition, HeaderValue.Content_Type.from(value));
+    this.addHeader(HeaderName.Content_Disposition, HeaderValue.from(value));
   }
 
   public boolean isStream() {
