@@ -5,6 +5,7 @@ public interface ResponseHeaderKey {
   String Set_Cookie = "Set-Cookie".toLowerCase(); // Set-Cookie: UserID=JohnDoe; Max-Age=3600; Version=1
   String Content_Length = "Content-Length".toLowerCase(); // 65
   String Cache_Control = "Cache-Control".toLowerCase(); // "public, max-age:86400"
+  String ETag = "ETag";
   String Connection = "Connection".toLowerCase(); // Upgrade, keep-alive
   String Keep_Alive = "Keep-Alive".toLowerCase(); // Keep-Alive:timeout=20
   String Sec_WebSocket_Accept = "Sec-WebSocket-Accept".toLowerCase();
@@ -12,8 +13,7 @@ public interface ResponseHeaderKey {
   String Access_Control_Allow_Credentials = "Access-Control-Allow-Credentials".toLowerCase();
 
   /**
-   * Content-Disposition: attachment;filename=FileName.txt
-   * 文件下载
+   * Content-Disposition: attachment;filename=FileName.txt 文件下载
    */
   String Content_Disposition = "Content-Disposition".toLowerCase();
 
@@ -39,9 +39,11 @@ public interface ResponseHeaderKey {
    * 应该在什么时候认为文档已经过期，从而不再缓存它？
    */
   String Expires = "Expires".toLowerCase();
+  String Pragma = "Pragma".toLowerCase();
   /**
    * 文档的最后改动时间。客户可以通过If-Modified-Since请求头提供一个日期，该请求将被视为一个条件GET，
-   * 只有改动时间迟于指定时间的文档才会返回，否则返回一个304（Not Modified）状态。Last-Modified也可用setDateHeader方法来设置。
+   * 只有改动时间迟于指定时间的文档才会返回，否则返回一个304（Not
+   * Modified）状态。Last-Modified也可用setDateHeader方法来设置。
    */
   String Last_Modified = "Last-Modified".toLowerCase();
   /**
@@ -49,12 +51,15 @@ public interface ResponseHeaderKey {
    */
   String Location = "Location".toLowerCase();
   /**
-   * 表示浏览器应该在多少时间之后刷新文档，以秒计。除了刷新当前文档之外，你还可以通过setHeader("Refresh", "5; URL=http://host/path")让浏览器读取指定的页面。
-  注意这种功能通常是通过设置HTML页面HEAD区的＜META HTTP-EQUIV="Refresh" CONTENT="5;URL=http://host/path"＞实现，这是因为，自动刷新或重定向对于那些不能使用CGI或Servlet的HTML编写者十分重要。但是，对于Servlet来说，直接设置Refresh头更加方便。
-  
-  注意Refresh的意义是"N秒之后刷新本页面或访问指定页面"，而不是"每隔N秒刷新本页面或访问指定页面"。因此，连续刷新要求每次都发送一个Refresh头，而发送204状态代码则可以阻止浏览器继续刷新，不管是使用Refresh头还是＜META HTTP-EQUIV="Refresh" ...＞。
-  
-  注意Refresh头不属于HTTP 1.1正式规范的一部分，而是一个扩展，但Netscape和IE都支持它。
+   * 表示浏览器应该在多少时间之后刷新文档，以秒计。除了刷新当前文档之外，你还可以通过setHeader("Refresh", "5;
+   * URL=http://host/path")让浏览器读取指定的页面。 注意这种功能通常是通过设置HTML页面HEAD区的＜META
+   * HTTP-EQUIV="Refresh"
+   * CONTENT="5;URL=http://host/path"＞实现，这是因为，自动刷新或重定向对于那些不能使用CGI或Servlet的HTML编写者十分重要。但是，对于Servlet来说，直接设置Refresh头更加方便。
+   * 
+   * 注意Refresh的意义是"N秒之后刷新本页面或访问指定页面"，而不是"每隔N秒刷新本页面或访问指定页面"。因此，连续刷新要求每次都发送一个Refresh头，而发送204状态代码则可以阻止浏览器继续刷新，不管是使用Refresh头还是＜META
+   * HTTP-EQUIV="Refresh" ...＞。
+   * 
+   * 注意Refresh头不属于HTTP 1.1正式规范的一部分，而是一个扩展，但Netscape和IE都支持它。
    */
   String Refresh = "Refresh".toLowerCase();
   /**
@@ -73,7 +78,8 @@ public interface ResponseHeaderKey {
   /**
    *
    */
-  String Access_Control_Allow_Headers = "Access-Control-Allow-Headers".toLowerCase(); // .toLowerCase(); //value: x-requested-with,content-type
+  String Access_Control_Allow_Headers = "Access-Control-Allow-Headers".toLowerCase(); // .toLowerCase(); //value:
+                                                                                      // x-requested-with,content-type
 
   /**
    * 是否是从缓存中获取的数据，tio-httpserver特有的头部信息
@@ -87,8 +93,10 @@ public interface ResponseHeaderKey {
   String vary = "vary";
   String allow = "allow";
   String origin = "origin";
-  String x_content_type_options = "X-Content-Type-Options";
-  String referrer_policy = "Referrer-Policy";
-  String cross_origin_opener_policy="Cross-Origin-Opener-Policy";
+  String x_content_type_options = "X-Content-Type-Options".toLowerCase();
+  String referrer_policy = "Referrer-Policy".toLowerCase();
+  String cross_origin_opener_policy = "Cross-Origin-Opener-Policy".toLowerCase();
+  String Accept_Ranges = "Accept-Ranges".toLowerCase();
+  String Content_Range = "Content-Range".toLowerCase();
 
 }
