@@ -98,5 +98,4 @@ public interface ResponseHeaderKey {
   String cross_origin_opener_policy = "Cross-Origin-Opener-Policy".toLowerCase();
   String Accept_Ranges = "Accept-Ranges".toLowerCase();
   String Content_Range = "Content-Range".toLowerCase();
-
 }

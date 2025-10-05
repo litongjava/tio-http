@@ -22,6 +22,7 @@ public class HttpPacket extends Packet {
 
   /**
    * localProps
+   * 
    * @param key
    * @param value
    */
@@ -39,6 +40,7 @@ public class HttpPacket extends Packet {
 
   /**
    * 获取属性
+   * 
    * @param key
    * @return
    * @author tanyaowu
@@ -73,6 +75,7 @@ public class HttpPacket extends Packet {
 
   /**
    * 设置属性
+   * 
    * @param key
    * @param value
    * @author tanyaowu
