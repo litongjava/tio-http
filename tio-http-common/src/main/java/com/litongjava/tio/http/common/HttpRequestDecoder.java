@@ -11,6 +11,7 @@ import java.util.Objects;
 import com.litongjava.constants.ServerConfigKeys;
 import com.litongjava.model.sys.SysConst;
 import com.litongjava.tio.core.ChannelContext;
+import com.litongjava.tio.core.ChannelCloseCode;
 import com.litongjava.tio.core.Node;
 import com.litongjava.tio.core.Tio;
 import com.litongjava.tio.core.exception.TioDecodeException;
@@ -116,6 +117,12 @@ public class HttpRequestDecoder {
     // request body start
     String realIp = HttpIpUtils.getRealIp(channelContext, httpConfig, headers);
     if (IpBlacklistUtils.isInBlacklist(channelContext.tioConfig, realIp)) {
+      String message = "[" + realIp + "] in black list";
+      log.warn("{}", message);
+
+      // 直接关闭连接
+      Tio.close(channelContext, null, message, ChannelCloseCode.IP_IN_BLACK_LIST);
+
       throw new TioDecodeException("[" + realIp + "] in black list");
     }
     if (httpConfig.checkHost) {
