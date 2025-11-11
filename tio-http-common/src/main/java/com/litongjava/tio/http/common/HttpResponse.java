@@ -644,6 +644,11 @@ public class HttpResponse extends HttpPacket {
     this.setStatus(400);
     return setJson(body);
   }
+  
+  public HttpResponse fail(String body) {
+    this.setStatus(400);
+    return setBodyString(body);
+  }
 
   public HttpResponse error(String body) {
     this.setStatus(HttpResponseStatus.C500);
