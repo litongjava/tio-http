@@ -11,14 +11,14 @@ public class SseEmitter {
 
   public static String LFLF = "\n\n";
 
-  public static void pushSSEChunk(ChannelContext channelContext, String string) {
+  public static boolean pushSSEChunk(ChannelContext channelContext, String string) {
     String text = "data:" + string + LFLF;
     byte[] bytes = text.getBytes();
     ChunkedPacket ssePacket = new ChunkedPacket(ChunkEncoder.encodeChunk(bytes));
-    Tio.bSend(channelContext, ssePacket);
+    return Tio.bSend(channelContext, ssePacket);
   }
 
-  public static void pushSSEChunk(ChannelContext channelContext, String event, String data) {
+  public static boolean pushSSEChunk(ChannelContext channelContext, String event, String data) {
     StringBuilder sb = new StringBuilder();
     if (event != null) {
       sb.append("event:").append(event).append("\n");
@@ -26,12 +26,12 @@ public class SseEmitter {
     sb.append("data:").append(data).append(LFLF);
     byte[] bytes = sb.toString().getBytes(StandardCharsets.UTF_8);
     ChunkedPacket ssePacket = new ChunkedPacket(ChunkEncoder.encodeChunk(bytes));
-    Tio.bSend(channelContext, ssePacket);
+    return Tio.bSend(channelContext, ssePacket);
   }
 
-  public static void pushChunk(ChannelContext channelContext, byte[] bytes) {
+  public static boolean pushChunk(ChannelContext channelContext, byte[] bytes) {
     ChunkedPacket ssePacket = new ChunkedPacket(ChunkEncoder.encodeChunk(bytes));
-    Tio.bSend(channelContext, ssePacket);
+    return Tio.bSend(channelContext, ssePacket);
   }
 
   public static void closeSeeConnection(ChannelContext channelContext) {
