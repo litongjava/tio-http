@@ -90,6 +90,8 @@ public enum HttpResponseStatus {
    * 写合适的Authorization头后再次发出请求。
    */
   C401(401, "Unauthorized", "401 Unauthorized"),
+
+  C402(402, "Payment Required", "402 Payment Required"),
   /**
    * 资源不可用。服务器理解客户的请求，但拒绝处理它。通常由于服务器上文件或目录的权限设置导致。
    */
