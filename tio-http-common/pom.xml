@@ -30,15 +30,6 @@
       <scope>provided</scope>
     </dependency>
 
-    <dependency>
-      <groupId>org.projectlombok</groupId>
-      <artifactId>lombok</artifactId>
-      <version>1.18.30</version>
-      <optional>true</optional>
-      <scope>provided</scope>
-    </dependency>
-
-
     <!-- slf4j-logback绑定 -->
     <dependency>
       <groupId>ch.qos.logback</groupId>

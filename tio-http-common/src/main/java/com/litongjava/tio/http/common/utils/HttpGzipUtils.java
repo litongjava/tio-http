@@ -2,6 +2,9 @@ package com.litongjava.tio.http.common.utils;
 
 import java.util.Locale;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.litongjava.tio.http.common.HeaderName;
 import com.litongjava.tio.http.common.HeaderValue;
 import com.litongjava.tio.http.common.HttpRequest;
@@ -9,14 +12,13 @@ import com.litongjava.tio.http.common.HttpResponse;
 import com.litongjava.tio.http.common.RequestHeaderKey;
 import com.litongjava.tio.utils.hutool.ZipUtil;
 
-import lombok.extern.slf4j.Slf4j;
-
 /**
  * @author tanyaowu
  * 2017年8月18日 下午5:47:00
  */
-@Slf4j
 public class HttpGzipUtils {
+  private static final Logger log = LoggerFactory.getLogger(HttpGzipUtils.class);
+  
   /**
    * gzip
    * @param request

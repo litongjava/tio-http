@@ -8,10 +8,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.litongjava.constants.ServerConfigKeys;
 import com.litongjava.model.sys.SysConst;
-import com.litongjava.tio.core.ChannelContext;
 import com.litongjava.tio.core.ChannelCloseCode;
+import com.litongjava.tio.core.ChannelContext;
 import com.litongjava.tio.core.Node;
 import com.litongjava.tio.core.Tio;
 import com.litongjava.tio.core.exception.TioDecodeException;
@@ -22,11 +25,10 @@ import com.litongjava.tio.http.common.utils.HttpParseUtils;
 import com.litongjava.tio.utils.environment.EnvUtils;
 import com.litongjava.tio.utils.hutool.StrUtil;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 public class HttpRequestDecoder {
 
+  private static Logger log = LoggerFactory.getLogger(HttpRequestDecoder.class);
+  
   // 头部，最多有多少字节
   public static final int MAX_LENGTH_OF_HEADER = 20480;
 

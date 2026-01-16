@@ -104,9 +104,7 @@ public class SimpleTioHttpClient {
     // 2) 计算拨号节点与目标节点
     Node targetNode = new Node(host, port);
 
-    Node dialNode = targetNode;
-
-    // 3) 连接（这里假设你已经把 TioClient.connect(..., ProxyInfo) 接进去了）
+    // 3) 连接
     ClientChannelContext cctx = tioClient.connect(targetNode, null, 0, connectTimeoutSec, this.proxyInfo);
     if (cctx == null) throw new RuntimeException("connect failed");
 

@@ -5,16 +5,13 @@ import java.nio.ByteBuffer;
 import com.litongjava.tio.core.TioConfig;
 import com.litongjava.tio.http.common.HttpResponsePacket;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-@NoArgsConstructor
-@Getter
-@Setter
 public class ChunkedPacket extends HttpResponsePacket {
   private static final long serialVersionUID = 1014364783783749718L;
   private byte[] bytes;
+
+  public ChunkedPacket() {
+    super();
+  }
 
   @Override
   public ByteBuffer toByteBuffer(TioConfig tioConfig) {
@@ -31,5 +28,13 @@ public class ChunkedPacket extends HttpResponsePacket {
 
   public ChunkedPacket(String line) {
     this.bytes = line.getBytes();
+  }
+
+  public byte[] getBytes() {
+    return bytes;
+  }
+
+  public void setBytes(byte[] bytes) {
+    this.bytes = bytes;
   }
 }

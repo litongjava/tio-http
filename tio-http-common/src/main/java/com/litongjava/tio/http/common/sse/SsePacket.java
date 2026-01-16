@@ -7,15 +7,6 @@ import java.nio.charset.StandardCharsets;
 import com.litongjava.tio.core.TioConfig;
 import com.litongjava.tio.http.common.HttpResponsePacket;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
 public class SsePacket extends HttpResponsePacket {
   private static final byte[] CRLF = { 13, 10 };
 
@@ -29,6 +20,30 @@ public class SsePacket extends HttpResponsePacket {
   private Long eventId;
   private String event;
   private byte[] data;
+
+  public Long getEventId() {
+    return eventId;
+  }
+
+  public void setEventId(Long eventId) {
+    this.eventId = eventId;
+  }
+
+  public String getEvent() {
+    return event;
+  }
+
+  public void setEvent(String event) {
+    this.event = event;
+  }
+
+  public byte[] getData() {
+    return data;
+  }
+
+  public void setData(byte[] data) {
+    this.data = data;
+  }
 
   public SsePacket(Long id, String event, byte[] data) {
     this.eventId = id;

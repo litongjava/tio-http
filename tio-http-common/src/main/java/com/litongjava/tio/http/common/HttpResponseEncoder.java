@@ -7,6 +7,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.litongjava.constants.ServerConfigKeys;
 import com.litongjava.model.sys.SysConst;
 import com.litongjava.tio.core.ChannelContext;
@@ -17,13 +20,11 @@ import com.litongjava.tio.http.common.utils.HttpGzipUtils;
 import com.litongjava.tio.utils.environment.EnvUtils;
 import com.litongjava.tio.utils.hutool.StrUtil;
 
-import lombok.extern.slf4j.Slf4j;
-
 /**
  * High-performance HttpResponseEncoder 关键思路：不修改 headers、不重复计算、所有长度先算准、一把写完。
  */
-@Slf4j
 public class HttpResponseEncoder {
+  private static final Logger log = LoggerFactory.getLogger(HttpResponseEncoder.class);
   // 常量与固定头部长度估算
   public static final int MAX_HEADER_LENGTH = 20480;
   private static final byte COLON = (byte) ':';

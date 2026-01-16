@@ -8,6 +8,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Set;
 
 import com.litongjava.model.sys.SysConst;
@@ -22,13 +26,11 @@ import com.litongjava.tio.utils.environment.EnvUtils;
 import com.litongjava.tio.utils.hutool.ClassUtil;
 import com.litongjava.tio.utils.json.Json;
 
-import lombok.extern.slf4j.Slf4j;
-
 /**
  * @author tanyaowu
  */
-@Slf4j
 public class HttpResponse extends HttpPacket {
+  private final Logger log = LoggerFactory.getLogger(this.getClass());
   private final static boolean DIAGNOSTIC_LOG_ENABLED = EnvUtils.getBoolean(TioCoreConfigKeys.TIO_CORE_DIAGNOSTIC,
       false);
   private static final long serialVersionUID = -3512681144230291786L;
