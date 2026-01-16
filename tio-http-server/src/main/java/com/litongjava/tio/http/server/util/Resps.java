@@ -11,6 +11,9 @@ import java.nio.file.Files;
 import java.util.Date;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.litongjava.tio.http.common.HeaderName;
 import com.litongjava.tio.http.common.HeaderValue;
 import com.litongjava.tio.http.common.HttpConfig;
@@ -27,13 +30,12 @@ import com.litongjava.tio.utils.hutool.FileUtil;
 import com.litongjava.tio.utils.hutool.StrUtil;
 import com.litongjava.tio.utils.json.Json;
 
-import lombok.extern.slf4j.Slf4j;
-
 /**
  * @author tanyaowu 2017年6月29日 下午4:17:24
  */
-@Slf4j
 public class Resps {
+  private static final Logger log = LoggerFactory.getLogger(Resps.class);
+  
   /**
    * 构建css响应 Content-Type: text/css;charset=utf-8
    *
