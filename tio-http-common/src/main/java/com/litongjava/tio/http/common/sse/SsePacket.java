@@ -69,6 +69,9 @@ public class SsePacket extends HttpResponsePacket {
     this.data = data.getBytes();
   }
 
+  public SsePacket() {
+  }
+
   public SsePacket id(int i) {
     eventId = ((long) i);
     return this;
