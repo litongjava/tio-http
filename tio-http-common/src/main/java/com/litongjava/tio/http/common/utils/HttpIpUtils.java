@@ -34,7 +34,7 @@ public class HttpIpUtils {
   public static String getRealIp(HttpRequest request) {
 
     if (request.httpConfig == null) {
-      return request.getRemote().getIp();
+      return request.getRemote().getHost();
     }
 
     String headerName = null;
@@ -50,14 +50,14 @@ public class HttpIpUtils {
 
     if (StrUtil.isBlank(ip) || "unknown".equalsIgnoreCase(ip)) {
       headerName = null;
-      ip = request.getRemote().getIp();
+      ip = request.getRemote().getHost();
     }
 
     if (ip.contains(",")) {
       ip = ip.split(",")[0].trim();
     }
     if (StrUtil.isBlank(ip)) {
-      ip = request.getRemote().getIp();
+      ip = request.getRemote().getHost();
     }
 
     return ip;
@@ -74,7 +74,7 @@ public class HttpIpUtils {
   public static String getRealIp(ChannelContext channelContext, HttpConfig httpConfig,
       Map<String, String> httpHeaders) {
     if (httpConfig == null) {
-      return channelContext.getClientNode().getIp();
+      return channelContext.getClientNode().getHost();
     }
 
     if (httpConfig.isProxied()) {
@@ -91,7 +91,7 @@ public class HttpIpUtils {
 
       if (StrUtil.isBlank(ip) || "unknown".equalsIgnoreCase(ip)) {
         headerName = null;
-        ip = channelContext.getClientNode().getIp();
+        ip = channelContext.getClientNode().getHost();
       }
 
       if (ip.contains(",")) {
@@ -103,7 +103,7 @@ public class HttpIpUtils {
       }
       return ip;
     } else {
-      return channelContext.getClientNode().getIp();
+      return channelContext.getClientNode().getHost();
     }
   }
 

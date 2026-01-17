@@ -130,7 +130,7 @@ public class HttpRequestDecoder {
     }
 
     Node realNode = null;
-    if (Objects.equals(realIp, channelContext.getClientNode().getIp())) {
+    if (Objects.equals(realIp, channelContext.getClientNode().getHost())) {
       realNode = channelContext.getClientNode();
     } else {
       realNode = new Node(realIp, channelContext.getClientNode().getPort()); // realNode

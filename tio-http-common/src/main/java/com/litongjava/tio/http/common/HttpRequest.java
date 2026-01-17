@@ -200,7 +200,7 @@ public class HttpRequest extends HttpPacket {
    * @author tanyaowu
    */
   public String getClientIp() {
-    return remote.getIp();
+    return remote.getHost();
   }
 
   public void addHeader(String key, String value) {
