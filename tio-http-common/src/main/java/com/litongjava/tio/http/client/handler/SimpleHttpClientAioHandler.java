@@ -27,22 +27,20 @@ public class SimpleHttpClientAioHandler implements ClientAioHandler {
   public Packet decode(ByteBuffer buffer, int limit, int position, int readableLength, ChannelContext channelContext)
       throws Exception {
 
-    // 需要：从 buffer[position..position+readableLength) 中解析一个完整 HTTP 响应
-    // 解析策略：先找 \r\n\r\n，得到 headers，然后根据 Content-Length 或 chunked 读 body。
-    int start = position;
-    int end = position + readableLength;
+    // 只信 buffer 自己的 position/limit，避免和上层传参不一致
+    int start = buffer.position();
+    int end = buffer.limit();
 
+    // 1) 找到 header 结束
     int headerEnd = indexOf(buffer, start, end, CRLFCRLF);
     if (headerEnd < 0) {
-      return null; // 还没收到完整 headers
+      return null;
     }
 
     int headersBytesEnd = headerEnd + 4;
-    byte[] headerBytes = new byte[headersBytesEnd - start];
-    for (int i = 0; i < headerBytes.length; i++) {
-      headerBytes[i] = buffer.get(start + i);
-    }
-    String headerText = new String(headerBytes, StandardCharsets.ISO_8859_1);
+
+    // 2) 解析 headers 文本
+    String headerText = readIso88591(buffer, start, headersBytesEnd);
     String[] lines = headerText.split("\r\n");
     if (lines.length == 0)
       return null;
@@ -50,7 +48,6 @@ public class SimpleHttpClientAioHandler implements ClientAioHandler {
     HttpResponsePacket resp = new HttpResponsePacket();
     resp.statusLine = lines[0];
 
-    // status code
     String[] parts = lines[0].split(" ");
     if (parts.length >= 2) {
       try {
@@ -72,55 +69,58 @@ public class SimpleHttpClientAioHandler implements ClientAioHandler {
       resp.headers.put(k, v);
 
       String kl = k.toLowerCase(Locale.ROOT);
-      if (kl.equals("content-length")) {
+      if ("content-length".equals(kl)) {
         try {
           contentLength = Integer.parseInt(v.trim());
         } catch (Exception ignore) {
         }
-      } else if (kl.equals("transfer-encoding") && v.toLowerCase(Locale.ROOT).contains("chunked")) {
+      } else if ("transfer-encoding".equals(kl) && v.toLowerCase(Locale.ROOT).contains("chunked")) {
         chunked = true;
       }
     }
 
     int bodyStart = headersBytesEnd;
 
+    // 3) chunked
     if (chunked) {
-      // 解析 chunked：如果不完整，返回 null
       ChunkParseResult cpr = parseChunkedBody(buffer, bodyStart, end);
       if (cpr == null)
         return null;
+
       resp.body = cpr.body;
 
-      // 消费长度 = headers + chunked 总长度
-      buffer.position(start + (headersBytesEnd - start) + cpr.consumedBytes);
+      // 消费：从 start 到 bodyStart+cpr.consumedBytes
+      int consumedEnd = bodyStart + cpr.consumedBytes;
+      buffer.position(consumedEnd);
       return resp;
-    } else {
-      if (contentLength < 0) {
-        // 没有 length 也没 chunked：这里简单处理为“等待对端关闭”不实现（测试代理通常够用）
-        // 也可以扩展：若 Connection: close，则读到 end 即 body
-        int bodyLen = end - bodyStart;
-        byte[] body = new byte[bodyLen];
-        for (int i = 0; i < bodyLen; i++)
-          body[i] = buffer.get(bodyStart + i);
-        resp.body = body;
-        buffer.position(end);
-        return resp;
-      }
+    }
 
+    // 4) content-length
+    if (contentLength >= 0) {
       int needEnd = bodyStart + contentLength;
-      if (needEnd > end) {
-        return null; // body 还没收全
-      }
+      if (needEnd > end)
+        return null;
 
       byte[] body = new byte[contentLength];
       for (int i = 0; i < contentLength; i++) {
         body[i] = buffer.get(bodyStart + i);
       }
       resp.body = body;
-
       buffer.position(needEnd);
       return resp;
     }
+
+    // 5) 既不是 chunked 也没 content-length：按 RFC 需要靠连接关闭判定结束
+    // 这里不要“直接把 end-bodyStart 当 body 并吃掉”，因为连接可能还没关闭，数据还没收全
+    // 先返回 null，等对端 close（Read=-1）时你再把缓存 flush 成响应（如果你要支持这种情况）
+    return null;
+  }
+
+  private static String readIso88591(ByteBuffer buf, int s, int e) {
+    byte[] b = new byte[e - s];
+    for (int i = 0; i < b.length; i++)
+      b[i] = buf.get(s + i);
+    return new String(b, StandardCharsets.ISO_8859_1);
   }
 
   @Override

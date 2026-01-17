@@ -48,16 +48,13 @@ public class SimpleTioHttpClient {
     // 1) 构建 tio client
     SimpleHttpClientAioHandler handler = new SimpleHttpClientAioHandler();
 
-    // listener：收到 HttpResponsePacket 时唤醒等待
     final Holder<HttpResponsePacket> holder = new Holder<>();
     CountDownLatch latch = new CountDownLatch(1);
 
     ClientAioListener listener = new ClientAioListener() {
-
       @Override
-      public void onAfterConnected(ChannelContext channelContext, boolean isConnected, boolean isReconnect)
-          throws Exception {
-        
+      public void onAfterConnected(ChannelContext channelContext, boolean isConnected, boolean isReconnect) throws Exception {
+        // 这里不做事，发送在 request() 里统一控制
       }
 
       @Override
@@ -67,52 +64,40 @@ public class SimpleTioHttpClient {
           latch.countDown();
           Tio.close(channelContext, "done");
         }
-        
       }
 
-      @Override
-      public void onAfterReceivedBytes(ChannelContext channelContext, int receivedBytes) throws Exception {
-        
-      }
-
-      @Override
-      public void onAfterSent(ChannelContext channelContext, Packet packet, boolean isSentSuccess) throws Exception {
-        
-      }
-
-      @Override
-      public void onAfterHandled(ChannelContext channelContext, Packet packet, long cost) throws Exception {
-        
-      }
-
-      @Override
-      public void onBeforeClose(ChannelContext channelContext, Throwable throwable, String remark, boolean isRemove)
-          throws Exception {
-        
-      }
-
+      @Override public void onAfterReceivedBytes(ChannelContext channelContext, int receivedBytes) throws Exception {}
+      @Override public void onAfterSent(ChannelContext channelContext, Packet packet, boolean isSentSuccess) throws Exception {}
+      @Override public void onAfterHandled(ChannelContext channelContext, Packet packet, long cost) throws Exception {}
+      @Override public void onBeforeClose(ChannelContext channelContext, Throwable throwable, String remark, boolean isRemove) throws Exception {}
     };
 
     ClientTioConfig cfg = new ClientTioConfig(handler, listener, null);
     cfg.setHeartbeatTimeout(0);
+
     if (ssl) {
-      cfg.useSsl(); // 走你现有的 SslFacadeContext.beginHandshake()
+      cfg.useSsl(); // 注意：代理场景下，SSL 真实握手会在 proxy CONNECT 完成后才进行（你框架内部会处理）
     }
 
     TioClient tioClient = new TioClient(cfg);
 
-    // 2) 计算拨号节点与目标节点
+    // 2) 目标节点（注意：如果传了 proxyInfo，底层会先连 proxy，再 CONNECT 到 targetNode）
     Node targetNode = new Node(host, port);
 
-    // 3) 连接
+    // 3) 连接（可能包含代理 CONNECT）
     ClientChannelContext cctx = tioClient.connect(targetNode, null, 0, connectTimeoutSec, this.proxyInfo);
     if (cctx == null) throw new RuntimeException("connect failed");
 
-    // 4) 组包并发送
+    // 4) HTTPS：等待握手完成后再发请求
+    if (ssl) {
+      waitSslHandshakeCompleted(cctx, timeoutSec <= 0 ? 10 : timeoutSec);
+    }
+
+    // 5) 发起 HTTP 请求
     byte[] reqBytes = buildHttpRequest(method, host, port, path, body);
     Tio.send(cctx, new HttpRequestPacket(reqBytes));
 
-    // 5) 等响应
+    // 6) 等响应
     boolean ok = latch.await(timeoutSec <= 0 ? 10 : timeoutSec, TimeUnit.SECONDS);
     if (!ok) {
       Tio.close(cctx, "timeout");
@@ -121,10 +106,28 @@ public class SimpleTioHttpClient {
     return holder.value;
   }
 
+  private static void waitSslHandshakeCompleted(ClientChannelContext cctx, int timeoutSec) throws InterruptedException {
+    long deadline = System.currentTimeMillis() + Math.max(1, timeoutSec) * 1000L;
+
+    while (true) {
+      // 等 sslFacadeContext 被创建
+      if (cctx.sslFacadeContext != null && cctx.sslFacadeContext.isHandshakeCompleted()) {
+        return;
+      }
+
+      if (System.currentTimeMillis() > deadline) {
+        // 这里直接抛异常更符合“握手失败/超时”的语义
+        Tio.close(cctx, "ssl handshake timeout");
+        throw new RuntimeException("ssl handshake timeout");
+      }
+
+      Thread.sleep(10);
+    }
+  }
+
   private static byte[] buildHttpRequest(String method, String host, int port, String path, String body) {
     StringBuilder sb = new StringBuilder();
     sb.append(method).append(" ").append(path).append(" HTTP/1.1\r\n");
-    // Host header 端口：80/443 时通常可省略，这里保留端口便于调试
     sb.append("Host: ").append(host).append(":").append(port).append("\r\n");
     sb.append("Connection: close\r\n");
     sb.append("User-Agent: tio-http-client/0.1\r\n");
