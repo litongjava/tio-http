@@ -35,13 +35,7 @@ public class SseEmitter {
   }
 
   public static void closeSeeConnection(ChannelContext channelContext) {
-    try {
-      // 给客户端足够的时间接受消息
-      Thread.sleep(1000);
-      Tio.remove(channelContext, "remove");
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
+    Tio.remove(channelContext, "remove");
   }
 
   public static void closeChunkConnectionImmediately(ChannelContext channelContext) {
@@ -56,14 +50,7 @@ public class SseEmitter {
     byte[] zeroChunk = ChunkEncoder.encodeChunk(new byte[0]);
     ChunkedPacket endPacket = new ChunkedPacket(zeroChunk);
     Tio.bSend(channelContext, endPacket);
-
-    try {
-      // 给客户端足够的时间接受消息
-      Thread.sleep(100);
-      Tio.remove(channelContext, "remove");
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
+    Tio.remove(channelContext, "remove");
   }
 
 }
