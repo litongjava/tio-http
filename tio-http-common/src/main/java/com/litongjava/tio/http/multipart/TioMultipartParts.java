@@ -29,7 +29,11 @@ public class TioMultipartParts {
   public TioMultipartParts addObject(String name, Object value) {
     return addObject(name, value, "text/plain; charset=utf-8");
   }
-  
+
+  public TioMultipartParts addJson(String name, String value) {
+    return addText(name, value, "application/json; charset=utf-8");
+  }
+
   public TioMultipartParts addObject(String name, Object value, String contentType) {
     if (value == null) {
       return this;
